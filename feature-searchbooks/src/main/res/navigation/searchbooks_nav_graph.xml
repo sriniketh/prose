@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/searchbooks_nav_graph"
+    app:startDestination="@id/fragment_searchbooks">
+
+    <fragment
+        android:id="@+id/fragment_searchbooks"
+        android:name="com.sriniketh.feature_searchbooks.SearchBookFragment"
+        android:label="@string/nav_label_searchbooks"
+        tools:layout="@layout/search_book_fragment">
+        <deepLink app:uri="android-app://com.sriniketh.prose/to_searchbooks_fragment" />
+    </fragment>
+</navigation>

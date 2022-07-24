@@ -15,3 +15,6 @@ dependencyResolutionManagement {
 rootProject.name = "prose"
 include ':app'
 include ':core-network'
+include ':core-models'
+include ':feature-searchbooks'
+include ':feature-bookshelf'

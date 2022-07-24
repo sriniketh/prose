@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_label_searchbooks">Search books</string>
+    <string name="search_for_a_book">search for a book..</string>
+    <string name="search_button_text">Search</string>
+</resources>

@@ -1,26 +1,25 @@
 package com.sriniketh.prose
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.lifecycleScope
-import com.sriniketh.prose.core_network.BooksRemoteDataSource
+import androidx.appcompat.app.AppCompatActivity
+import com.sriniketh.prose.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var booksRemoteDataSource: BooksRemoteDataSource
+    private var _binding: ActivityMainBinding? = null
+    private val binding: ActivityMainBinding
+        get() = checkNotNull(_binding)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
 
-        // Testing
-        lifecycleScope.launch {
-            booksRemoteDataSource.getVolumes("Harry Potter")
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
     }
 }
