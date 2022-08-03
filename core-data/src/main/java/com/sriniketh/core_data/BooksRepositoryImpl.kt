@@ -15,7 +15,7 @@ class BooksRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : BooksRepository {
 
-    override suspend fun searchBooks(searchQuery: String): Flow<Result<BookSearch>> = flow {
+    override fun searchBooks(searchQuery: String): Flow<Result<BookSearch>> = flow {
         try {
             val books = remoteDataSource.getVolumes(searchQuery).asBookSearchResult()
             emit(Result.success(books))
