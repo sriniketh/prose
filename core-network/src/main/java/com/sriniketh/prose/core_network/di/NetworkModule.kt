@@ -6,8 +6,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
@@ -25,8 +23,4 @@ object NetworkModule {
     fun providesRemoteJson(): Json = Json {
         ignoreUnknownKeys = true
     }
-
-    @Provides
-    @Singleton
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 }

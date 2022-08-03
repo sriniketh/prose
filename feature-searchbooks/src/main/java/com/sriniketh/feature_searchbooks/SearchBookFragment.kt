@@ -5,14 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_searchbooks.databinding.SearchBookFragmentBinding
-import com.sriniketh.prose.core_network.BooksRemoteDataSource
-import com.sriniketh.prose.core_network.model.asBookSearchResult
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SearchBookFragment : Fragment() {
@@ -25,8 +26,7 @@ class SearchBookFragment : Fragment() {
     private val searchAdapter: SearchBookRecyclerViewAdapter
         get() = checkNotNull(_searchAdapter)
 
-    @Inject
-    lateinit var remoteDataSource: BooksRemoteDataSource
+    private val viewModel: SearchBookFragmentViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -44,9 +44,29 @@ class SearchBookFragment : Fragment() {
         }
         binding.searchEditButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                // TODO move to viewmodel
-                val volumes = remoteDataSource.getVolumes(binding.searchEditText.text.toString())
-                searchAdapter.submitList(volumes.asBookSearchResult().items)
+                viewModel.searchForBook(binding.searchEditText.text.toString())
+            }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.searchUiState.collect { uiState ->
+                    when (uiState) {
+                        is BookSearchUiState.Initial -> binding.searchProgress.hide()
+                        is BookSearchUiState.Loading -> binding.searchProgress.show()
+                        is BookSearchUiState.Success -> {
+                            binding.searchProgress.hide()
+                            searchAdapter.submitList(uiState.books)
+                        }
+                        is BookSearchUiState.Failure -> {
+                            binding.searchProgress.hide()
+                            Snackbar.make(
+                                binding.root,
+                                getString(uiState.errorMessage),
+                                Snackbar.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             }
         }
     }

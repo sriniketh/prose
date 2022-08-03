@@ -4,8 +4,6 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import com.sriniketh.prose.core_network.BuildConfig
 import com.sriniketh.prose.core_network.model.Volumes
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,8 +15,7 @@ import retrofit2.http.Query
 import javax.inject.Inject
 
 class BooksRemoteDataSourceImpl @Inject constructor(
-    remoteJson: Json,
-    private val ioDispatcher: CoroutineDispatcher
+    remoteJson: Json
 ) : BooksRemoteDataSource {
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -37,9 +34,8 @@ class BooksRemoteDataSourceImpl @Inject constructor(
         .build()
         .create(BooksApi::class.java)
 
-    override suspend fun getVolumes(searchQuery: String): Volumes = withContext(ioDispatcher) {
+    override suspend fun getVolumes(searchQuery: String): Volumes =
         booksApi.volumes(searchQuery, BuildConfig.BOOKS_API_KEY, "lite")
-    }
 }
 
 private interface BooksApi {

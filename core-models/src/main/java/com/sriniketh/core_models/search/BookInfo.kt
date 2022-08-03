@@ -1,6 +1,6 @@
 package com.sriniketh.core_models.search
 
-data class BookSearchResult(
+data class BookSearch(
     val items: List<Book>
 )
 
