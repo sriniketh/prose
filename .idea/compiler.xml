@@ -6,6 +6,7 @@
       <module name="prose.blah-core-models" target="11" />
       <module name="prose.core-data" target="11" />
       <module name="prose.core-network" target="11" />
+      <module name="prose.feature-bookinfo" target="11" />
       <module name="prose.feature-bookshelf" target="11" />
       <module name="prose.feature-searchbooks" target="11" />
     </bytecodeTargetLevel>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_label_book_info">Book info</string>
+    <string name="want_to_read_button_text">Want to read</string>
+    <string name="book_info_load_error_message">Error loading book details.</string>
+    <string name="book_info_ratings_template">Ratings: {rating_value}/5.0 out of {rating_count} reviews</string>
+    <string name="book_info_pagecount_template">Number of pages: {page_count}</string>
+    <string name="book_info_publisher_template">Publisher: {publisher}</string>
+    <string name="book_info_publish_date_template">Date published: {date_published}</string>
+</resources>

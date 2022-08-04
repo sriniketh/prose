@@ -19,7 +19,12 @@ data class VolumeInfo(
     val subtitle: String? = null,
     val description: String? = null,
     val authors: List<String>,
-    val imageLinks: ImageLinks? = null
+    val imageLinks: ImageLinks? = null,
+    val publisher: String? = null,
+    val publishedDate: String? = null,
+    val pageCount: Int? = null,
+    val averageRating: Double? = null,
+    val ratingsCount: Int? = null
 )
 
 @Serializable

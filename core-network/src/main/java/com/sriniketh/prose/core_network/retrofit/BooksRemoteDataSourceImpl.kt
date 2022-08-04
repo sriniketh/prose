@@ -3,6 +3,7 @@ package com.sriniketh.prose.core_network.retrofit
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import com.sriniketh.prose.core_network.BuildConfig
+import com.sriniketh.prose.core_network.model.Volume
 import com.sriniketh.prose.core_network.model.Volumes
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -11,6 +12,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import javax.inject.Inject
 
@@ -36,6 +38,9 @@ class BooksRemoteDataSourceImpl @Inject constructor(
 
     override suspend fun getVolumes(searchQuery: String): Volumes =
         booksApi.volumes(searchQuery, BuildConfig.BOOKS_API_KEY, "lite")
+
+    override suspend fun getVolume(volumeId: String): Volume =
+        booksApi.volume(volumeId, BuildConfig.BOOKS_API_KEY)
 }
 
 private interface BooksApi {
@@ -46,4 +51,10 @@ private interface BooksApi {
         @Query("key") apiKey: String,
         @Query("projection") projection: String
     ): Volumes
+
+    @GET("books/v1/volumes/{id}")
+    suspend fun volume(
+        @Path("id") volumeId: String,
+        @Query("key") apiKey: String
+    ): Volume
 }

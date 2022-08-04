@@ -4,11 +4,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.sriniketh.core_models.search.Book
 import com.sriniketh.feature_searchbooks.databinding.SearchBookResultCardBinding
 
 class SearchBookRecyclerViewAdapter :
-    ListAdapter<Book, SearchBookViewHolder>(SearchBookDiffCallback) {
+    ListAdapter<BookUiState, SearchBookViewHolder>(SearchBookDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchBookViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -20,12 +19,12 @@ class SearchBookRecyclerViewAdapter :
         holder.bind(getItem(position))
     }
 
-    object SearchBookDiffCallback : DiffUtil.ItemCallback<Book>() {
-        override fun areItemsTheSame(oldItem: Book, newItem: Book): Boolean {
+    object SearchBookDiffCallback : DiffUtil.ItemCallback<BookUiState>() {
+        override fun areItemsTheSame(oldItem: BookUiState, newItem: BookUiState): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: Book, newItem: Book): Boolean {
+        override fun areContentsTheSame(oldItem: BookUiState, newItem: BookUiState): Boolean {
             return oldItem == newItem
         }
     }

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:id="@+id/book_detail_background"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@color/design_default_color_primary_variant"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/book_details"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginBottom="24dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/book_detail_thumbnail"
+                android:layout_width="120dp"
+                android:layout_height="160dp"
+                android:layout_marginTop="40dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/image_rounded_corner" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_thumbnail"
+                tools:text="Harry Potter and the Goblet of Fire" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_authors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_title"
+                tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit." />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/book_detail_add_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@color/design_default_color_primary"
+                android:padding="12dp"
+                android:text="@string/want_to_read_button_text"
+                android:textColor="@color/design_default_color_on_primary"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_authors" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_add_button"
+                tools:text="Here is the story behind one of the most remarkable Internet
+  successes of our time. Based on scrupulous research and extraordinary access
+  to Google, ..." />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_rating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_description"
+                tools:text="Rating: 4.5/5 out of 128 reviews" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_page_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_rating"
+                tools:text="Number of pages: 446" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_publisher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_page_count"
+                tools:text="Random House Digital, Inc." />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/book_detail_publish_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/book_detail_publisher"
+                tools:text="Date published: 2005-11-15" />
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:id="@+id/search_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:indeterminate="true"
+                app:indicatorColor="@color/design_default_color_primary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</ScrollView>

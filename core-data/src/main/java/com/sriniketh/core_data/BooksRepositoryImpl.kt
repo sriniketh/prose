@@ -1,6 +1,8 @@
 package com.sriniketh.core_data
 
+import com.sriniketh.core_data.transformers.asBook
 import com.sriniketh.core_data.transformers.asBookSearchResult
+import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.search.BookSearch
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,4 +26,14 @@ class BooksRepositoryImpl @Inject constructor(
             emit(Result.failure(exception))
         }
     }.flowOn(ioDispatcher)
+
+    override fun getBook(volumeId: String): Flow<Result<Book>> = flow {
+        try {
+            val book = remoteDataSource.getVolume(volumeId).asBook()
+            emit(Result.success(book))
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            emit(Result.failure(exception))
+        }
+    }
 }

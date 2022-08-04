@@ -1,7 +1,7 @@
 package com.sriniketh.core_data.transformers
 
-import com.sriniketh.core_models.search.Book
-import com.sriniketh.core_models.search.BookInfo
+import com.sriniketh.core_models.book.Book
+import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_models.search.BookSearch
 import com.sriniketh.prose.core_network.model.Volume
 import com.sriniketh.prose.core_network.model.VolumeInfo
@@ -20,5 +20,11 @@ fun VolumeInfo.asBookInfo() = BookInfo(
     title = title,
     subtitle = subtitle,
     authors = authors,
-    thumbnailLink = imageLinks?.thumbnail
+    thumbnailLink = imageLinks?.thumbnail,
+    publisher = publisher,
+    publishedDate = publishedDate,
+    description = description,
+    pageCount = pageCount,
+    averageRating = averageRating,
+    ratingsCount = ratingsCount
 )

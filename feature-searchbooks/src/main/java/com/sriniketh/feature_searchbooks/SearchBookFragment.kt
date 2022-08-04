@@ -4,11 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_searchbooks.databinding.SearchBookFragmentBinding
@@ -47,21 +50,24 @@ class SearchBookFragment : Fragment() {
                 viewModel.searchForBook(binding.searchEditText.text.toString())
             }
         }
+        viewModel.goToBookInfo = { volumeId ->
+            navigateToBookInfoFragment(volumeId)
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.searchUiState.collect { uiState ->
-                    when (uiState) {
+                viewModel.searchUiState.collect { searchUiState ->
+                    when (searchUiState) {
                         is BookSearchUiState.Initial -> binding.searchProgress.hide()
                         is BookSearchUiState.Loading -> binding.searchProgress.show()
                         is BookSearchUiState.Success -> {
                             binding.searchProgress.hide()
-                            searchAdapter.submitList(uiState.books)
+                            searchAdapter.submitList(searchUiState.bookUiStates)
                         }
                         is BookSearchUiState.Failure -> {
                             binding.searchProgress.hide()
                             Snackbar.make(
                                 binding.root,
-                                getString(uiState.errorMessage),
+                                getString(searchUiState.errorMessage),
                                 Snackbar.LENGTH_SHORT
                             ).show()
                         }
@@ -69,6 +75,13 @@ class SearchBookFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun navigateToBookInfoFragment(volumeId: String) {
+        val request = NavDeepLinkRequest.Builder
+            .fromUri("android-app://com.sriniketh.prose/to_bookinfo_fragment?volumeid=$volumeId".toUri())
+            .build()
+        findNavController().navigate(request)
     }
 
     override fun onDestroyView() {
