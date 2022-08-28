@@ -7,13 +7,14 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurface">
 
         <FrameLayout
             android:id="@+id/book_detail_background"
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:background="@color/design_default_color_primary_variant"
+            android:background="?attr/colorOnPrimaryContainer"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:gravity="center"
+                android:textColor="?attr/colorOnSurface"
                 android:textStyle="bold"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -59,6 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:gravity="center"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_title"
@@ -69,10 +72,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:background="@color/design_default_color_primary"
                 android:padding="12dp"
                 android:text="@string/want_to_read_button_text"
-                android:textColor="@color/design_default_color_on_primary"
+                android:textColor="?attr/colorOnPrimary"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_authors" />
@@ -82,6 +84,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_add_button"
                 tools:text="Here is the story behind one of the most remarkable Internet
@@ -93,6 +96,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_description"
                 tools:text="Rating: 4.5/5 out of 128 reviews" />
@@ -102,6 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_rating"
                 tools:text="Number of pages: 446" />
@@ -111,6 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_page_count"
                 tools:text="Random House Digital, Inc." />
@@ -120,6 +126,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/book_detail_publisher"
                 tools:text="Date published: 2005-11-15" />
@@ -130,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:indeterminate="true"
-                app:indicatorColor="@color/design_default_color_primary"
+                app:indicatorColor="?attr/colorTertiary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent" />

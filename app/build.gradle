@@ -39,6 +39,7 @@ android {
 
 dependencies {
 
+    implementation(project(":core-design"))
     implementation(project(":feature-bookshelf"))
     implementation(project(":feature-searchbooks"))
     implementation(project(":feature-bookinfo"))
