@@ -2,5 +2,6 @@
 <resources>
     <string name="nav_label_bookshelf">Bookshelf</string>
     <string name="bookshelf_empty_text">No saved books</string>
+    <string name="getallbooks_error_message">Error retrieving saved books.</string>
     <string name="search_fab_cont_desc">search for a book button</string>
 </resources>

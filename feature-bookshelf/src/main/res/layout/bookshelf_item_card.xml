@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/bookshelf_item_image"
+        android:layout_width="40dp"
+        android:layout_height="60dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/image_rounded_corner" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bookshelf_item_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp"
+        android:maxLines="2"
+        android:textColor="?attr/colorOnSurface"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@id/bookshelf_item_image"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Book Title" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bookshelf_item_authors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginBottom="12dp"
+        android:maxLines="2"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        app:layout_constraintLeft_toRightOf="@id/bookshelf_item_image"
+        app:layout_constraintTop_toBottomOf="@id/bookshelf_item_title"
+        tools:text="authors" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

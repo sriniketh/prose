@@ -52,6 +52,7 @@ class BookInfoFragment : Fragment() {
                         is BookInfoUiState.AddToBookshelfSuccess -> {
                             binding.searchProgress.hide()
                             binding.bookDetailAddButton.isEnabled = false
+                            binding.bookDetailAddButton.isClickable = false
                         }
                         is BookInfoUiState.Failure -> {
                             binding.searchProgress.hide()

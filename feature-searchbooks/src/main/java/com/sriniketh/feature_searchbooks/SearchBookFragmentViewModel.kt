@@ -8,6 +8,7 @@ import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,7 +19,7 @@ class SearchBookFragmentViewModel @Inject constructor(
 
     private val _searchUiState: MutableStateFlow<BookSearchUiState> =
         MutableStateFlow(BookSearchUiState.Initial)
-    internal val searchUiState: StateFlow<BookSearchUiState> = _searchUiState
+    internal val searchUiState: StateFlow<BookSearchUiState> = _searchUiState.asStateFlow()
 
     var goToBookInfo: (String) -> Unit = {}
 
