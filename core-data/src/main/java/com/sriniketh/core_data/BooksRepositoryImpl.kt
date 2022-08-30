@@ -35,5 +35,5 @@ class BooksRepositoryImpl @Inject constructor(
             Timber.e(exception)
             emit(Result.failure(exception))
         }
-    }
+    }.flowOn(ioDispatcher)
 }
