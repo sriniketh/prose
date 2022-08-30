@@ -33,13 +33,11 @@ android {
 
 dependencies {
 
-    implementation(project(":core-network"))
-    implementation(project(":core-db"))
-    implementation(project(":core-models"))
-
     implementation "androidx.core:core-ktx:$android_ktx_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
-    implementation "com.jakewharton.timber:timber:$timber_version"
+
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"

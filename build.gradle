@@ -33,6 +33,7 @@ ext {
     kotlinx_serialization_converter_version = '0.8.0'
     coil_version = '2.2.0'
     phrase_version = '1.2.0'
+    room_version = '2.4.3'
 
     junit_version = '4.13.2'
     android_junit_version = '1.1.3'

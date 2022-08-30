@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.Flow
 interface BooksRepository {
     fun searchBooks(searchQuery: String): Flow<Result<BookSearch>>
     fun getBook(volumeId: String): Flow<Result<Book>>
+    fun insertBook(book: Book): Flow<Result<Unit>>
 }

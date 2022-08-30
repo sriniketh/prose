@@ -45,9 +45,13 @@ class BookInfoFragment : Fragment() {
                     when (uiState) {
                         is BookInfoUiState.Initial -> binding.searchProgress.hide()
                         is BookInfoUiState.Loading -> binding.searchProgress.show()
-                        is BookInfoUiState.Success -> {
+                        is BookInfoUiState.BookInfoLoadSuccess -> {
                             binding.searchProgress.hide()
                             updateBookState(uiState)
+                        }
+                        is BookInfoUiState.AddToBookshelfSuccess -> {
+                            binding.searchProgress.hide()
+                            binding.bookDetailAddButton.isEnabled = false
                         }
                         is BookInfoUiState.Failure -> {
                             binding.searchProgress.hide()
@@ -63,7 +67,7 @@ class BookInfoFragment : Fragment() {
         }
     }
 
-    private fun updateBookState(uiState: BookInfoUiState.Success) {
+    private fun updateBookState(uiState: BookInfoUiState.BookInfoLoadSuccess) {
         val bookInfo = uiState.book.info
         binding.bookDetailTitle.text = bookInfo.title
         binding.bookDetailAuthors.text = bookInfo.authors.joinToString(",")
