@@ -73,7 +73,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:padding="12dp"
-                android:text="@string/want_to_read_button_text"
+                android:text="@string/add_to_list_button_text"
                 android:textColor="?attr/colorOnPrimary"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

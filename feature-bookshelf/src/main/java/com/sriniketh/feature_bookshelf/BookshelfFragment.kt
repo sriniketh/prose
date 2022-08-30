@@ -12,7 +12,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_bookshelf.databinding.BookshelfFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +47,9 @@ class BookshelfFragment : Fragment() {
         binding.bookshelfRecyclerview.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = bookshelfAdapter
+            addItemDecoration(
+                DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL)
+            )
         }
 
         viewModel.getSavedBooks()

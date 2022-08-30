@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_searchbooks.databinding.SearchBookFragmentBinding
@@ -44,6 +45,9 @@ class SearchBookFragment : Fragment() {
         binding.searchRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = searchAdapter
+            addItemDecoration(
+                DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL)
+            )
         }
         binding.searchEditButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
