@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_label_highlights">View highlights</string>
+    <string name="no_highlights_text">No saved highlights</string>
+    <string name="add_fab_cont_desc">Add highlight</string>
+</resources>

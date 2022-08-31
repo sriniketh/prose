@@ -7,5 +7,6 @@
     <include app:graph="@navigation/bookshelf_nav_graph" />
     <include app:graph="@navigation/searchbooks_nav_graph" />
     <include app:graph="@navigation/bookinfo_nav_graph" />
+    <include app:graph="@navigation/highlights_nav_graph" />
 
 </navigation>

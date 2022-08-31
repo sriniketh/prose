@@ -14,11 +14,11 @@ import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.divider.MaterialDividerItemDecoration
 import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_bookshelf.databinding.BookshelfFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.net.URLEncoder
 
 @AndroidEntryPoint
 class BookshelfFragment : Fragment() {
@@ -47,9 +47,7 @@ class BookshelfFragment : Fragment() {
         binding.bookshelfRecyclerview.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = bookshelfAdapter
-            addItemDecoration(
-                DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL)
-            )
+            addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         }
 
         viewModel.getSavedBooks()
@@ -80,6 +78,14 @@ class BookshelfFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        viewModel.viewHighlightsForBook = { bookId ->
+            val encodedBookId = URLEncoder.encode(bookId, "UTF-8")
+            val request = NavDeepLinkRequest.Builder
+                .fromUri("android-app://com.sriniketh.prose/to_highlights_fragment/$encodedBookId".toUri())
+                .build()
+            findNavController().navigate(request)
         }
 
         binding.searchFab.setOnClickListener {

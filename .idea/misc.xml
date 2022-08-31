@@ -15,6 +15,11 @@
         <entry key="feature-searchbooks/src/main/res/layout/bookshelf_item_card.xml" value="0.3421875" />
         <entry key="feature-searchbooks/src/main/res/layout/search_book_fragment.xml" value="0.2874008178710938" />
         <entry key="feature-searchbooks/src/main/res/layout/search_book_result_card.xml" value="0.33054376132246377" />
+        <entry key="feature-viewhighlights/src/main/res/drawable/ic_baseline_add_24.xml" value="0.1605" />
+        <entry key="feature-viewhighlights/src/main/res/layout/highlight_item_card.xml" value="0.4089068825910931" />
+        <entry key="feature-viewhighlights/src/main/res/layout/highlight_view_holder.xml" value="0.48233695652173914" />
+        <entry key="feature-viewhighlights/src/main/res/layout/view_highlights_fragment.xml" value="0.48233695652173914" />
+        <entry key="feature-viewhighlights/src/main/res/layout/viewhighlights_fragment.xml" value="0.48233695652173914" />
       </map>
     </option>
   </component>

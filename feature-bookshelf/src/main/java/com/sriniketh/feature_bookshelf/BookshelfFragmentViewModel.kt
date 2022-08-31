@@ -21,6 +21,8 @@ class BookshelfFragmentViewModel @Inject constructor(
         MutableStateFlow(BookshelfUIState.Initial)
     internal val bookshelfUIState: StateFlow<BookshelfUIState> = _bookshelfUIState.asStateFlow()
 
+    var viewHighlightsForBook: (String) -> Unit = {}
+
     fun getSavedBooks() {
         viewModelScope.launch {
             _bookshelfUIState.emit(BookshelfUIState.Loading)
@@ -46,7 +48,9 @@ class BookshelfFragmentViewModel @Inject constructor(
             authors = info.authors,
             thumbnailLink = info.thumbnailLink
         ),
-        viewBook = {}
+        viewBook = {
+            viewHighlightsForBook(id)
+        }
     )
 }
 

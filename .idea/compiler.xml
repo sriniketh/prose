@@ -11,6 +11,7 @@
       <module name="prose.feature-bookinfo" target="11" />
       <module name="prose.feature-bookshelf" target="11" />
       <module name="prose.feature-searchbooks" target="11" />
+      <module name="prose.feature-viewhighlights" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
