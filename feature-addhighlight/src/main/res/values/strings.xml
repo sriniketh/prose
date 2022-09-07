@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="camera_fragment_label">Add highlight</string>
+    <string name="edithighlight_fragment_label">Edit highlight</string>
+    <string name="capture_button_text">Capture</string>
+    <string name="save_highlight_title_text">Save highlight</string>
+    <string name="save_button_text">Save</string>
+    <string name="discard_button_text">Discard</string>
+</resources>

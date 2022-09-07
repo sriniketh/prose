@@ -8,6 +8,8 @@
       <module name="prose.core-db" target="11" />
       <module name="prose.core-design" target="11" />
       <module name="prose.core-network" target="11" />
+      <module name="prose.core-platform" target="11" />
+      <module name="prose.feature-addhighlight" target="11" />
       <module name="prose.feature-bookinfo" target="11" />
       <module name="prose.feature-bookshelf" target="11" />
       <module name="prose.feature-searchbooks" target="11" />
