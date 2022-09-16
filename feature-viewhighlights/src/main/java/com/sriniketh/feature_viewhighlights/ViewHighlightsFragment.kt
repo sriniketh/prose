@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
@@ -31,6 +32,7 @@ class ViewHighlightsFragment : Fragment() {
         get() = checkNotNull(_highlightsAdapter)
 
     private val viewModel: ViewHighlightsFragmentViewModel by viewModels()
+    private val args: ViewHighlightsFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,11 +53,10 @@ class ViewHighlightsFragment : Fragment() {
             addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         }
 
-        arguments?.getString("bookId")?.let {
-            viewModel.getHighlights(it)
-        }
-
         viewLifecycleOwner.lifecycleScope.launch {
+
+            viewModel.getHighlights(args.bookId)
+
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.highlightsUIStateFlow.collect { uiState ->
                     when (uiState) {
@@ -74,9 +75,7 @@ class ViewHighlightsFragment : Fragment() {
                         }
                         is ViewHighlightsUIState.Failure -> {
                             binding.fetchProgress.hide()
-                            Snackbar.make(
-                                binding.root, getString(uiState.errorMessage), Snackbar.LENGTH_SHORT
-                            ).show()
+                            Snackbar.make(binding.root, getString(uiState.errorMessage), Snackbar.LENGTH_SHORT).show()
                         }
                     }
                 }
@@ -84,8 +83,9 @@ class ViewHighlightsFragment : Fragment() {
         }
 
         binding.addHighlightFab.setOnClickListener {
+            val bookId = args.bookId
             val request = NavDeepLinkRequest.Builder
-                .fromUri("android-app://com.sriniketh.prose/to_camera_fragment".toUri())
+                .fromUri("android-app://com.sriniketh.prose/to_camera_fragment?bookId=$bookId".toUri())
                 .build()
             findNavController().navigate(request)
         }

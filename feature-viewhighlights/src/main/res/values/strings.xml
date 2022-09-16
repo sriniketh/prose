@@ -3,4 +3,5 @@
     <string name="nav_label_highlights">View highlights</string>
     <string name="no_highlights_text">No saved highlights</string>
     <string name="add_fab_cont_desc">Add highlight</string>
+    <string name="gethighlights_error_message">Error retrieving saved highlights.</string>
 </resources>

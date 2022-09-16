@@ -40,6 +40,8 @@ dependencies {
 
     implementation(project(":core-design"))
     implementation(project(":core-platform"))
+    implementation(project(":core-data"))
+    implementation(project(":core-models"))
 
     implementation "androidx.core:core-ktx:$android_ktx_version"
     implementation "androidx.appcompat:appcompat:$appcompat_version"

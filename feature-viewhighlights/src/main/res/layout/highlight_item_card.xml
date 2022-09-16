@@ -13,7 +13,7 @@
         android:textColor="?attr/colorOnSurfaceVariant"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="authors" />
+        tools:text="highlight" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/highlight_subtext"
@@ -21,8 +21,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:textColor="?attr/colorOnSurfaceVariant"
+        android:textStyle="italic"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/highlight_text"
-        tools:text="authors" />
+        tools:text="saved on" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

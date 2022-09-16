@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.navArgs
 import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.phrase.Phrase
@@ -26,6 +27,7 @@ class BookInfoFragment : Fragment() {
         get() = checkNotNull(_binding)
 
     private val viewModel: BookInfoFragmentViewModel by viewModels()
+    private val args: BookInfoFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -37,9 +39,9 @@ class BookInfoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
-            arguments?.getString("volumeid")?.let {
-                viewModel.getBookDetail(it)
-            }
+
+            viewModel.getBookDetail(args.volumeid)
+
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
                     when (uiState) {

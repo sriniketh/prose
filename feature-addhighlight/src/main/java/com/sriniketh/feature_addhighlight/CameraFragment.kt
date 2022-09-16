@@ -11,6 +11,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.sriniketh.core_platform.permissions.CameraPermissionChecker
 import com.sriniketh.feature_addhighlight.databinding.CameraFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -33,6 +34,7 @@ class CameraFragment : Fragment() {
     lateinit var cameraPermissionChecker: CameraPermissionChecker
 
     private val cameraExecutor: ExecutorService by lazy { Executors.newSingleThreadExecutor() }
+    private val args: CameraFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -45,8 +47,9 @@ class CameraFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.captureButton.setOnClickListener {
+            val bookId = args.bookId
             val translatedText = getTranslatedTextFromAnalyzer()
-            val action = CameraFragmentDirections.cameraToEdithighlightAction(translatedText = translatedText)
+            val action = CameraFragmentDirections.cameraToEdithighlightAction(translatedText = translatedText, bookId = bookId)
             findNavController().navigate(action)
         }
 

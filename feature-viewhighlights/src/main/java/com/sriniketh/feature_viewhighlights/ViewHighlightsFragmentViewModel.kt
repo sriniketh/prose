@@ -2,21 +2,48 @@ package com.sriniketh.feature_viewhighlights
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sriniketh.core_data.BooksRepository
+import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ViewHighlightsFragmentViewModel @Inject constructor() : ViewModel() {
+class ViewHighlightsFragmentViewModel @Inject constructor(
+    private val repo: BooksRepository
+) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
         MutableStateFlow(ViewHighlightsUIState.Initial)
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
 
-    fun getHighlights(bookId: String) {}
+    fun getHighlights(bookId: String) {
+        viewModelScope.launch {
+            _highlightsUIStateFlow.emit(ViewHighlightsUIState.Loading)
+            repo.getAllHighlightsForBook(bookId).collect { result ->
+                if (result.isSuccess) {
+                    val highlights = result.getOrThrow()
+                    if (highlights.isEmpty()) {
+                        _highlightsUIStateFlow.emit(ViewHighlightsUIState.SuccessNoHighlights)
+                    } else {
+                        _highlightsUIStateFlow.emit(ViewHighlightsUIState.Success(highlightsUIState = highlights.map { it.asHighlightUIState() }))
+                    }
+                } else if (result.isFailure) {
+                    _highlightsUIStateFlow.emit(ViewHighlightsUIState.Failure(R.string.gethighlights_error_message))
+                }
+            }
+        }
+    }
+
+    private fun Highlight.asHighlightUIState(): HighlightUIState = HighlightUIState(
+        text = text,
+        savedOn = savedOnTimestamp
+    )
 }
 
 internal sealed interface ViewHighlightsUIState {
@@ -27,4 +54,7 @@ internal sealed interface ViewHighlightsUIState {
     data class Failure(@StringRes val errorMessage: Int) : ViewHighlightsUIState
 }
 
-class HighlightUIState
+data class HighlightUIState(
+    val text: String,
+    val savedOn: String
+)

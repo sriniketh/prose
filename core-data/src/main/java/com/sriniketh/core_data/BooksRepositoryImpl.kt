@@ -3,8 +3,11 @@ package com.sriniketh.core_data
 import com.sriniketh.core_data.transformers.asBook
 import com.sriniketh.core_data.transformers.asBookEntity
 import com.sriniketh.core_data.transformers.asBookSearchResult
+import com.sriniketh.core_data.transformers.asHighlight
+import com.sriniketh.core_data.transformers.asHighlightEntity
 import com.sriniketh.core_db.dao.BookDao
 import com.sriniketh.core_models.book.Book
+import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_models.search.BookSearch
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
@@ -53,6 +56,25 @@ class BooksRepositoryImpl @Inject constructor(
         localBookDataSource.getAllBooks()
             .map { entities ->
                 Result.success(entities.map { entity -> entity.asBook() })
+            }
+            .catch { exception ->
+                Timber.e(exception)
+                emit(Result.failure(exception))
+            }.flowOn(ioDispatcher)
+
+    override fun insertHighlight(highlight: Highlight): Flow<Result<Unit>> =
+        flow {
+            localBookDataSource.insertHighlight(highlight.asHighlightEntity())
+            emit(Result.success(Unit))
+        }.catch { exception ->
+            Timber.e(exception)
+            emit(Result.failure(exception))
+        }.flowOn(ioDispatcher)
+
+    override fun getAllHighlightsForBook(bookId: String): Flow<Result<List<Highlight>>> =
+        localBookDataSource.getAllHighlightsForBook(bookId)
+            .map { entities ->
+                Result.success(entities.map { entity -> entity.asHighlight() })
             }
             .catch { exception ->
                 Timber.e(exception)

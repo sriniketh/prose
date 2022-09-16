@@ -8,6 +8,7 @@ class HighlightViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(uiState: HighlightUIState) {
-
+        binding.highlightText.text = uiState.text
+        binding.highlightSubtext.text = uiState.savedOn
     }
 }

@@ -8,10 +8,14 @@
         android:id="@+id/camera_fragment"
         android:name="com.sriniketh.feature_addhighlight.CameraFragment"
         android:label="@string/camera_fragment_label">
-        <deepLink app:uri="android-app://com.sriniketh.prose/to_camera_fragment" />
+        <deepLink app:uri="android-app://com.sriniketh.prose/to_camera_fragment?bookId={bookId}" />
         <action
             android:id="@+id/camera_to_edithighlight_action"
             app:destination="@id/edithighlight_fragment" />
+        <argument
+            android:name="bookId"
+            android:defaultValue=""
+            app:argType="string" />
     </fragment>
 
     <fragment
@@ -20,6 +24,10 @@
         android:label="@string/edithighlight_fragment_label">
         <argument
             android:name="translatedText"
+            android:defaultValue=""
+            app:argType="string" />
+        <argument
+            android:name="bookId"
             android:defaultValue=""
             app:argType="string" />
     </fragment>
