@@ -34,7 +34,7 @@ class EditHighlightFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.highlightEdittext.setText(args.translatedText)
         binding.highlightSaveButton.setOnClickListener {
-            viewModel.saveHighlight(args.bookId, args.translatedText)
+            viewModel.saveHighlight(args.bookId, binding.highlightEdittext.text.toString())
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
