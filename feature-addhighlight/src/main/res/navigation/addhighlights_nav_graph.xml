@@ -11,7 +11,9 @@
         <deepLink app:uri="android-app://com.sriniketh.prose/to_camera_fragment?bookId={bookId}" />
         <action
             android:id="@+id/camera_to_edithighlight_action"
-            app:destination="@id/edithighlight_fragment" />
+            app:destination="@id/edithighlight_fragment"
+            app:popUpTo="@id/addhighlight_nav_graph"
+            app:popUpToInclusive="true" />
         <argument
             android:name="bookId"
             android:defaultValue=""
