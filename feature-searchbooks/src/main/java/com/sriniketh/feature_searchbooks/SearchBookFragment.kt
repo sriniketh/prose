@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -82,10 +80,8 @@ class SearchBookFragment : Fragment() {
     }
 
     private fun navigateToBookInfoFragment(volumeId: String) {
-        val request = NavDeepLinkRequest.Builder
-            .fromUri("android-app://com.sriniketh.prose/to_bookinfo_fragment?volumeid=$volumeId".toUri())
-            .build()
-        findNavController().navigate(request)
+        val action = SearchBookFragmentDirections.searchToBookinfo(volumeId)
+        findNavController().navigate(action)
     }
 
     override fun onDestroyView() {
