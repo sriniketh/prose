@@ -13,9 +13,7 @@
         <deepLink app:uri="android-app://com.sriniketh.prose/to_searchbooks_fragment" />
         <action
             android:id="@+id/search_to_bookinfo"
-            app:destination="@id/fragment_bookinfo"
-            app:popUpTo="@id/searchbooks_nav_graph"
-            app:popUpToInclusive="true" />
+            app:destination="@id/fragment_bookinfo" />
     </fragment>
 
     <fragment
