@@ -38,15 +38,11 @@ class SearchBookFragmentViewModel @Inject constructor(
 
     private fun Book.asBookUiState(): BookUiState = BookUiState(
         id = id,
-        info = BookInfoUiState(
-            title = info.title,
-            subtitle = info.subtitle,
-            authors = info.authors,
-            thumbnailLink = info.thumbnailLink
-        ),
-        viewDetail = {
-            goToBookInfo(it)
-        }
+        title = info.title,
+        subtitle = info.subtitle,
+        authors = info.authors,
+        thumbnailLink = info.thumbnailLink,
+        viewDetail = { goToBookInfo(it) }
     )
 }
 
@@ -59,13 +55,9 @@ internal sealed interface BookSearchUiState {
 
 data class BookUiState(
     val id: String,
-    val info: BookInfoUiState,
-    var viewDetail: (String) -> Unit
-)
-
-data class BookInfoUiState(
     val title: String,
     val subtitle: String?,
     val authors: List<String>,
-    val thumbnailLink: String?
+    val thumbnailLink: String?,
+    var viewDetail: (String) -> Unit
 )

@@ -1,4 +1,4 @@
-package com.sriniketh.feature_bookinfo
+package com.sriniketh.feature_searchbooks
 
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel

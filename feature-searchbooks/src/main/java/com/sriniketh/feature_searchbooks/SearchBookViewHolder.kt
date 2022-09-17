@@ -10,10 +10,10 @@ class SearchBookViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(uiState: BookUiState) {
-        binding.searchResultBookTitle.text = uiState.info.title
-        uiState.info.subtitle?.let { binding.searchResultBookSubtitle.text = it }
-        binding.searchResultBookAuthors.text = uiState.info.authors.joinToString(", ")
-        uiState.info.thumbnailLink?.let { url ->
+        binding.searchResultBookTitle.text = uiState.title
+        uiState.subtitle?.let { binding.searchResultBookSubtitle.text = it }
+        binding.searchResultBookAuthors.text = uiState.authors.joinToString(", ")
+        uiState.thumbnailLink?.let { url ->
             val uri = Uri.parse(url).buildUpon().apply { scheme("https") }.build()
             binding.searchResultImage.load(uri) {
                 crossfade(true)

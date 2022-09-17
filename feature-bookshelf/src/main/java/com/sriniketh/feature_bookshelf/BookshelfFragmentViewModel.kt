@@ -43,11 +43,9 @@ class BookshelfFragmentViewModel @Inject constructor(
 
     private fun Book.asBookshelfUIState(): BookUIState = BookUIState(
         id = id,
-        info = BookInfoUiState(
-            title = info.title,
-            authors = info.authors,
-            thumbnailLink = info.thumbnailLink
-        ),
+        title = info.title,
+        authors = info.authors,
+        thumbnailLink = info.thumbnailLink,
         viewBook = {
             viewHighlightsForBook(id)
         }
@@ -64,12 +62,8 @@ internal sealed interface BookshelfUIState {
 
 data class BookUIState(
     val id: String,
-    val info: BookInfoUiState,
-    var viewBook: (String) -> Unit
-)
-
-data class BookInfoUiState(
     val title: String,
     val authors: List<String>,
-    val thumbnailLink: String?
+    val thumbnailLink: String?,
+    var viewBook: (String) -> Unit
 )

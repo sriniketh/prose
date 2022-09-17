@@ -6,8 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.sriniketh.feature_searchbooks.databinding.SearchBookResultCardBinding
 
-class SearchBookRecyclerViewAdapter :
-    ListAdapter<BookUiState, SearchBookViewHolder>(SearchBookDiffCallback) {
+class SearchBookRecyclerViewAdapter : ListAdapter<BookUiState, SearchBookViewHolder>(SearchBookDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchBookViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)

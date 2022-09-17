@@ -10,9 +10,9 @@ class BookshelfViewHolder(
 ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(uiState: BookUIState) {
-        binding.bookshelfItemTitle.text = uiState.info.title
-        binding.bookshelfItemAuthors.text = uiState.info.authors.joinToString(", ")
-        uiState.info.thumbnailLink?.let { url ->
+        binding.bookshelfItemTitle.text = uiState.title
+        binding.bookshelfItemAuthors.text = uiState.authors.joinToString(", ")
+        uiState.thumbnailLink?.let { url ->
             val uri = Uri.parse(url).buildUpon().apply { scheme("https") }.build()
             binding.bookshelfItemImage.load(uri) {
                 crossfade(true)

@@ -12,4 +12,14 @@
         tools:layout="@layout/search_book_fragment">
         <deepLink app:uri="android-app://com.sriniketh.prose/to_searchbooks_fragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/fragment_bookinfo"
+        android:name="com.sriniketh.feature_searchbooks.BookInfoFragment"
+        android:label="@string/nav_label_book_info">
+        <argument
+            android:name="volumeid"
+            app:argType="string" />
+        <deepLink app:uri="android-app://com.sriniketh.prose/to_bookinfo_fragment?volumeid={volumeid}" />
+    </fragment>
 </navigation>

@@ -1,4 +1,4 @@
-package com.sriniketh.feature_bookinfo
+package com.sriniketh.feature_searchbooks
 
 import android.net.Uri
 import android.os.Bundle
@@ -15,7 +15,7 @@ import androidx.navigation.fragment.navArgs
 import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.phrase.Phrase
-import com.sriniketh.feature_bookinfo.databinding.BookInfoFragmentBinding
+import com.sriniketh.feature_searchbooks.databinding.BookInfoFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
