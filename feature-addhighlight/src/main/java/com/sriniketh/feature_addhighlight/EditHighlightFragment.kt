@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_addhighlight.databinding.EditHighlightFragmentBinding
@@ -36,6 +37,9 @@ class EditHighlightFragment : Fragment() {
         binding.highlightSaveButton.setOnClickListener {
             viewModel.saveHighlight(args.bookId, binding.highlightEdittext.text.toString())
         }
+        binding.highlightDiscardButton.setOnClickListener {
+            findNavController().navigateUp()
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -49,7 +53,7 @@ class EditHighlightFragment : Fragment() {
                         }
                         is EditHighlightUIState.AddHighlightSuccess -> {
                             binding.saveProgress.hide()
-                            binding.highlightSaveButton.isEnabled = false
+                            findNavController().navigateUp()
                         }
                         is EditHighlightUIState.Failure -> {
                             binding.saveProgress.hide()
