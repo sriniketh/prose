@@ -71,6 +71,7 @@ class CameraFragment : Fragment() {
         val sb = StringBuilder()
         textAnalyzer.lastSeenText?.textBlocks?.forEach {
             sb.appendLine(it.text)
+            sb.appendLine()
         }
         return sb.toString()
     }
