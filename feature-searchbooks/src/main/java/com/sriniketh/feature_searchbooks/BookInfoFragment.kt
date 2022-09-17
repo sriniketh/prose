@@ -55,6 +55,7 @@ class BookInfoFragment : Fragment() {
                             binding.searchProgress.hide()
                             binding.bookDetailAddButton.isEnabled = false
                             binding.bookDetailAddButton.isClickable = false
+                            binding.bookDetailAddButton.text = getString(uiState.addBookToShelfButtonText)
                         }
                         is BookInfoUiState.Failure -> {
                             binding.searchProgress.hide()
@@ -80,6 +81,7 @@ class BookInfoFragment : Fragment() {
                 crossfade(true)
             }
         }
+        binding.bookDetailAddButton.text = getString(uiState.addBookToShelfButtonText)
         binding.bookDetailAddButton.setOnClickListener {
             uiState.addBookToShelf(uiState.book)
         }

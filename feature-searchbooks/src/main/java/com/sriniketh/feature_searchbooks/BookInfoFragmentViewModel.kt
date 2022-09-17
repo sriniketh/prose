@@ -25,9 +25,10 @@ class BookInfoFragmentViewModel @Inject constructor(
             _uiState.emit(BookInfoUiState.Loading)
             bookRepo.getBook(volumeId).collect { result ->
                 if (result.isSuccess) {
-                    _uiState.emit(BookInfoUiState.BookInfoLoadSuccess(result.getOrThrow()) { book ->
-                        addBookToShelf(book)
-                    })
+                    _uiState.emit(
+                        BookInfoUiState.BookInfoLoadSuccess(result.getOrThrow(), R.string.add_to_shelf_button_text) { book ->
+                            addBookToShelf(book)
+                        })
                 } else if (result.isFailure) {
                     _uiState.emit(BookInfoUiState.Failure(R.string.book_info_load_error_message))
                 }
@@ -40,7 +41,7 @@ class BookInfoFragmentViewModel @Inject constructor(
             _uiState.emit(BookInfoUiState.Loading)
             bookRepo.insertBook(book).collect { result ->
                 if (result.isSuccess) {
-                    _uiState.emit(BookInfoUiState.AddToBookshelfSuccess)
+                    _uiState.emit(BookInfoUiState.AddToBookshelfSuccess(R.string.added_to_shelf_button_text))
                 } else if (result.isFailure) {
                     _uiState.emit(BookInfoUiState.Failure(R.string.add_to_bookshelf_error_message))
                 }
@@ -54,9 +55,10 @@ internal sealed interface BookInfoUiState {
     object Loading : BookInfoUiState
     data class BookInfoLoadSuccess(
         val book: Book,
+        @StringRes val addBookToShelfButtonText: Int,
         val addBookToShelf: (Book) -> Unit
     ) : BookInfoUiState
 
-    object AddToBookshelfSuccess : BookInfoUiState
+    data class AddToBookshelfSuccess(@StringRes val addBookToShelfButtonText: Int) : BookInfoUiState
     data class Failure(@StringRes val errorMessage: Int) : BookInfoUiState
 }
