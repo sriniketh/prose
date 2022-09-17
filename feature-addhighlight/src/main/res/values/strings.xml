@@ -4,6 +4,7 @@
     <string name="edithighlight_fragment_label">Edit highlight</string>
     <string name="capture_button_text">Capture</string>
     <string name="save_highlight_title_text">Save highlight</string>
+    <string name="save_highlight_description_text">Did the camera capture more than what you intended? Feel free to edit your content before saving.</string>
     <string name="save_button_text">Save</string>
     <string name="discard_button_text">Discard</string>
     <string name="save_highlight_error_message">Error saving highlight.</string>

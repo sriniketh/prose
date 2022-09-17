@@ -19,39 +19,38 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/search_result_book_title"
+        style="@style/text_recycleritem_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
         android:maxLines="2"
-        android:textColor="?attr/colorOnSurface"
-        android:textStyle="bold"
         app:layout_constraintLeft_toRightOf="@id/search_result_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Book Title" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/search_result_book_subtitle"
+        style="@style/text_recycleritem_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="12dp"
         android:layout_marginRight="12dp"
         android:maxLines="2"
-        android:textColor="?attr/colorOnSurfaceVariant"
         app:layout_constraintLeft_toRightOf="@id/search_result_image"
         app:layout_constraintTop_toBottomOf="@id/search_result_book_title"
         tools:text="book subtitle" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/search_result_book_authors"
+        style="@style/text_recycleritem_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="12dp"
         android:layout_marginRight="12dp"
         android:maxLines="2"
-        android:textColor="?attr/colorOnSurfaceVariant"
         app:layout_constraintLeft_toRightOf="@id/search_result_image"
         app:layout_constraintTop_toBottomOf="@id/search_result_book_subtitle"
         tools:text="authors" />
