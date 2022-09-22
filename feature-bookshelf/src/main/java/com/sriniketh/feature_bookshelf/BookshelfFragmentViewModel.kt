@@ -3,7 +3,7 @@ package com.sriniketh.feature_bookshelf
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.BooksRepository
+import com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookshelfFragmentViewModel @Inject constructor(
-    private val bookRepo: BooksRepository
+    private val getAllSavedBooksUseCase: GetAllSavedBooksUseCase
 ) : ViewModel() {
 
     private val _bookshelfUIState: MutableStateFlow<BookshelfUIState> =
@@ -26,7 +26,7 @@ class BookshelfFragmentViewModel @Inject constructor(
     fun getSavedBooks() {
         viewModelScope.launch {
             _bookshelfUIState.emit(BookshelfUIState.Loading)
-            bookRepo.getAllBooks().collect { result ->
+            getAllSavedBooksUseCase().collect { result ->
                 if (result.isSuccess) {
                     val books = result.getOrThrow()
                     if (books.isEmpty()) {

@@ -3,7 +3,7 @@ package com.sriniketh.feature_searchbooks
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.BooksRepository
+import com.sriniketh.core_data.usecases.SearchForBookUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SearchBookFragmentViewModel @Inject constructor(
-    private val bookRepo: BooksRepository
+    private val searchForBookUseCase: SearchForBookUseCase
 ) : ViewModel() {
 
     private val _searchUiState: MutableStateFlow<BookSearchUiState> =
@@ -26,7 +26,7 @@ class SearchBookFragmentViewModel @Inject constructor(
     fun searchForBook(query: String) {
         viewModelScope.launch {
             _searchUiState.emit(BookSearchUiState.Loading)
-            bookRepo.searchBooks(query).collect { result ->
+            searchForBookUseCase(query).collect { result ->
                 if (result.isSuccess) {
                     _searchUiState.emit(BookSearchUiState.Success(result.getOrThrow().items.map { it.asBookUiState() }))
                 } else if (result.isFailure) {

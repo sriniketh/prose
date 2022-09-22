@@ -3,7 +3,8 @@ package com.sriniketh.feature_searchbooks
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.BooksRepository
+import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
+import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookInfoFragmentViewModel @Inject constructor(
-    private val bookRepo: BooksRepository
+    private val fetchBookInfoUseCase: FetchBookInfoUseCase,
+    private val addBookToShelfUseCase: AddBookToShelfUseCase
 ) : ViewModel() {
 
     private var _uiState: MutableStateFlow<BookInfoUiState> =
@@ -23,7 +25,7 @@ class BookInfoFragmentViewModel @Inject constructor(
     fun getBookDetail(volumeId: String) {
         viewModelScope.launch {
             _uiState.emit(BookInfoUiState.Loading)
-            bookRepo.getBook(volumeId).collect { result ->
+            fetchBookInfoUseCase(volumeId).collect { result ->
                 if (result.isSuccess) {
                     _uiState.emit(
                         BookInfoUiState.BookInfoLoadSuccess(result.getOrThrow(), R.string.add_to_shelf_button_text) { book ->
@@ -39,7 +41,7 @@ class BookInfoFragmentViewModel @Inject constructor(
     private fun addBookToShelf(book: Book) {
         viewModelScope.launch {
             _uiState.emit(BookInfoUiState.Loading)
-            bookRepo.insertBook(book).collect { result ->
+            addBookToShelfUseCase(book).collect { result ->
                 if (result.isSuccess) {
                     _uiState.emit(BookInfoUiState.AddToBookshelfSuccess(R.string.added_to_shelf_button_text))
                 } else if (result.isFailure) {

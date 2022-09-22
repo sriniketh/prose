@@ -25,7 +25,7 @@ class BooksRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : BooksRepository {
 
-    override fun searchBooks(searchQuery: String): Flow<Result<BookSearch>> =
+    override fun searchForBooks(searchQuery: String): Flow<Result<BookSearch>> =
         flow {
             val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
             emit(Result.success(books))
@@ -34,7 +34,7 @@ class BooksRepositoryImpl @Inject constructor(
             emit(Result.failure(exception))
         }.flowOn(ioDispatcher)
 
-    override fun getBook(volumeId: String): Flow<Result<Book>> =
+    override fun fetchBookInfo(volumeId: String): Flow<Result<Book>> =
         flow {
             val book = remoteBookDataSource.getVolume(volumeId).asBook()
             emit(Result.success(book))
@@ -43,7 +43,7 @@ class BooksRepositoryImpl @Inject constructor(
             emit(Result.failure(exception))
         }.flowOn(ioDispatcher)
 
-    override fun insertBook(book: Book): Flow<Result<Unit>> =
+    override fun insertBookIntoDb(book: Book): Flow<Result<Unit>> =
         flow {
             localBookDataSource.insertBook(book.asBookEntity())
             emit(Result.success(Unit))
@@ -52,7 +52,7 @@ class BooksRepositoryImpl @Inject constructor(
             emit(Result.failure(exception))
         }.flowOn(ioDispatcher)
 
-    override fun getAllBooks(): Flow<Result<List<Book>>> =
+    override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> =
         localBookDataSource.getAllBooks()
             .map { entities ->
                 Result.success(entities.map { entity -> entity.asBook() })
@@ -62,7 +62,7 @@ class BooksRepositoryImpl @Inject constructor(
                 emit(Result.failure(exception))
             }.flowOn(ioDispatcher)
 
-    override fun insertHighlight(highlight: Highlight): Flow<Result<Unit>> =
+    override fun insertHighlightIntoDb(highlight: Highlight): Flow<Result<Unit>> =
         flow {
             localBookDataSource.insertHighlight(highlight.asHighlightEntity())
             emit(Result.success(Unit))
@@ -71,7 +71,7 @@ class BooksRepositoryImpl @Inject constructor(
             emit(Result.failure(exception))
         }.flowOn(ioDispatcher)
 
-    override fun getAllHighlightsForBook(bookId: String): Flow<Result<List<Highlight>>> =
+    override fun getAllHighlightsForBookFromDb(bookId: String): Flow<Result<List<Highlight>>> =
         localBookDataSource.getAllHighlightsForBook(bookId)
             .map { entities ->
                 Result.success(entities.map { entity -> entity.asHighlight() })

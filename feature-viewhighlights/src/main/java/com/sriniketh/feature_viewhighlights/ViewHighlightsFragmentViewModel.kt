@@ -3,7 +3,7 @@ package com.sriniketh.feature_viewhighlights
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.BooksRepository
+import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewHighlightsFragmentViewModel @Inject constructor(
-    private val repo: BooksRepository
+    private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
 ) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
@@ -25,7 +25,7 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
     fun getHighlights(bookId: String) {
         viewModelScope.launch {
             _highlightsUIStateFlow.emit(ViewHighlightsUIState.Loading)
-            repo.getAllHighlightsForBook(bookId).collect { result ->
+            getAllSavedHighlightsUseCase(bookId).collect { result ->
                 if (result.isSuccess) {
                     val highlights = result.getOrThrow()
                     if (highlights.isEmpty()) {
