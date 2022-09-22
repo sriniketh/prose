@@ -35,7 +35,8 @@ class EditHighlightFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.highlightEdittext.setText(args.translatedText)
         binding.highlightSaveButton.setOnClickListener {
-            viewModel.saveHighlight(args.bookId, binding.highlightEdittext.text.toString())
+            val highlightedText = binding.highlightEdittext.text.toString().trim()
+            viewModel.saveHighlight(args.bookId, highlightedText)
         }
         binding.highlightDiscardButton.setOnClickListener {
             findNavController().navigateUp()
