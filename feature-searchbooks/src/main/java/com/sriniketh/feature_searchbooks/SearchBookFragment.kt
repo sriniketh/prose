@@ -1,10 +1,12 @@
 package com.sriniketh.feature_searchbooks
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -48,6 +50,7 @@ class SearchBookFragment : Fragment() {
                 DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL)
             )
         }
+
         with(binding.searchEditText) {
             doAfterTextChanged { editable ->
                 val text = editable.toString()
@@ -65,6 +68,8 @@ class SearchBookFragment : Fragment() {
                 }
             }
         }
+        showSoftKeyboard(binding.searchEditText)
+
         viewModel.goToBookInfo = { volumeId ->
             navigateToBookInfoFragment(volumeId)
         }
@@ -86,6 +91,13 @@ class SearchBookFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    private fun showSoftKeyboard(view: View) {
+        if (view.requestFocus()) {
+            val inputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
