@@ -48,6 +48,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$fragment_nav_version"
     implementation "io.coil-kt:coil:$coil_version"
+    implementation "com.squareup.phrase:phrase:$phrase_version"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
