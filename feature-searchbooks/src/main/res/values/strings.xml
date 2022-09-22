@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_label_searchbooks">Search books</string>
-    <string name="search_for_a_book">Search for a book..</string>
-    <string name="search_button_text">Search</string>
+    <string name="search_for_a_book">Search for a book</string>
     <string name="search_error_message">Error searching for book. Please try again.</string>
 
     <string name="nav_label_book_info">Book info</string>

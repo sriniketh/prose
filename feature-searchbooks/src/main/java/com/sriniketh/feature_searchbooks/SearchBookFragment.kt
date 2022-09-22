@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -12,7 +14,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.snackbar.Snackbar
 import com.sriniketh.feature_searchbooks.databinding.SearchBookFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -47,9 +48,21 @@ class SearchBookFragment : Fragment() {
                 DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL)
             )
         }
-        binding.searchEditButton.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                viewModel.searchForBook(binding.searchEditText.text.toString())
+        with(binding.searchEditText) {
+            doAfterTextChanged { editable ->
+                val text = editable.toString()
+                if (text.length > 3) {
+                    viewModel.searchForBook(text)
+                }
+            }
+            setOnEditorActionListener { textView, actionId, _ ->
+                return@setOnEditorActionListener when (actionId) {
+                    EditorInfo.IME_ACTION_SEARCH -> {
+                        viewModel.searchForBook(textView.text.toString())
+                        true
+                    }
+                    else -> false
+                }
             }
         }
         viewModel.goToBookInfo = { volumeId ->
@@ -63,15 +76,12 @@ class SearchBookFragment : Fragment() {
                         is BookSearchUiState.Loading -> binding.searchProgress.show()
                         is BookSearchUiState.Success -> {
                             binding.searchProgress.hide()
+                            binding.searchEditTextLayout.error = null
                             searchAdapter.submitList(searchUiState.bookUiStates)
                         }
                         is BookSearchUiState.Failure -> {
                             binding.searchProgress.hide()
-                            Snackbar.make(
-                                binding.root,
-                                getString(searchUiState.errorMessage),
-                                Snackbar.LENGTH_SHORT
-                            ).show()
+                            binding.searchEditTextLayout.error = getString(searchUiState.errorMessage)
                         }
                     }
                 }
