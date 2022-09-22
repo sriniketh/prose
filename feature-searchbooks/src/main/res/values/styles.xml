@@ -2,6 +2,6 @@
 <resources>
 
     <style name="image_rounded_corner">
-        <item name="cornerSize">12dp</item>
+        <item name="cornerSize">8dp</item>
     </style>
 </resources>
