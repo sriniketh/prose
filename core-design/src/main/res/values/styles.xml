@@ -25,7 +25,7 @@
     </style>
 
     <style name="text_subheading">
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="fontFamily">@font/roboto</item>
         <item name="android:textStyle">normal</item>
