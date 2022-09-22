@@ -19,26 +19,30 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/bookshelf_item_title"
-        android:layout_width="wrap_content"
+        style="@style/text_recycleritem_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
         android:maxLines="2"
-        style="@style/text_recycleritem_title"
-        app:layout_constraintLeft_toRightOf="@id/bookshelf_item_image"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/bookshelf_item_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Book Title" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/bookshelf_item_authors"
-        android:layout_width="wrap_content"
+        style="@style/text_recycleritem_subtitle"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="12dp"
         android:layout_marginTop="12dp"
-        android:layout_marginRight="12dp"
         android:maxLines="2"
-        style="@style/text_recycleritem_subtitle"
-        app:layout_constraintLeft_toRightOf="@id/bookshelf_item_image"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/bookshelf_item_image"
         app:layout_constraintTop_toBottomOf="@id/bookshelf_item_title"
         tools:text="authors" />
 
