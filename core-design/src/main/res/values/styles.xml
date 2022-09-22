@@ -10,13 +10,6 @@
         <item name="fontFamily">@font/roboto</item>
     </style>
 
-    <style name="text_pagetitle">
-        <item name="android:textSize">28sp</item>
-        <item name="android:textColor">?attr/colorOnSurface</item>
-        <item name="fontFamily">@font/roboto</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
     <style name="text_heading">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">?attr/colorOnSurface</item>

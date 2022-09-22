@@ -16,7 +16,7 @@
             android:background="?attr/colorSurface"
             app:layout_scrollFlags="scroll|enterAlways"
             app:title="@string/bookshelf_pagetitle"
-            app:titleTextAppearance="@style/text_pagetitle" />
+            app:titleTextAppearance="@style/text_heading" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

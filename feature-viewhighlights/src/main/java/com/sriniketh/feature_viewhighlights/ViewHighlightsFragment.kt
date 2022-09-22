@@ -53,6 +53,10 @@ class ViewHighlightsFragment : Fragment() {
             addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         }
 
+        binding.viewhighlightsAppbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
 
             viewModel.getHighlights(args.bookId)
