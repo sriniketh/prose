@@ -41,6 +41,10 @@ class EditHighlightFragment : Fragment() {
             findNavController().navigateUp()
         }
 
+        binding.edithighlightToolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.uiState.collect { uiState ->
