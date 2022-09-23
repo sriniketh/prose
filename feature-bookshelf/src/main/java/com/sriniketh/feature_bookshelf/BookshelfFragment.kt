@@ -83,19 +83,25 @@ class BookshelfFragment : Fragment() {
         }
 
         viewModel.viewHighlightsForBook = { bookId ->
+            val navOptions = NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_from_right)
+                .setExitAnim(R.anim.slide_to_left)
+                .setPopEnterAnim(R.anim.slide_from_left)
+                .setPopExitAnim(R.anim.slide_to_right)
+                .build()
             val encodedBookId = URLEncoder.encode(bookId, "UTF-8")
             val request = NavDeepLinkRequest.Builder
                 .fromUri("android-app://com.sriniketh.prose/to_highlights_fragment/$encodedBookId".toUri())
                 .build()
-            findNavController().navigate(request)
+            findNavController().navigate(request, navOptions)
         }
 
         binding.searchFab.setOnClickListener {
             val navOptions = NavOptions.Builder()
                 .setEnterAnim(R.anim.slide_from_bottom)
                 .setExitAnim(R.anim.slide_out_top)
-                .setPopExitAnim(R.anim.slide_out_bottom)
                 .setPopEnterAnim(R.anim.slide_from_top)
+                .setPopExitAnim(R.anim.slide_out_bottom)
                 .build()
             val request = NavDeepLinkRequest.Builder
                 .fromUri("android-app://com.sriniketh.prose/to_searchbooks_fragment".toUri())
