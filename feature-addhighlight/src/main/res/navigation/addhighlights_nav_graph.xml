@@ -12,6 +12,10 @@
         <action
             android:id="@+id/camera_to_edithighlight_action"
             app:destination="@id/edithighlight_fragment"
+            app:enterAnim="@anim/slide_from_right"
+            app:exitAnim="@anim/slide_to_left"
+            app:popEnterAnim="@anim/slide_from_left"
+            app:popExitAnim="@anim/slide_to_right"
             app:popUpTo="@id/addhighlight_nav_graph"
             app:popUpToInclusive="true" />
         <argument

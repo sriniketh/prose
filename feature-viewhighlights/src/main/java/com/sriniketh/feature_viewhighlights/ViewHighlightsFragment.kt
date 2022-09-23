@@ -11,11 +11,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.sriniketh.core_design.R
 import com.sriniketh.feature_viewhighlights.databinding.ViewHighlightsFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -87,11 +89,17 @@ class ViewHighlightsFragment : Fragment() {
         }
 
         binding.addHighlightFab.setOnClickListener {
+            val navOptions = NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_from_bottom)
+                .setExitAnim(R.anim.slide_out_top)
+                .setPopEnterAnim(R.anim.slide_from_top)
+                .setPopExitAnim(R.anim.slide_out_bottom)
+                .build()
             val bookId = args.bookId
             val request = NavDeepLinkRequest.Builder
                 .fromUri("android-app://com.sriniketh.prose/to_camera_fragment?bookId=$bookId".toUri())
                 .build()
-            findNavController().navigate(request)
+            findNavController().navigate(request, navOptions)
         }
     }
 
