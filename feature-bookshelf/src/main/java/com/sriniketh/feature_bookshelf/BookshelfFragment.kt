@@ -11,10 +11,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.sriniketh.core_design.R
 import com.sriniketh.feature_bookshelf.databinding.BookshelfFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -89,10 +91,16 @@ class BookshelfFragment : Fragment() {
         }
 
         binding.searchFab.setOnClickListener {
+            val navOptions = NavOptions.Builder()
+                .setEnterAnim(R.anim.slide_from_bottom)
+                .setExitAnim(R.anim.slide_out_top)
+                .setPopExitAnim(R.anim.slide_out_bottom)
+                .setPopEnterAnim(R.anim.slide_from_top)
+                .build()
             val request = NavDeepLinkRequest.Builder
                 .fromUri("android-app://com.sriniketh.prose/to_searchbooks_fragment".toUri())
                 .build()
-            findNavController().navigate(request)
+            findNavController().navigate(request, navOptions)
         }
     }
 
