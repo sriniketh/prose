@@ -2,6 +2,8 @@ package com.sriniketh.core_data.di
 
 import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_data.BooksRepositoryImpl
+import com.sriniketh.core_data.HighlightsRepository
+import com.sriniketh.core_data.HighlightsRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,6 +20,11 @@ object DataModule {
     fun providesBooksRepository(
         booksRepositoryImpl: BooksRepositoryImpl
     ): BooksRepository = booksRepositoryImpl
+
+    @Provides
+    fun providesHighlightsRepository(
+        highlightsRepositoryImpl: HighlightsRepositoryImpl
+    ): HighlightsRepository = highlightsRepositoryImpl
 
     @Provides
     @Singleton

@@ -1,12 +1,11 @@
 package com.sriniketh.core_data.usecases
 
-import com.sriniketh.core_data.BooksRepository
+import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_models.book.Highlight
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class SaveHighlightUseCase @Inject constructor(
-    private val bookRepo: BooksRepository
+    private val highlightsRepository: HighlightsRepository
 ) {
-    operator fun invoke(highlight: Highlight): Flow<Result<Unit>> = bookRepo.insertHighlightIntoDb(highlight)
+    suspend operator fun invoke(highlight: Highlight): Result<Unit> = highlightsRepository.insertHighlightIntoDb(highlight)
 }

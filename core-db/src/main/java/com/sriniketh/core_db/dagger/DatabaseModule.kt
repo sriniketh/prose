@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.sriniketh.core_db.BookDatabase
 import com.sriniketh.core_db.dao.BookDao
+import com.sriniketh.core_db.dao.HighlightDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,4 +28,9 @@ object DatabaseModule {
     fun providesBookDao(
         database: BookDatabase
     ): BookDao = database.bookDao()
+
+    @Provides
+    fun providesHighlightDao(
+        database: BookDatabase
+    ): HighlightDao = database.highlightDao()
 }

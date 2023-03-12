@@ -28,19 +28,18 @@ class EditHighlightFragmentViewModel @Inject constructor(
     fun saveHighlight(bookId: String, highlightText: String) {
         viewModelScope.launch {
             _uiState.emit(EditHighlightUIState.Loading)
-            saveHighlightUseCase(
+            val result = saveHighlightUseCase(
                 highlight = Highlight(
                     id = UUID.randomUUID().toString(),
                     bookId = bookId,
                     text = highlightText,
                     savedOnTimestamp = formatCurrentDateTimeUseCase(dateTimeSource.now())
                 )
-            ).collect { result ->
-                if (result.isSuccess) {
-                    _uiState.emit(EditHighlightUIState.AddHighlightSuccess)
-                } else if (result.isFailure) {
-                    _uiState.emit(EditHighlightUIState.Failure(R.string.save_highlight_error_message))
-                }
+            )
+            if (result.isSuccess) {
+                _uiState.emit(EditHighlightUIState.AddHighlightSuccess)
+            } else if (result.isFailure) {
+                _uiState.emit(EditHighlightUIState.Failure(R.string.save_highlight_error_message))
             }
         }
     }
