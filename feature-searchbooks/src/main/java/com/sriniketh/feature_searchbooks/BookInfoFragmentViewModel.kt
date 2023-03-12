@@ -25,15 +25,14 @@ class BookInfoFragmentViewModel @Inject constructor(
     fun getBookDetail(volumeId: String) {
         viewModelScope.launch {
             _uiState.emit(BookInfoUiState.Loading)
-            fetchBookInfoUseCase(volumeId).collect { result ->
-                if (result.isSuccess) {
-                    _uiState.emit(
-                        BookInfoUiState.BookInfoLoadSuccess(result.getOrThrow(), R.string.add_to_shelf_button_text) { book ->
-                            addBookToShelf(book)
-                        })
-                } else if (result.isFailure) {
-                    _uiState.emit(BookInfoUiState.Failure(R.string.book_info_load_error_message))
-                }
+            val result = fetchBookInfoUseCase(volumeId)
+            if (result.isSuccess) {
+                _uiState.emit(
+                    BookInfoUiState.BookInfoLoadSuccess(result.getOrThrow(), R.string.add_to_shelf_button_text) { book ->
+                        addBookToShelf(book)
+                    })
+            } else if (result.isFailure) {
+                _uiState.emit(BookInfoUiState.Failure(R.string.book_info_load_error_message))
             }
         }
     }
@@ -41,12 +40,11 @@ class BookInfoFragmentViewModel @Inject constructor(
     private fun addBookToShelf(book: Book) {
         viewModelScope.launch {
             _uiState.emit(BookInfoUiState.Loading)
-            addBookToShelfUseCase(book).collect { result ->
-                if (result.isSuccess) {
-                    _uiState.emit(BookInfoUiState.AddToBookshelfSuccess(R.string.added_to_shelf_button_text))
-                } else if (result.isFailure) {
-                    _uiState.emit(BookInfoUiState.Failure(R.string.add_to_bookshelf_error_message))
-                }
+            val result = addBookToShelfUseCase(book)
+            if (result.isSuccess) {
+                _uiState.emit(BookInfoUiState.AddToBookshelfSuccess(R.string.added_to_shelf_button_text))
+            } else if (result.isFailure) {
+                _uiState.emit(BookInfoUiState.Failure(R.string.add_to_bookshelf_error_message))
             }
         }
     }

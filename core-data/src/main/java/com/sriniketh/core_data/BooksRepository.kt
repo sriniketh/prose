@@ -5,8 +5,8 @@ import com.sriniketh.core_models.search.BookSearch
 import kotlinx.coroutines.flow.Flow
 
 interface BooksRepository {
-    fun searchForBooks(searchQuery: String): Flow<Result<BookSearch>>
-    fun fetchBookInfo(volumeId: String): Flow<Result<Book>>
-    fun insertBookIntoDb(book: Book): Flow<Result<Unit>>
+    suspend fun searchForBooks(searchQuery: String): Result<BookSearch>
+    suspend fun fetchBookInfo(volumeId: String): Result<Book>
+    suspend fun insertBookIntoDb(book: Book): Result<Unit>
     fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>>
 }

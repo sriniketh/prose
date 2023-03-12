@@ -26,12 +26,11 @@ class SearchBookFragmentViewModel @Inject constructor(
     fun searchForBook(query: String) {
         viewModelScope.launch {
             _searchUiState.emit(BookSearchUiState.Loading)
-            searchForBookUseCase(query).collect { result ->
-                if (result.isSuccess) {
-                    _searchUiState.emit(BookSearchUiState.Success(result.getOrThrow().items.map { it.asBookUiState() }))
-                } else if (result.isFailure) {
-                    _searchUiState.emit(BookSearchUiState.Failure(R.string.search_error_message))
-                }
+            val result = searchForBookUseCase(query)
+            if (result.isSuccess) {
+                _searchUiState.emit(BookSearchUiState.Success(result.getOrThrow().items.map { it.asBookUiState() }))
+            } else if (result.isFailure) {
+                _searchUiState.emit(BookSearchUiState.Failure(R.string.search_error_message))
             }
         }
     }

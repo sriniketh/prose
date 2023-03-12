@@ -10,9 +10,9 @@ import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -22,32 +22,35 @@ class BooksRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : BooksRepository {
 
-    override fun searchForBooks(searchQuery: String): Flow<Result<BookSearch>> =
-        flow {
+    override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> = withContext(ioDispatcher) {
+        try {
             val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
-            emit(Result.success(books))
-        }.catch { exception ->
+            Result.success(books)
+        } catch (exception: Exception) {
             Timber.e(exception)
-            emit(Result.failure(exception))
-        }.flowOn(ioDispatcher)
+            Result.failure(exception)
+        }
+    }
 
-    override fun fetchBookInfo(volumeId: String): Flow<Result<Book>> =
-        flow {
+    override suspend fun fetchBookInfo(volumeId: String): Result<Book> = withContext(ioDispatcher) {
+        try {
             val book = remoteBookDataSource.getVolume(volumeId).asBook()
-            emit(Result.success(book))
-        }.catch { exception ->
+            Result.success(book)
+        } catch (exception: Exception) {
             Timber.e(exception)
-            emit(Result.failure(exception))
-        }.flowOn(ioDispatcher)
+            Result.failure(exception)
+        }
+    }
 
-    override fun insertBookIntoDb(book: Book): Flow<Result<Unit>> =
-        flow {
+    override suspend fun insertBookIntoDb(book: Book): Result<Unit> = withContext(ioDispatcher) {
+        try {
             localBookDataSource.insertBook(book.asBookEntity())
-            emit(Result.success(Unit))
-        }.catch { exception ->
+            Result.success(Unit)
+        } catch (exception: Exception) {
             Timber.e(exception)
-            emit(Result.failure(exception))
-        }.flowOn(ioDispatcher)
+            Result.failure(exception)
+        }
+    }
 
     override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> =
         localBookDataSource.getAllBooks()
