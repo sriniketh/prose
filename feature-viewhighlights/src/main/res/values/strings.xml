@@ -6,4 +6,9 @@
     <string name="add_fab_cont_desc">Add highlight</string>
     <string name="saved_on_template">Saved on: {datetime}</string>
     <string name="gethighlights_error_message">Error retrieving saved highlights.</string>
+    <string name="delete_dialog_title">Delete highlight</string>
+    <string name="delete_dialog_message">Are you sure you want to remove this highlight from your device?</string>
+    <string name="delete_dialog_positive_button_label">Delete</string>
+    <string name="delete_dialog_negative_button_label">Cancel</string>
+    <string name="delete_error_message">Unable to delete highlight.</string>
 </resources>

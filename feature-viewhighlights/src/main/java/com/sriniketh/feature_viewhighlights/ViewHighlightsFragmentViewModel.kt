@@ -3,6 +3,7 @@ package com.sriniketh.feature_viewhighlights
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewHighlightsFragmentViewModel @Inject constructor(
-    private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
+    private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase,
+    private val deleteHighlightUseCase: DeleteHighlightUseCase
 ) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
@@ -42,7 +44,15 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
 
     private fun Highlight.asHighlightUIState(): HighlightUIState = HighlightUIState(
         text = text,
-        savedOn = savedOnTimestamp
+        savedOn = savedOnTimestamp,
+        onDelete = {
+            viewModelScope.launch {
+                val result = deleteHighlightUseCase.invoke(this@asHighlightUIState)
+                if (result.isFailure) {
+                    _highlightsUIStateFlow.emit(ViewHighlightsUIState.Failure(R.string.delete_error_message))
+                }
+            }
+        }
     )
 }
 
@@ -56,5 +66,6 @@ internal sealed interface ViewHighlightsUIState {
 
 data class HighlightUIState(
     val text: String,
-    val savedOn: String
+    val savedOn: String,
+    val onDelete: () -> Unit
 )
