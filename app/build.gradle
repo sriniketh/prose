@@ -45,7 +45,7 @@ dependencies {
     implementation(project(":feature-viewhighlights"))
     implementation(project(":feature-addhighlight"))
 
-    implementation "androidx.core:core-ktx:$android_ktx_version"
+    implementation "androidx.core:core-ktx:1.10.1"
     implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "com.google.android.material:material:$material_version"
     implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"

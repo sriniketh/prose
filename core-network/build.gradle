@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.devtools.ksp'
     id 'dagger.hilt.android.plugin'
 }
 
@@ -45,7 +46,7 @@ dependencies {
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
     implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    kapt "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
