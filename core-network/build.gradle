@@ -28,13 +28,17 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = rootProject.ext.jvmTargetVersion
         freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
     }
+    buildFeatures {
+        buildConfig = true
+    }
+    namespace 'com.sriniketh.prose.core_network'
 }
 
 dependencies {
