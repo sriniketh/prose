@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.core_models.book.Highlight
-import com.sriniketh.core_platform.permissions.DateTimeSource
+import com.sriniketh.core_platform.DateTimeSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

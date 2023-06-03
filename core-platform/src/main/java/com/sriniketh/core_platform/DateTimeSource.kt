@@ -1,4 +1,4 @@
-package com.sriniketh.core_platform.permissions
+package com.sriniketh.core_platform
 
 import java.time.LocalDateTime
 import javax.inject.Inject
