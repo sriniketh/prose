@@ -49,5 +49,6 @@ dependencies {
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
 
     testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$android_junit_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_android_version"
+    testImplementation "app.cash.turbine:turbine:$cashapp_turbine_version"
 }
