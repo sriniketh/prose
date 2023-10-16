@@ -30,7 +30,7 @@ android {
         jvmTarget = rootProject.ext.jvmTargetVersion
     }
     buildFeatures {
-        buildConfig = true
+        buildConfig true
     }
     namespace 'com.sriniketh.core_platform'
 }
