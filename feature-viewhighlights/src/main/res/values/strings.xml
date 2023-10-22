@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="nav_label_highlights">View highlights</string>
+    <string name="nav_icon_back_cont_desc">Go back</string>
     <string name="highlights_pagetitle">Saved highlights</string>
     <string name="no_highlights_text">No saved highlights</string>
     <string name="add_fab_cont_desc">Add highlight</string>
-    <string name="saved_on_template">Saved on: {datetime}</string>
+    <string name="highlight_item_saved_on_template">Saved on: %s</string>
+    <string name="highlight_item_delete_cont_desc">Delete button</string>
     <string name="gethighlights_error_message">Error retrieving saved highlights.</string>
     <string name="delete_dialog_title">Delete highlight</string>
     <string name="delete_dialog_message">Are you sure you want to remove this highlight from your device?</string>
