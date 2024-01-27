@@ -56,7 +56,7 @@ internal fun HighlightsList(
                     .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
+                Column(modifier = modifier.weight(1f)) {
                     Text(
                         modifier = modifier.padding(6.dp), text = highlightUiState.text
                     )
@@ -68,7 +68,7 @@ internal fun HighlightsList(
                     )
                 }
                 IconButton(modifier = modifier
-                    .padding(12.dp)
+                    .padding(6.dp)
                     .align(Alignment.CenterVertically),
                     onClick = { showDeleteDialog = true }) {
                     Icon(
@@ -120,7 +120,8 @@ private fun HighlightsListPreview() {
             highlightsUIState = listOf(HighlightUIState(
                 text = "some highlight text 1", savedOn = "12-12-2022"
             ) {}, HighlightUIState(
-                text = "some highlight text 2", savedOn = "12-13-2022"
+                text = "some highlight text 2 this is a very long piece of text that extends into the next line",
+                savedOn = "12-13-2022"
             ) {})
         )
     )
