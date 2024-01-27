@@ -24,7 +24,7 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
 
-    fun getHighlights(bookId: String) {
+    fun loadHighlights(bookId: String) {
         viewModelScope.launch {
             _highlightsUIStateFlow.emit(ViewHighlightsUIState.Loading)
             getAllSavedHighlightsUseCase(bookId).collect { result ->

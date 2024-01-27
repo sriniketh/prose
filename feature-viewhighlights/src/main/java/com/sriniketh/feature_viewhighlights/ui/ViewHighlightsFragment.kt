@@ -28,7 +28,7 @@ class ViewHighlightsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            viewModel.getHighlights(args.bookId)
+            viewModel.loadHighlights(args.bookId)
             setContent {
                 MaterialTheme {
                     val uiState: ViewHighlightsUIState by viewModel.highlightsUIStateFlow.collectAsStateWithLifecycle()
