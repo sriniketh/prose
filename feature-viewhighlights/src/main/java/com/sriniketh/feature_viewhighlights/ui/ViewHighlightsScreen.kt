@@ -56,8 +56,6 @@ internal fun ViewHighlightsScreen(
             is ViewHighlightsUIState.SuccessNoHighlights -> {
                 NoHighlights(modifier, innerPadding)
             }
-
-            else -> {}
         }
     }
 }

@@ -20,7 +20,7 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
-        MutableStateFlow(ViewHighlightsUIState.Initial)
+        MutableStateFlow(ViewHighlightsUIState.Loading)
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
 
@@ -57,7 +57,6 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
 }
 
 internal sealed interface ViewHighlightsUIState {
-    object Initial : ViewHighlightsUIState
     object Loading : ViewHighlightsUIState
     data class Success(val highlightsUIState: List<HighlightUIState>) : ViewHighlightsUIState
     object SuccessNoHighlights : ViewHighlightsUIState
