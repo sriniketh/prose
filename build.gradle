@@ -46,5 +46,6 @@ ext {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+    group = "Build"
+    delete rootProject.layout.buildDirectory
 }
