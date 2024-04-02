@@ -18,7 +18,7 @@ class BookshelfFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _bookshelfUIState: MutableStateFlow<BookshelfUIState> =
-        MutableStateFlow(BookshelfUIState.Initial)
+        MutableStateFlow(BookshelfUIState.Loading)
     internal val bookshelfUIState: StateFlow<BookshelfUIState> = _bookshelfUIState.asStateFlow()
 
     var viewHighlightsForBook: (String) -> Unit = {}
@@ -53,10 +53,9 @@ class BookshelfFragmentViewModel @Inject constructor(
 }
 
 internal sealed interface BookshelfUIState {
-    object Initial : BookshelfUIState
-    object Loading : BookshelfUIState
+    data object Loading : BookshelfUIState
     data class Success(val bookUIStates: List<BookUIState>) : BookshelfUIState
-    object SuccessNoBooks : BookshelfUIState
+    data object SuccessNoBooks : BookshelfUIState
     data class Failure(@StringRes val errorMessage: Int) : BookshelfUIState
 }
 

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bookshelf_nav_graph"
     app:startDestination="@id/fragment_bookshelf">
 
     <fragment
         android:id="@+id/fragment_bookshelf"
         android:name="com.sriniketh.feature_bookshelf.BookshelfFragment"
-        android:label="@string/nav_label_bookshelf"
-        tools:layout="@layout/bookshelf_fragment" />
+        android:label="@string/nav_label_bookshelf" />
 
 </navigation>

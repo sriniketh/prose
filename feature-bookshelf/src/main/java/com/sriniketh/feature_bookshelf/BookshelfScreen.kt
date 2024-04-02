@@ -1,5 +1,6 @@
 package com.sriniketh.feature_bookshelf
 
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.painter.BrushPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -64,8 +65,7 @@ internal fun BookShelfScreen(
                             text = stringResource(id = R.string.bookshelf_pagetitle),
                             style = MaterialTheme.typography.displayMedium
                         )
-                    },
-                    scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+                    }
                 )
             },
             floatingActionButton = {
@@ -95,22 +95,27 @@ internal fun BookShelfScreen(
                                     .fillMaxWidth()
                                     .padding(12.dp)
                                     .clickable { goToHighlight(bookUIState.id) },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
                             ) {
                                 Row(
                                     modifier = modifier
                                         .padding(12.dp)
                                         .align(Alignment.Start)
                                 ) {
+                                    val uri = bookUIState.thumbnailLink?.let {
+                                        Uri.parse(it).buildUpon().apply { scheme("https") }.build()
+                                    }
                                     AsyncImage(
                                         modifier = modifier
                                             .padding(6.dp)
                                             .height(100.dp)
                                             .width(80.dp)
                                             .clip(RoundedCornerShape(10.dp)),
-                                        model = bookUIState.thumbnailLink,
+                                        model = uri,
+                                        contentScale = ContentScale.Crop,
                                         contentDescription = null,
-                                        placeholder = gradientPlaceholder()
+                                        placeholder = gradientPlaceholder(),
+                                        error = gradientPlaceholder()
                                     )
                                     Column(
                                         modifier = modifier
@@ -154,8 +159,6 @@ internal fun BookShelfScreen(
                         }
                     }
                 }
-
-                else -> {}
             }
         }
     }
