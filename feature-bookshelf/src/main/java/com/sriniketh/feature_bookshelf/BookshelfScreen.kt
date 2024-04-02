@@ -1,0 +1,254 @@
+package com.sriniketh.feature_bookshelf
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.painter.BrushPainter
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import com.sriniketh.core_design.ui.components.AppSurface
+import com.sriniketh.core_design.ui.components.CenteredCircularProgressIndicator
+import com.sriniketh.core_design.ui.theme.AppTheme
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+internal fun BookShelfScreen(
+    uiState: BookshelfUIState,
+    modifier: Modifier = Modifier,
+    goToSearch: () -> Unit,
+    goToHighlight: (String) -> Unit
+) {
+    AppSurface {
+
+        val snackbarHostState = remember { SnackbarHostState() }
+
+        Scaffold(
+            modifier = modifier.fillMaxSize(),
+            topBar = {
+                LargeTopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(id = R.string.bookshelf_pagetitle),
+                            style = MaterialTheme.typography.displayMedium
+                        )
+                    },
+                    scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(onClick = goToSearch) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = stringResource(id = R.string.search_fab_cont_desc)
+                    )
+                }
+            },
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        ) { contentPadding ->
+            when (uiState) {
+                is BookshelfUIState.Loading -> {
+                    CenteredCircularProgressIndicator(modifier = modifier)
+                }
+
+                is BookshelfUIState.Success -> {
+                    LazyColumn(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(contentPadding)
+                    ) {
+                        itemsIndexed(uiState.bookUIStates) { index, bookUIState ->
+                            Card(
+                                modifier = modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp)
+                                    .clickable { goToHighlight(bookUIState.id) },
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                            ) {
+                                Row(
+                                    modifier = modifier
+                                        .padding(12.dp)
+                                        .align(Alignment.Start)
+                                ) {
+                                    AsyncImage(
+                                        modifier = modifier
+                                            .padding(6.dp)
+                                            .height(100.dp)
+                                            .width(80.dp)
+                                            .clip(RoundedCornerShape(10.dp)),
+                                        model = bookUIState.thumbnailLink,
+                                        contentDescription = null,
+                                        placeholder = gradientPlaceholder()
+                                    )
+                                    Column(
+                                        modifier = modifier
+                                            .padding(horizontal = 6.dp)
+                                            .align(Alignment.Top)
+                                    ) {
+                                        Text(
+                                            modifier = modifier.padding(6.dp),
+                                            text = bookUIState.title,
+                                            style = MaterialTheme.typography.headlineMedium
+                                        )
+                                        Text(
+                                            modifier = modifier.padding(6.dp),
+                                            text = bookUIState.authors.joinToString(", "),
+                                            style = MaterialTheme.typography.bodyLarge
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                is BookshelfUIState.SuccessNoBooks -> {
+                    Box(
+                        modifier = modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            modifier = Modifier.align(Alignment.Center),
+                            text = stringResource(id = R.string.bookshelf_empty_text),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+
+                is BookshelfUIState.Failure -> {
+                    val errorMessage = stringResource(id = uiState.errorMessage)
+                    LaunchedEffect(key1 = null) {
+                        launch {
+                            snackbarHostState.showSnackbar(errorMessage)
+                        }
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+}
+
+@Composable
+private fun gradientPlaceholder() = BrushPainter(
+    Brush.linearGradient(
+        listOf(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.surfaceVariant
+        )
+    )
+)
+
+@PreviewLightDark
+@Composable
+internal fun BookshelfScreenSuccessPreview() {
+    AppTheme {
+        BookShelfScreen(
+            uiState = BookshelfUIState.Success(bookUIStates = listOf(BookUIState(
+                id = "someId",
+                title = "Some title 1",
+                authors = listOf("Author 1", "Author 2", "Author 3"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ), BookUIState(
+                id = "someId2",
+                title = "Some title 2",
+                authors = listOf("Author 1"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ), BookUIState(
+                id = "someId3",
+                title = "Some title 3",
+                authors = listOf("Author 1", "Author 2"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ), BookUIState(
+                id = "someId4",
+                title = "Some title 4",
+                authors = listOf("Author 1", "Author 2"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ), BookUIState(
+                id = "someId5",
+                title = "Some title 5",
+                authors = listOf("Author 1", "Author 2"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ), BookUIState(
+                id = "someId6",
+                title = "Some title 6",
+                authors = listOf("Author 1", "Author 2"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ), BookUIState(
+                id = "someId7",
+                title = "Some title 7",
+                authors = listOf("Author 1", "Author 2"),
+                thumbnailLink = "https://picsum.photos/200/300",
+                viewBook = {}
+            ))),
+            goToSearch = {}, goToHighlight = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+internal fun BookshelfScreenLoadingPreview() {
+    AppTheme {
+        BookShelfScreen(
+            uiState = BookshelfUIState.Loading,
+            goToSearch = {}, goToHighlight = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+internal fun BookshelfScreenSuccessNoBooksPreview() {
+    AppTheme {
+        BookShelfScreen(
+            uiState = BookshelfUIState.SuccessNoBooks,
+            goToSearch = {}, goToHighlight = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+internal fun BookshelfScreenFailurePreview() {
+    AppTheme {
+        BookShelfScreen(
+            uiState = BookshelfUIState.Failure(errorMessage = R.string.getallbooks_error_message),
+            goToSearch = {}, goToHighlight = {})
+    }
+}
