@@ -6,11 +6,11 @@
 
     <string name="nav_label_book_info">Book info</string>
     <string name="add_to_shelf_button_text">Add to shelf</string>
-    <string name="added_to_shelf_button_text">Added!</string>
     <string name="book_info_load_error_message">Error loading book details.</string>
+    <string name="add_to_bookshelf_success_message">Book has been added to shelf!</string>
     <string name="add_to_bookshelf_error_message">Error adding book to bookshelf.</string>
-    <string name="book_info_ratings_template">Ratings: {rating_value}/5.0 out of {rating_count} reviews</string>
-    <string name="book_info_pagecount_template">Number of pages: {page_count}</string>
-    <string name="book_info_publisher_template">Publisher: {publisher}</string>
-    <string name="book_info_publish_date_template">Date published: {date_published}</string>
+    <string name="book_info_ratings_template">Ratings: %1$.2f/5.0 out of %2$d reviews</string>
+    <string name="book_info_pagecount_template">Number of pages: %1$d</string>
+    <string name="book_info_publisher_template">Publisher: %1$s</string>
+    <string name="book_info_publish_date_template">Date published: %1$s</string>
 </resources>
