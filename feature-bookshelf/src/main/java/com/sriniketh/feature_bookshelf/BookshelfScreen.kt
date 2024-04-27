@@ -1,6 +1,5 @@
 package com.sriniketh.feature_bookshelf
 
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,8 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -41,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.components.CenteredCircularProgressIndicator
+import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
+import com.sriniketh.core_platform.buildHttpsUri
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,9 +52,7 @@ internal fun BookShelfScreen(
     goToHighlight: (String) -> Unit
 ) {
     AppSurface {
-
         val snackbarHostState = remember { SnackbarHostState() }
-
         Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
@@ -63,13 +60,17 @@ internal fun BookShelfScreen(
                     title = {
                         Text(
                             text = stringResource(id = R.string.bookshelf_pagetitle),
-                            style = MaterialTheme.typography.displayMedium
+                            style = MaterialTheme.typography.headlineMedium
                         )
                     }
                 )
             },
             floatingActionButton = {
-                FloatingActionButton(onClick = goToSearch) {
+                FloatingActionButton(
+                    onClick = goToSearch,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ) {
                     Icon(
                         imageVector = Icons.Filled.Search,
                         contentDescription = stringResource(id = R.string.search_fab_cont_desc)
@@ -95,16 +96,14 @@ internal fun BookShelfScreen(
                                     .fillMaxWidth()
                                     .padding(12.dp)
                                     .clickable { goToHighlight(bookUIState.id) },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
+                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                             ) {
                                 Row(
                                     modifier = modifier
                                         .padding(12.dp)
                                         .align(Alignment.Start)
                                 ) {
-                                    val uri = bookUIState.thumbnailLink?.let {
-                                        Uri.parse(it).buildUpon().apply { scheme("https") }.build()
-                                    }
+                                    val uri = bookUIState.thumbnailLink?.buildHttpsUri()
                                     AsyncImage(
                                         modifier = modifier
                                             .padding(6.dp)
@@ -125,7 +124,7 @@ internal fun BookShelfScreen(
                                         Text(
                                             modifier = modifier.padding(6.dp),
                                             text = bookUIState.title,
-                                            style = MaterialTheme.typography.headlineMedium
+                                            style = MaterialTheme.typography.titleLarge
                                         )
                                         Text(
                                             modifier = modifier.padding(6.dp),
@@ -163,16 +162,6 @@ internal fun BookShelfScreen(
         }
     }
 }
-
-@Composable
-private fun gradientPlaceholder() = BrushPainter(
-    Brush.linearGradient(
-        listOf(
-            MaterialTheme.colorScheme.surface,
-            MaterialTheme.colorScheme.surfaceVariant
-        )
-    )
-)
 
 @PreviewLightDark
 @Composable
