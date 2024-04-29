@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
 import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
+import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BookInfoFragmentViewModel @Inject constructor(
     private val fetchBookInfoUseCase: FetchBookInfoUseCase,
-    private val addBookToShelfUseCase: AddBookToShelfUseCase
+    private val addBookToShelfUseCase: AddBookToShelfUseCase,
+    private val isBookInDbUseCase: IsBookInDbUseCase
 ) : ViewModel() {
 
     private var _uiState: MutableStateFlow<BookInfoUiState> =
@@ -35,7 +37,7 @@ class BookInfoFragmentViewModel @Inject constructor(
                     state.copy(
                         isLoading = false,
                         book = book,
-                        canAddToShelf = true, //TODO: determine if book was already added
+                        canAddToShelf = !isBookInDbUseCase(book),
                         addBookToShelf = { addBookToShelf(book) }
                     )
                 }

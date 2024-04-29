@@ -22,15 +22,16 @@ class BooksRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : BooksRepository {
 
-    override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> = withContext(ioDispatcher) {
-        try {
-            val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
-            Result.success(books)
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            Result.failure(exception)
+    override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> =
+        withContext(ioDispatcher) {
+            try {
+                val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
+                Result.success(books)
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                Result.failure(exception)
+            }
         }
-    }
 
     override suspend fun fetchBookInfo(volumeId: String): Result<Book> = withContext(ioDispatcher) {
         try {
@@ -49,6 +50,15 @@ class BooksRepositoryImpl @Inject constructor(
         } catch (exception: Exception) {
             Timber.e(exception)
             Result.failure(exception)
+        }
+    }
+
+    override suspend fun doesBookExistInDb(bookId: String): Boolean = withContext(ioDispatcher) {
+        try {
+            localBookDataSource.doesBookExist(bookId)
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            false
         }
     }
 
