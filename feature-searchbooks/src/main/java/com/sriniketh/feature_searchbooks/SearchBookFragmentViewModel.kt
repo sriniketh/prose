@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,20 +19,33 @@ class SearchBookFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _searchUiState: MutableStateFlow<BookSearchUiState> =
-        MutableStateFlow(BookSearchUiState.Initial)
+        MutableStateFlow(BookSearchUiState())
     internal val searchUiState: StateFlow<BookSearchUiState> = _searchUiState.asStateFlow()
-
-    var goToBookInfo: (String) -> Unit = {}
 
     fun searchForBook(query: String) {
         viewModelScope.launch {
-            _searchUiState.emit(BookSearchUiState.Loading)
+            _searchUiState.update { state ->
+                state.copy(isLoading = true)
+            }
             val result = searchForBookUseCase(query)
             if (result.isSuccess) {
-                _searchUiState.emit(BookSearchUiState.Success(result.getOrThrow().items.map { it.asBookUiState() }))
+                _searchUiState.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        bookUiStates = result.getOrThrow().items.map { it.asBookUiState() }
+                    )
+                }
             } else if (result.isFailure) {
-                _searchUiState.emit(BookSearchUiState.Failure(R.string.search_error_message))
+                _searchUiState.update { state ->
+                    state.copy(isLoading = false, snackBarText = R.string.search_error_message)
+                }
             }
+        }
+    }
+
+    fun resetSearch() {
+        _searchUiState.update { state ->
+            state.copy(bookUiStates = emptyList())
         }
     }
 
@@ -40,23 +54,20 @@ class SearchBookFragmentViewModel @Inject constructor(
         title = info.title,
         subtitle = info.subtitle,
         authors = info.authors,
-        thumbnailLink = info.thumbnailLink,
-        viewDetail = { goToBookInfo(it) }
+        thumbnailLink = info.thumbnailLink
     )
 }
 
-internal sealed interface BookSearchUiState {
-    object Initial : BookSearchUiState
-    object Loading : BookSearchUiState
-    data class Success(val bookUiStates: List<BookUiState>) : BookSearchUiState
-    data class Failure(@StringRes val errorMessage: Int) : BookSearchUiState
-}
+internal data class BookSearchUiState(
+    val isLoading: Boolean = false,
+    val bookUiStates: List<BookUiState> = emptyList(),
+    @StringRes val snackBarText: Int? = null,
+)
 
 data class BookUiState(
     val id: String,
     val title: String,
     val subtitle: String?,
     val authors: List<String>,
-    val thumbnailLink: String?,
-    var viewDetail: (String) -> Unit
+    val thumbnailLink: String?
 )

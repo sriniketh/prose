@@ -2,6 +2,8 @@
 <resources>
     <string name="nav_label_searchbooks">Search books</string>
     <string name="search_for_a_book">Search for a book</string>
+    <string name="search_icon_cont_desc">Search icon</string>
+    <string name="close_icon_cont_desc">Close icon</string>
     <string name="search_error_message">Error searching for book. Please try again.</string>
 
     <string name="nav_label_book_info">Book info</string>
