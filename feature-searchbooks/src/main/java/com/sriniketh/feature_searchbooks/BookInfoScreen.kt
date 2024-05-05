@@ -55,42 +55,40 @@ internal fun BookInfoScreen(
     modifier: Modifier = Modifier,
     goBack: () -> Unit
 ) {
-    AppSurface {
-        val snackbarHostState = remember { SnackbarHostState() }
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                LargeTopAppBar(
-                    title = { BookInfoScreenTitle(uiState) },
-                    navigationIcon = { NavigationBack(goBack) }
-                )
-            },
-            floatingActionButton = {
-                if (uiState.canAddToShelf) {
-                    BookInfoScreenFloatingActionButton(uiState.addBookToShelf)
-                }
-            },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-        ) { contentPadding ->
-            if (uiState.isLoading) {
-                LinearProgressIndicator(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(contentPadding)
-                )
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            LargeTopAppBar(
+                title = { BookInfoScreenTitle(uiState) },
+                navigationIcon = { NavigationBack(goBack) }
+            )
+        },
+        floatingActionButton = {
+            if (uiState.canAddToShelf) {
+                BookInfoScreenFloatingActionButton(uiState.addBookToShelf)
             }
-
-            uiState.snackBarText?.let { resId ->
-                val snackbarMessage = stringResource(id = resId)
-                LaunchedEffect(key1 = null) {
-                    launch {
-                        snackbarHostState.showSnackbar(snackbarMessage)
-                    }
-                }
-            }
-
-            BookInfoLayout(uiState, modifier, contentPadding)
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { contentPadding ->
+        if (uiState.isLoading) {
+            LinearProgressIndicator(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding)
+            )
         }
+
+        uiState.snackBarText?.let { resId ->
+            val snackbarMessage = stringResource(id = resId)
+            LaunchedEffect(key1 = null) {
+                launch {
+                    snackbarHostState.showSnackbar(snackbarMessage)
+                }
+            }
+        }
+
+        BookInfoLayout(uiState, modifier, contentPadding)
     }
 }
 

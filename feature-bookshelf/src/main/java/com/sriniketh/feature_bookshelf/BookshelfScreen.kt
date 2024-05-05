@@ -51,115 +51,113 @@ internal fun BookShelfScreen(
     goToSearch: () -> Unit,
     goToHighlight: (String) -> Unit
 ) {
-    AppSurface {
-        val snackbarHostState = remember { SnackbarHostState() }
-        Scaffold(
-            modifier = modifier.fillMaxSize(),
-            topBar = {
-                LargeTopAppBar(
-                    title = {
-                        Text(
-                            text = stringResource(id = R.string.bookshelf_pagetitle),
-                            style = MaterialTheme.typography.headlineMedium
-                        )
-                    }
+    val snackbarHostState = remember { SnackbarHostState() }
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.bookshelf_pagetitle),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = goToSearch,
+                containerColor = MaterialTheme.colorScheme.secondary,
+                contentColor = MaterialTheme.colorScheme.onSecondary
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Search,
+                    contentDescription = stringResource(id = R.string.search_fab_cont_desc)
                 )
-            },
-            floatingActionButton = {
-                FloatingActionButton(
-                    onClick = goToSearch,
-                    containerColor = MaterialTheme.colorScheme.secondary,
-                    contentColor = MaterialTheme.colorScheme.onSecondary
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Search,
-                        contentDescription = stringResource(id = R.string.search_fab_cont_desc)
-                    )
-                }
-            },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-        ) { contentPadding ->
-            when (uiState) {
-                is BookshelfUIState.Loading -> {
-                    LinearProgressIndicator(
-                        modifier = modifier
-                            .fillMaxWidth()
-                            .padding(contentPadding)
-                    )
-                }
+            }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { contentPadding ->
+        when (uiState) {
+            is BookshelfUIState.Loading -> {
+                LinearProgressIndicator(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(contentPadding)
+                )
+            }
 
-                is BookshelfUIState.Success -> {
-                    LazyColumn(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .padding(contentPadding)
-                    ) {
-                        itemsIndexed(uiState.bookUIStates) { index, bookUIState ->
-                            Card(
+            is BookshelfUIState.Success -> {
+                LazyColumn(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(contentPadding)
+                ) {
+                    itemsIndexed(uiState.bookUIStates) { index, bookUIState ->
+                        Card(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(12.dp)
+                                .clickable { goToHighlight(bookUIState.id) },
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                        ) {
+                            Row(
                                 modifier = modifier
-                                    .fillMaxWidth()
                                     .padding(12.dp)
-                                    .clickable { goToHighlight(bookUIState.id) },
-                                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                                    .align(Alignment.Start)
                             ) {
-                                Row(
+                                val uri = bookUIState.thumbnailLink?.buildHttpsUri()
+                                AsyncImage(
                                     modifier = modifier
-                                        .padding(12.dp)
-                                        .align(Alignment.Start)
+                                        .padding(6.dp)
+                                        .height(100.dp)
+                                        .width(80.dp)
+                                        .clip(RoundedCornerShape(10.dp)),
+                                    model = uri,
+                                    contentScale = ContentScale.Crop,
+                                    contentDescription = null,
+                                    placeholder = gradientPlaceholder(),
+                                    error = gradientPlaceholder()
+                                )
+                                Column(
+                                    modifier = modifier
+                                        .padding(horizontal = 6.dp)
+                                        .align(Alignment.Top)
                                 ) {
-                                    val uri = bookUIState.thumbnailLink?.buildHttpsUri()
-                                    AsyncImage(
-                                        modifier = modifier
-                                            .padding(6.dp)
-                                            .height(100.dp)
-                                            .width(80.dp)
-                                            .clip(RoundedCornerShape(10.dp)),
-                                        model = uri,
-                                        contentScale = ContentScale.Crop,
-                                        contentDescription = null,
-                                        placeholder = gradientPlaceholder(),
-                                        error = gradientPlaceholder()
+                                    Text(
+                                        modifier = modifier.padding(6.dp),
+                                        text = bookUIState.title,
+                                        style = MaterialTheme.typography.titleLarge
                                     )
-                                    Column(
-                                        modifier = modifier
-                                            .padding(horizontal = 6.dp)
-                                            .align(Alignment.Top)
-                                    ) {
-                                        Text(
-                                            modifier = modifier.padding(6.dp),
-                                            text = bookUIState.title,
-                                            style = MaterialTheme.typography.titleLarge
-                                        )
-                                        Text(
-                                            modifier = modifier.padding(6.dp),
-                                            text = bookUIState.authors.joinToString(", "),
-                                            style = MaterialTheme.typography.bodyLarge
-                                        )
-                                    }
+                                    Text(
+                                        modifier = modifier.padding(6.dp),
+                                        text = bookUIState.authors.joinToString(", "),
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                is BookshelfUIState.SuccessNoBooks -> {
-                    Box(
-                        modifier = modifier.fillMaxSize()
-                    ) {
-                        Text(
-                            modifier = Modifier.align(Alignment.Center),
-                            text = stringResource(id = R.string.bookshelf_empty_text),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
+            is BookshelfUIState.SuccessNoBooks -> {
+                Box(
+                    modifier = modifier.fillMaxSize()
+                ) {
+                    Text(
+                        modifier = Modifier.align(Alignment.Center),
+                        text = stringResource(id = R.string.bookshelf_empty_text),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
                 }
+            }
 
-                is BookshelfUIState.Failure -> {
-                    val errorMessage = stringResource(id = uiState.errorMessage)
-                    LaunchedEffect(key1 = null) {
-                        launch {
-                            snackbarHostState.showSnackbar(errorMessage)
-                        }
+            is BookshelfUIState.Failure -> {
+                val errorMessage = stringResource(id = uiState.errorMessage)
+                LaunchedEffect(key1 = null) {
+                    launch {
+                        snackbarHostState.showSnackbar(errorMessage)
                     }
                 }
             }
