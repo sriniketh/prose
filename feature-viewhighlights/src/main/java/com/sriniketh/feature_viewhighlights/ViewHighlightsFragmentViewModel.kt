@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -20,23 +21,31 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
-        MutableStateFlow(ViewHighlightsUIState.Initial)
+        MutableStateFlow(ViewHighlightsUIState())
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
 
     fun getHighlights(bookId: String) {
         viewModelScope.launch {
-            _highlightsUIStateFlow.emit(ViewHighlightsUIState.Loading)
+            _highlightsUIStateFlow.update { state ->
+                state.copy(isLoading = true)
+            }
             getAllSavedHighlightsUseCase(bookId).collect { result ->
                 if (result.isSuccess) {
                     val highlights = result.getOrThrow()
-                    if (highlights.isEmpty()) {
-                        _highlightsUIStateFlow.emit(ViewHighlightsUIState.SuccessNoHighlights)
-                    } else {
-                        _highlightsUIStateFlow.emit(ViewHighlightsUIState.Success(highlightsUIState = highlights.map { it.asHighlightUIState() }))
+                    _highlightsUIStateFlow.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            highlights = highlights.map { it.asHighlightUIState() }
+                        )
                     }
                 } else if (result.isFailure) {
-                    _highlightsUIStateFlow.emit(ViewHighlightsUIState.Failure(R.string.gethighlights_error_message))
+                    _highlightsUIStateFlow.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            snackBarText = R.string.gethighlights_error_message
+                        )
+                    }
                 }
             }
         }
@@ -47,22 +56,28 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
         savedOn = savedOnTimestamp,
         onDelete = {
             viewModelScope.launch {
+                _highlightsUIStateFlow.update { state ->
+                    state.copy(isLoading = true)
+                }
                 val result = deleteHighlightUseCase.invoke(this@asHighlightUIState)
                 if (result.isFailure) {
-                    _highlightsUIStateFlow.emit(ViewHighlightsUIState.Failure(R.string.delete_error_message))
+                    _highlightsUIStateFlow.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            snackBarText = R.string.delete_error_message
+                        )
+                    }
                 }
             }
         }
     )
 }
 
-internal sealed interface ViewHighlightsUIState {
-    object Initial : ViewHighlightsUIState
-    object Loading : ViewHighlightsUIState
-    data class Success(val highlightsUIState: List<HighlightUIState>) : ViewHighlightsUIState
-    object SuccessNoHighlights : ViewHighlightsUIState
-    data class Failure(@StringRes val errorMessage: Int) : ViewHighlightsUIState
-}
+internal data class ViewHighlightsUIState(
+    val isLoading: Boolean = false,
+    val highlights: List<HighlightUIState> = emptyList(),
+    @StringRes val snackBarText: Int? = null
+)
 
 data class HighlightUIState(
     val text: String,
