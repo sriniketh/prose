@@ -79,7 +79,7 @@ internal data class ViewHighlightsUIState(
     @StringRes val snackBarText: Int? = null
 )
 
-data class HighlightUIState(
+internal data class HighlightUIState(
     val text: String,
     val savedOn: String,
     val onDelete: () -> Unit

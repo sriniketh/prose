@@ -37,7 +37,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
@@ -78,87 +77,83 @@ internal fun BookShelfScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
-        when (uiState) {
-            is BookshelfUIState.Loading -> {
-                LinearProgressIndicator(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(contentPadding)
+        if (uiState.isLoading) {
+            LinearProgressIndicator(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(contentPadding)
+            )
+        }
+
+        if (uiState.books.isEmpty() && !uiState.isLoading) {
+            Box(
+                modifier = modifier.fillMaxSize()
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = stringResource(id = R.string.bookshelf_empty_text),
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
-
-            is BookshelfUIState.Success -> {
-                LazyColumn(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(contentPadding)
-                ) {
-                    itemsIndexed(uiState.bookUIStates) { index, bookUIState ->
-                        Card(
+        } else if (uiState.books.isNotEmpty()) {
+            LazyColumn(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(contentPadding)
+            ) {
+                itemsIndexed(uiState.books) { index, bookUIState ->
+                    Card(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                            .clickable { goToHighlight(bookUIState.id) },
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                    ) {
+                        Row(
                             modifier = modifier
-                                .fillMaxWidth()
                                 .padding(12.dp)
-                                .clickable { goToHighlight(bookUIState.id) },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                                .align(Alignment.Start)
                         ) {
-                            Row(
+                            val uri = bookUIState.thumbnailLink?.buildHttpsUri()
+                            AsyncImage(
                                 modifier = modifier
-                                    .padding(12.dp)
-                                    .align(Alignment.Start)
+                                    .padding(6.dp)
+                                    .height(100.dp)
+                                    .width(80.dp)
+                                    .clip(RoundedCornerShape(10.dp)),
+                                model = uri,
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
+                                placeholder = gradientPlaceholder(),
+                                error = gradientPlaceholder()
+                            )
+                            Column(
+                                modifier = modifier
+                                    .padding(horizontal = 6.dp)
+                                    .align(Alignment.Top)
                             ) {
-                                val uri = bookUIState.thumbnailLink?.buildHttpsUri()
-                                AsyncImage(
-                                    modifier = modifier
-                                        .padding(6.dp)
-                                        .height(100.dp)
-                                        .width(80.dp)
-                                        .clip(RoundedCornerShape(10.dp)),
-                                    model = uri,
-                                    contentScale = ContentScale.Crop,
-                                    contentDescription = null,
-                                    placeholder = gradientPlaceholder(),
-                                    error = gradientPlaceholder()
+                                Text(
+                                    modifier = modifier.padding(6.dp),
+                                    text = bookUIState.title,
+                                    style = MaterialTheme.typography.titleLarge
                                 )
-                                Column(
-                                    modifier = modifier
-                                        .padding(horizontal = 6.dp)
-                                        .align(Alignment.Top)
-                                ) {
-                                    Text(
-                                        modifier = modifier.padding(6.dp),
-                                        text = bookUIState.title,
-                                        style = MaterialTheme.typography.titleLarge
-                                    )
-                                    Text(
-                                        modifier = modifier.padding(6.dp),
-                                        text = bookUIState.authors.joinToString(", "),
-                                        style = MaterialTheme.typography.bodyLarge
-                                    )
-                                }
+                                Text(
+                                    modifier = modifier.padding(6.dp),
+                                    text = bookUIState.authors.joinToString(", "),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
                             }
                         }
                     }
                 }
             }
+        }
 
-            is BookshelfUIState.SuccessNoBooks -> {
-                Box(
-                    modifier = modifier.fillMaxSize()
-                ) {
-                    Text(
-                        modifier = Modifier.align(Alignment.Center),
-                        text = stringResource(id = R.string.bookshelf_empty_text),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-
-            is BookshelfUIState.Failure -> {
-                val errorMessage = stringResource(id = uiState.errorMessage)
-                LaunchedEffect(key1 = null) {
-                    launch {
-                        snackbarHostState.showSnackbar(errorMessage)
-                    }
+        uiState.snackBarText?.let { message ->
+            val errorMessage = stringResource(id = message)
+            LaunchedEffect(key1 = null) {
+                launch {
+                    snackbarHostState.showSnackbar(errorMessage)
                 }
             }
         }
@@ -170,49 +165,50 @@ internal fun BookShelfScreen(
 internal fun BookshelfScreenSuccessPreview() {
     AppTheme {
         BookShelfScreen(
-            uiState = BookshelfUIState.Success(bookUIStates = listOf(BookUIState(
-                id = "someId",
-                title = "Some title 1",
-                authors = listOf("Author 1", "Author 2", "Author 3"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ), BookUIState(
-                id = "someId2",
-                title = "Some title 2",
-                authors = listOf("Author 1"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ), BookUIState(
-                id = "someId3",
-                title = "Some title 3",
-                authors = listOf("Author 1", "Author 2"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ), BookUIState(
-                id = "someId4",
-                title = "Some title 4",
-                authors = listOf("Author 1", "Author 2"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ), BookUIState(
-                id = "someId5",
-                title = "Some title 5",
-                authors = listOf("Author 1", "Author 2"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ), BookUIState(
-                id = "someId6",
-                title = "Some title 6",
-                authors = listOf("Author 1", "Author 2"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ), BookUIState(
-                id = "someId7",
-                title = "Some title 7",
-                authors = listOf("Author 1", "Author 2"),
-                thumbnailLink = "https://picsum.photos/200/300",
-                viewBook = {}
-            ))),
+            uiState = BookshelfUIState(
+                books = listOf(BookUIState(
+                    id = "someId",
+                    title = "Some title 1",
+                    authors = listOf("Author 1", "Author 2", "Author 3"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ), BookUIState(
+                    id = "someId2",
+                    title = "Some title 2",
+                    authors = listOf("Author 1"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ), BookUIState(
+                    id = "someId3",
+                    title = "Some title 3",
+                    authors = listOf("Author 1", "Author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ), BookUIState(
+                    id = "someId4",
+                    title = "Some title 4",
+                    authors = listOf("Author 1", "Author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ), BookUIState(
+                    id = "someId5",
+                    title = "Some title 5",
+                    authors = listOf("Author 1", "Author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ), BookUIState(
+                    id = "someId6",
+                    title = "Some title 6",
+                    authors = listOf("Author 1", "Author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ), BookUIState(
+                    id = "someId7",
+                    title = "Some title 7",
+                    authors = listOf("Author 1", "Author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    viewBook = {}
+                ))),
             goToSearch = {}, goToHighlight = {})
     }
 }
@@ -222,7 +218,7 @@ internal fun BookshelfScreenSuccessPreview() {
 internal fun BookshelfScreenLoadingPreview() {
     AppTheme {
         BookShelfScreen(
-            uiState = BookshelfUIState.Loading,
+            uiState = BookshelfUIState(isLoading = true),
             goToSearch = {}, goToHighlight = {})
     }
 }
@@ -232,7 +228,7 @@ internal fun BookshelfScreenLoadingPreview() {
 internal fun BookshelfScreenSuccessNoBooksPreview() {
     AppTheme {
         BookShelfScreen(
-            uiState = BookshelfUIState.SuccessNoBooks,
+            uiState = BookshelfUIState(books = emptyList()),
             goToSearch = {}, goToHighlight = {})
     }
 }
@@ -242,7 +238,7 @@ internal fun BookshelfScreenSuccessNoBooksPreview() {
 internal fun BookshelfScreenFailurePreview() {
     AppTheme {
         BookShelfScreen(
-            uiState = BookshelfUIState.Failure(errorMessage = R.string.getallbooks_error_message),
+            uiState = BookshelfUIState(snackBarText = R.string.getallbooks_error_message),
             goToSearch = {}, goToHighlight = {})
     }
 }

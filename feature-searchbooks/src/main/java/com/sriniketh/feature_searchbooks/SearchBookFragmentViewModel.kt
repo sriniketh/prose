@@ -64,7 +64,7 @@ internal data class BookSearchUiState(
     @StringRes val snackBarText: Int? = null,
 )
 
-data class BookUiState(
+internal data class BookUiState(
     val id: String,
     val title: String,
     val subtitle: String?,
