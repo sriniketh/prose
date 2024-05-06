@@ -1,6 +1,7 @@
 package com.sriniketh.prose
 
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.sriniketh.prose.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,6 +14,7 @@ class MainActivity : AppCompatActivity() {
         get() = checkNotNull(_binding)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
