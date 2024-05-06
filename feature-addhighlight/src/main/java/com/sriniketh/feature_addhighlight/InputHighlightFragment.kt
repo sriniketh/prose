@@ -30,13 +30,12 @@ class InputHighlightFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
+            viewModel.setHighlightText(args.translatedText)
+
             setContent {
                 AppTheme {
                     AppSurface {
                         val uiState: InputHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
-
-                        viewModel.setHighlightText(args.translatedText)
-
                         InputHighlightScreen(
                             uiState = uiState,
                             saveHighlight = { text ->

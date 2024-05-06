@@ -1,6 +1,5 @@
 package com.sriniketh.feature_addhighlight
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -87,7 +86,7 @@ internal fun InputHighlightScreen(
                 .fillMaxSize()
                 .padding(contentPadding)
         ) {
-            var text by remember { mutableStateOf("") }
+            var text by remember { mutableStateOf(uiState.highlightText) }
             OutlinedTextField(
                 modifier = modifier
                     .weight(0.8f)
