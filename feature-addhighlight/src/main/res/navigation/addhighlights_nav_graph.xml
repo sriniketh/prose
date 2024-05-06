@@ -10,7 +10,7 @@
         android:label="@string/camera_fragment_label">
         <deepLink app:uri="android-app://com.sriniketh.prose/to_camera_fragment?bookId={bookId}" />
         <action
-            android:id="@+id/camera_to_edithighlight_action"
+            android:id="@+id/camera_to_inputhighlight_action"
             app:destination="@id/edithighlight_fragment"
             app:enterAnim="@anim/slide_from_right"
             app:exitAnim="@anim/slide_to_left"
@@ -26,8 +26,8 @@
 
     <fragment
         android:id="@+id/edithighlight_fragment"
-        android:name="com.sriniketh.feature_addhighlight.EditHighlightFragment"
-        android:label="@string/edithighlight_fragment_label">
+        android:name="com.sriniketh.feature_addhighlight.InputHighlightFragment"
+        android:label="@string/inputhighlight_fragment_label">
         <argument
             android:name="translatedText"
             android:defaultValue=""

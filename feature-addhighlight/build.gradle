@@ -34,7 +34,12 @@ android {
     buildFeatures {
         viewBinding true
         buildConfig true
+        compose true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = rootProject.ext.compose_compiler_version
+    }
+
     namespace 'com.sriniketh.feature_addhighlight'
 }
 
@@ -58,6 +63,16 @@ dependencies {
     implementation "androidx.camera:camera-extensions:${camerax_version}"
 
     implementation "com.google.android.gms:play-services-mlkit-text-recognition:${mlkit_version}"
+
+    def composeBom = platform("androidx.compose:compose-bom:$compose_bom_version")
+    implementation composeBom
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:$lifecycle_version"
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    androidTestImplementation composeBom
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"

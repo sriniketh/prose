@@ -49,7 +49,10 @@ class CameraFragment : Fragment() {
         binding.captureButton.setOnClickListener {
             val bookId = args.bookId
             val translatedText = getTranslatedTextFromAnalyzer()
-            val action = CameraFragmentDirections.cameraToEdithighlightAction(translatedText = translatedText, bookId = bookId)
+            val action = CameraFragmentDirections.cameraToInputhighlightAction(
+                translatedText = translatedText,
+                bookId = bookId
+            )
             findNavController().navigate(action)
         }
 
