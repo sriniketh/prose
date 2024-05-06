@@ -78,11 +78,7 @@ internal fun BookShelfScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         if (uiState.isLoading) {
-            LinearProgressIndicator(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(contentPadding)
-            )
+            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
         }
 
         if (uiState.books.isEmpty() && !uiState.isLoading) {

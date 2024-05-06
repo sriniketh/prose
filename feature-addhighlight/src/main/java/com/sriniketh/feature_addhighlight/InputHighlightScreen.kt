@@ -65,11 +65,7 @@ internal fun InputHighlightScreen(
         }
 
         if (uiState.isLoading) {
-            LinearProgressIndicator(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(contentPadding)
-            )
+            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
         }
 
         uiState.snackBarText?.let { resId ->

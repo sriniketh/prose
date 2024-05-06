@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
@@ -72,11 +71,7 @@ internal fun BookInfoScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         if (uiState.isLoading) {
-            LinearProgressIndicator(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(contentPadding)
-            )
+            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
         }
 
         uiState.snackBarText?.let { resId ->

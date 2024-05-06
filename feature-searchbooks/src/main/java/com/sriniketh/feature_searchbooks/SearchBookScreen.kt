@@ -103,11 +103,7 @@ internal fun SearchBookScreen(
             colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         ) {
             if (uiState.isLoading) {
-                LinearProgressIndicator(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(contentPadding)
-                )
+                LinearProgressIndicator(modifier = modifier.fillMaxWidth())
             }
             LazyColumn(
                 modifier = modifier
