@@ -28,6 +28,7 @@
         android:id="@+id/edithighlight_fragment"
         android:name="com.sriniketh.feature_addhighlight.InputHighlightFragment"
         android:label="@string/inputhighlight_fragment_label">
+        <deepLink app:uri="android-app://com.sriniketh.prose/to_input_highlight_fragment?bookId={bookId}" />
         <argument
             android:name="translatedText"
             android:defaultValue=""

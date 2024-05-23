@@ -15,6 +15,7 @@ import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.sriniketh.core_design.R
 import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,24 +40,33 @@ class ViewHighlightsFragment : Fragment() {
                         val uiState: ViewHighlightsUIState by viewModel.highlightsUIStateFlow.collectAsStateWithLifecycle()
                         ViewHighlightsScreen(
                             uiState = uiState,
-                            addHighlight = {
-                                val navOptions = NavOptions.Builder()
-                                    .setEnterAnim(com.sriniketh.core_design.R.anim.slide_from_bottom)
-                                    .setExitAnim(com.sriniketh.core_design.R.anim.slide_out_top)
-                                    .setPopEnterAnim(com.sriniketh.core_design.R.anim.slide_from_top)
-                                    .setPopExitAnim(com.sriniketh.core_design.R.anim.slide_out_bottom)
-                                    .build()
-                                val bookId = args.bookId
-                                val request = NavDeepLinkRequest.Builder
-                                    .fromUri("android-app://com.sriniketh.prose/to_camera_fragment?bookId=$bookId".toUri())
-                                    .build()
-                                findNavController().navigate(request, navOptions)
-                            },
-                            goBack = { findNavController().navigateUp() }
+                            onEvent = { event ->
+                                when (event) {
+                                    is ViewHighlightsEvent.OnBackPressed -> findNavController().navigateUp()
+                                    is ViewHighlightsEvent.OnCameraPermissionGranted -> {
+                                        launchInputHighlightScreen(args.bookId)
+                                    }
+
+                                    else -> viewModel.processEvent(event)
+                                }
+                            }
                         )
                     }
                 }
             }
         }
+    }
+
+    private fun launchInputHighlightScreen(bookId: String) {
+        val navOptions = NavOptions.Builder()
+            .setEnterAnim(R.anim.slide_from_bottom)
+            .setExitAnim(R.anim.slide_out_top)
+            .setPopEnterAnim(R.anim.slide_from_top)
+            .setPopExitAnim(R.anim.slide_out_bottom)
+            .build()
+        val request = NavDeepLinkRequest.Builder
+            .fromUri("android-app://com.sriniketh.prose/to_input_highlight_fragment?bookId=$bookId".toUri())
+            .build()
+        findNavController().navigate(request, navOptions)
     }
 }

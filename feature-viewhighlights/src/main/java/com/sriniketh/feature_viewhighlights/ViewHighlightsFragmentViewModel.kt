@@ -25,7 +25,7 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
 
-    fun getHighlights(bookId: String) {
+    internal fun getHighlights(bookId: String) {
         viewModelScope.launch {
             _highlightsUIStateFlow.update { state ->
                 state.copy(isLoading = true)
@@ -48,6 +48,21 @@ class ViewHighlightsFragmentViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    internal fun processEvent(event: ViewHighlightsEvent) {
+        when (event) {
+            ViewHighlightsEvent.OnCameraPermissionDenied -> {
+                _highlightsUIStateFlow.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        snackBarText = R.string.permission_denied_error_message
+                    )
+                }
+            }
+
+            else -> Unit
         }
     }
 
@@ -84,3 +99,9 @@ internal data class HighlightUIState(
     val savedOn: String,
     val onDelete: () -> Unit
 )
+
+internal sealed interface ViewHighlightsEvent {
+    data object OnBackPressed : ViewHighlightsEvent
+    data object OnCameraPermissionDenied : ViewHighlightsEvent
+    data object OnCameraPermissionGranted : ViewHighlightsEvent
+}

@@ -1,5 +1,7 @@
 package com.sriniketh.feature_viewhighlights
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,9 +49,18 @@ import kotlinx.coroutines.launch
 internal fun ViewHighlightsScreen(
     uiState: ViewHighlightsUIState,
     modifier: Modifier = Modifier,
-    addHighlight: () -> Unit,
-    goBack: () -> Unit
+    onEvent: (ViewHighlightsEvent) -> Unit
 ) {
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { granted ->
+            if (granted) {
+                onEvent(ViewHighlightsEvent.OnCameraPermissionGranted)
+            } else {
+                onEvent(ViewHighlightsEvent.OnCameraPermissionDenied)
+            }
+        })
+
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -63,12 +74,12 @@ internal fun ViewHighlightsScreen(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                navigationIcon = { NavigationBack(goBack) }
+                navigationIcon = { NavigationBack { onEvent(ViewHighlightsEvent.OnBackPressed) } }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = addHighlight,
+                onClick = { cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA) },
                 containerColor = MaterialTheme.colorScheme.secondary,
                 contentColor = MaterialTheme.colorScheme.onSecondary
             ) {
