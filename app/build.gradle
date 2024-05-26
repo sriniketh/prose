@@ -55,6 +55,7 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$fragment_nav_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
+    implementation "com.jakewharton.timber:timber:$timber_version"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
