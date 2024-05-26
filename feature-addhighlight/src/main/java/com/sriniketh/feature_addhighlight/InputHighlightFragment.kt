@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -30,19 +33,56 @@ class InputHighlightFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            viewModel.setHighlightText(args.translatedText)
-
             setContent {
                 AppTheme {
                     AppSurface {
-                        val uiState: InputHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
-                        InputHighlightScreen(
-                            uiState = uiState,
-                            saveHighlight = { text ->
-                                viewModel.saveHighlight(args.bookId, text)
-                            },
-                            goBack = { findNavController().navigateUp() }
+                        val bookId = args.bookId
+                        val inputHighlightScreenState: InputHighlightScreenState by viewModel.screenState.collectAsStateWithLifecycle()
+                        val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.editHighlightUiState.collectAsStateWithLifecycle()
+                        val cameraLauncher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.TakePicture(),
+                            onResult = { success ->
+                                if (success) {
+                                    viewModel.onImageCaptured()
+                                } else {
+                                    findNavController().navigateUp()
+                                }
+                            }
                         )
+
+                        when (val screenState = inputHighlightScreenState) {
+                            is InputHighlightScreenState.CaptureImage -> {
+                                LaunchedEffect(Unit) {
+                                    cameraLauncher.launch(screenState.imageUri)
+                                }
+                            }
+
+                            is InputHighlightScreenState.CropImage -> {
+                                CropImageScreen(
+                                    imageUri = screenState.imageUri,
+                                    onImageCropped = { viewModel.onImageCropped() }
+                                )
+                            }
+
+                            InputHighlightScreenState.EditAndSaveHighlight -> {
+                                EditAndSaveHighlightScreen(
+                                    uiState = editHighlightUiState,
+                                    updateHighlightText = { highlightText ->
+                                        viewModel.onHighlightTextUpdated(highlightText)
+                                    },
+                                    saveHighlight = { highlight ->
+                                        viewModel.onHighlightSaved(bookId, highlight)
+                                    },
+                                    goBack = {
+                                        findNavController().navigateUp()
+                                    }
+                                )
+                            }
+
+                            InputHighlightScreenState.SaveHighlightSuccessful -> {
+                                findNavController().navigateUp()
+                            }
+                        }
                     }
                 }
             }

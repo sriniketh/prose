@@ -1,19 +1,16 @@
 package com.sriniketh.prose.dagger
 
-import android.content.Context
 import com.sriniketh.core_platform.FileSource
 import com.sriniketh.prose.files.FileSourceImpl
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+abstract class AppModule {
 
-    @Provides
-    fun providesFileSource(@ApplicationContext context: Context): FileSource =
-        FileSourceImpl(context)
+    @Binds
+    abstract fun fileSource(impl: FileSourceImpl): FileSource
 }

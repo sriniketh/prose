@@ -1,43 +1,29 @@
 package com.sriniketh.feature_addhighlight
 
-import android.annotation.SuppressLint
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
+import android.content.Context
+import android.net.Uri
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import timber.log.Timber
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 
-class TextAnalyzerImpl @Inject constructor() : TextAnalyzer {
+class TextAnalyzerImpl @Inject constructor(@ApplicationContext private val appContext: Context) :
+    TextAnalyzer {
 
-    private var _lastSeenText: Text? = null
-    override val lastSeenText: Text?
-        get() = _lastSeenText
-
-    @SuppressLint("UnsafeOptInUsageError")
-    override fun analyze(imageProxy: ImageProxy) {
-        imageProxy.image?.let { image ->
-            val inputImage = InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees)
-            try {
-                TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-                    .process(inputImage)
-                    .addOnSuccessListener { visionText ->
-                        _lastSeenText = visionText
-                        imageProxy.close()
-                    }
-                    .addOnFailureListener { error ->
-                        Timber.e(error)
-                        imageProxy.close()
-                    }
-            } catch (exception: Exception) {
-                Timber.e(exception)
-            }
+    override suspend fun analyzeImage(uri: Uri): Text =
+        suspendCancellableCoroutine { continuation ->
+            val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+            val image = InputImage.fromFilePath(appContext, uri)
+            recognizer.process(image)
+                .addOnSuccessListener { continuation.resumeWith(Result.success(it)) }
+                .addOnFailureListener { continuation.resumeWith(Result.failure(it)) }
+            continuation.invokeOnCancellation { recognizer.close() }
         }
-    }
 }
 
-interface TextAnalyzer : ImageAnalysis.Analyzer {
-    val lastSeenText: Text?
+interface TextAnalyzer {
+    suspend fun analyzeImage(uri: Uri): Text
 }

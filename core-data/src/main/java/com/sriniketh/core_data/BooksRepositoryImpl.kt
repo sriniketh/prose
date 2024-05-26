@@ -6,6 +6,7 @@ import com.sriniketh.core_data.transformers.asBookSearchResult
 import com.sriniketh.core_db.dao.BookDao
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.search.BookSearch
+import com.sriniketh.core_platform.logTag
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +29,7 @@ class BooksRepositoryImpl @Inject constructor(
                 val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
                 Result.success(books)
             } catch (exception: Exception) {
-                Timber.e(exception)
+                Timber.e(exception, this.logTag())
                 Result.failure(exception)
             }
         }
@@ -38,7 +39,7 @@ class BooksRepositoryImpl @Inject constructor(
             val book = remoteBookDataSource.getVolume(volumeId).asBook()
             Result.success(book)
         } catch (exception: Exception) {
-            Timber.e(exception)
+            Timber.e(exception, this.logTag())
             Result.failure(exception)
         }
     }
@@ -48,7 +49,7 @@ class BooksRepositoryImpl @Inject constructor(
             localBookDataSource.insertBook(book.asBookEntity())
             Result.success(Unit)
         } catch (exception: Exception) {
-            Timber.e(exception)
+            Timber.e(exception, this.logTag())
             Result.failure(exception)
         }
     }
@@ -57,7 +58,7 @@ class BooksRepositoryImpl @Inject constructor(
         try {
             localBookDataSource.doesBookExist(bookId)
         } catch (exception: Exception) {
-            Timber.e(exception)
+            Timber.e(exception, this.logTag())
             false
         }
     }
@@ -68,7 +69,7 @@ class BooksRepositoryImpl @Inject constructor(
                 Result.success(entities.map { entity -> entity.asBook() })
             }
             .catch { exception ->
-                Timber.e(exception)
+                Timber.e(exception, this.logTag())
                 emit(Result.failure(exception))
             }.flowOn(ioDispatcher)
 }
