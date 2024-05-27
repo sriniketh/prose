@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ViewHighlightsFragmentViewModel @Inject constructor(
+class ViewHighlightsViewModel @Inject constructor(
     private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase,
     private val deleteHighlightUseCase: DeleteHighlightUseCase
 ) : ViewModel() {

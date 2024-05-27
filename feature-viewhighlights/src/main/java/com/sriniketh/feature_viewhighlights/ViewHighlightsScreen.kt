@@ -41,12 +41,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sriniketh.core_design.ui.components.NavigationBack
 import kotlinx.coroutines.launch
 
+@Composable
+fun ViewHighlightsScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ViewHighlightsViewModel = viewModel(),
+    bookId: String,
+    goBack: () -> Unit,
+    goToInputHighlightScreen: () -> Unit
+) {
+    LaunchedEffect(key1 = bookId) {
+        viewModel.getHighlights(bookId)
+    }
+    val uiState: ViewHighlightsUIState by viewModel.highlightsUIStateFlow.collectAsStateWithLifecycle()
+    ViewHighlights(
+        modifier = modifier,
+        uiState = uiState,
+        onEvent = { event ->
+            when (event) {
+                is ViewHighlightsEvent.OnBackPressed -> {
+                    goBack()
+                }
+
+                is ViewHighlightsEvent.OnCameraPermissionGranted -> {
+                    goToInputHighlightScreen()
+                }
+
+                else -> viewModel.processEvent(event)
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun ViewHighlightsScreen(
+internal fun ViewHighlights(
     uiState: ViewHighlightsUIState,
     modifier: Modifier = Modifier,
     onEvent: (ViewHighlightsEvent) -> Unit

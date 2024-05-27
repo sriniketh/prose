@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -23,7 +20,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class ViewHighlightsFragment : Fragment() {
 
-    private val viewModel: ViewHighlightsFragmentViewModel by viewModels()
     private val args: ViewHighlightsFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -31,24 +27,16 @@ class ViewHighlightsFragment : Fragment() {
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            viewModel.getHighlights(args.bookId)
-
             setContent {
                 AppTheme {
                     AppSurface {
-                        val uiState: ViewHighlightsUIState by viewModel.highlightsUIStateFlow.collectAsStateWithLifecycle()
                         ViewHighlightsScreen(
-                            uiState = uiState,
-                            onEvent = { event ->
-                                when (event) {
-                                    is ViewHighlightsEvent.OnBackPressed -> findNavController().navigateUp()
-                                    is ViewHighlightsEvent.OnCameraPermissionGranted -> {
-                                        launchInputHighlightScreen(args.bookId)
-                                    }
-
-                                    else -> viewModel.processEvent(event)
-                                }
+                            bookId = args.bookId,
+                            goBack = {
+                                findNavController().navigateUp()
+                            },
+                            goToInputHighlightScreen = {
+                                launchInputHighlightScreen(args.bookId)
                             }
                         )
                     }
