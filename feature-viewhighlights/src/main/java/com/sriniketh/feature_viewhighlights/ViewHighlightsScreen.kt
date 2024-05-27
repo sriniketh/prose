@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -169,11 +170,13 @@ internal fun ViewHighlights(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = modifier.weight(1f)) {
-                            Text(
-                                modifier = modifier.padding(6.dp),
-                                text = highlightUiState.text,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+                            SelectionContainer {
+                                Text(
+                                    modifier = modifier.padding(6.dp),
+                                    text = highlightUiState.text,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
                             Text(
                                 modifier = modifier.padding(6.dp),
                                 text = stringResource(
