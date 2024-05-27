@@ -4,13 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -23,22 +20,16 @@ import java.net.URLEncoder
 @AndroidEntryPoint
 class BookshelfFragment : Fragment() {
 
-    private val viewModel: BookshelfFragmentViewModel by viewModels()
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            viewModel.getSavedBooks()
-
             setContent {
                 AppTheme {
                     AppSurface {
-                        val uiState: BookshelfUIState by viewModel.bookshelfUIState.collectAsStateWithLifecycle()
-                        BookShelfScreen(
-                            uiState = uiState,
+                        BookshelfScreen(
                             goToSearch = {
                                 val navOptions = NavOptions.Builder()
                                     .setEnterAnim(R.anim.slide_from_bottom)

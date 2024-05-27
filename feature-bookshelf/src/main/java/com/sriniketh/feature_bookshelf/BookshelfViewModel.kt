@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BookshelfFragmentViewModel @Inject constructor(
+class BookshelfViewModel @Inject constructor(
     private val getAllSavedBooksUseCase: GetAllSavedBooksUseCase
 ) : ViewModel() {
 
@@ -24,7 +24,7 @@ class BookshelfFragmentViewModel @Inject constructor(
 
     var viewHighlightsForBook: (String) -> Unit = {}
 
-    fun getSavedBooks() {
+    init {
         viewModelScope.launch {
             _bookshelfUIState.update { state ->
                 state.copy(isLoading = true)

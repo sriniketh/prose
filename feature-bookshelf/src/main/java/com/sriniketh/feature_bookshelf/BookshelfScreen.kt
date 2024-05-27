@@ -28,6 +28,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,15 +37,33 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
 import kotlinx.coroutines.launch
 
+@Composable
+fun BookshelfScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BookshelfViewModel = viewModel(),
+    goToSearch: () -> Unit,
+    goToHighlight: (String) -> Unit
+) {
+    val uiState: BookshelfUIState by viewModel.bookshelfUIState.collectAsStateWithLifecycle()
+    Bookshelf(
+        uiState = uiState,
+        modifier = modifier,
+        goToSearch = { goToSearch() },
+        goToHighlight = { goToHighlight(it) }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BookShelfScreen(
+internal fun Bookshelf(
     uiState: BookshelfUIState,
     modifier: Modifier = Modifier,
     goToSearch: () -> Unit,
@@ -160,7 +179,7 @@ internal fun BookShelfScreen(
 @Composable
 internal fun BookshelfScreenSuccessPreview() {
     AppTheme {
-        BookShelfScreen(
+        Bookshelf(
             uiState = BookshelfUIState(
                 books = listOf(BookUIState(
                     id = "someId",
@@ -213,7 +232,7 @@ internal fun BookshelfScreenSuccessPreview() {
 @Composable
 internal fun BookshelfScreenLoadingPreview() {
     AppTheme {
-        BookShelfScreen(
+        Bookshelf(
             uiState = BookshelfUIState(isLoading = true),
             goToSearch = {}, goToHighlight = {})
     }
@@ -223,7 +242,7 @@ internal fun BookshelfScreenLoadingPreview() {
 @Composable
 internal fun BookshelfScreenSuccessNoBooksPreview() {
     AppTheme {
-        BookShelfScreen(
+        Bookshelf(
             uiState = BookshelfUIState(books = emptyList()),
             goToSearch = {}, goToHighlight = {})
     }
@@ -233,7 +252,7 @@ internal fun BookshelfScreenSuccessNoBooksPreview() {
 @Composable
 internal fun BookshelfScreenFailurePreview() {
     AppTheme {
-        BookShelfScreen(
+        Bookshelf(
             uiState = BookshelfUIState(snackBarText = R.string.getallbooks_error_message),
             goToSearch = {}, goToHighlight = {})
     }
