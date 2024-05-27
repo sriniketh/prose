@@ -21,7 +21,7 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
-class InputHighlightFragmentViewModel @Inject constructor(
+class InputHighlightViewModel @Inject constructor(
     private val dateTimeSource: DateTimeSource,
     private val textAnalyzer: TextAnalyzer,
     private val saveHighlightUseCase: SaveHighlightUseCase,

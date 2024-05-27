@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="cropimage_pagetitle">Crop image</string>
     <string name="done_fab_cont_desc">Done cropping button</string>
     <string name="inputhighlight_fragment_label">Edit highlight</string>
     <string name="save_highlight_title_text">Save highlight</string>
