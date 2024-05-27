@@ -170,7 +170,7 @@ private fun BookInfoLayout(
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                 ) {
                     Text(
                         modifier = modifier.padding(12.dp),
@@ -184,7 +184,7 @@ private fun BookInfoLayout(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
             ) {
                 Column(modifier = modifier.padding(12.dp)) {
                     val averageRating = bookInfo.averageRating
@@ -250,8 +250,8 @@ private fun BookInfoScreenFloatingActionButton(buttonOnClick: () -> Unit) {
                 contentDescription = stringResource(id = R.string.add_to_shelf_button_text)
             )
         },
-        containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.onSecondary,
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         text = {
             Text(
                 text = stringResource(id = R.string.add_to_shelf_button_text),

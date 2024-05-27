@@ -117,8 +117,8 @@ internal fun ViewHighlights(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA) },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,

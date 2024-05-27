@@ -35,8 +35,8 @@ internal fun CropImageScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { cropifyState.crop() },
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Icon(
                     imageVector = Icons.Filled.Done,

@@ -85,8 +85,8 @@ internal fun Bookshelf(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = goToSearch,
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Icon(
                     imageVector = Icons.Filled.Search,
