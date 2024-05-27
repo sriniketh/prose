@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -209,7 +210,7 @@ private fun DeleteHighlightAlertDialog(
         title = {
             Text(
                 text = stringResource(id = R.string.delete_dialog_title),
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineMedium
             )
         },
         text = {
@@ -228,7 +229,8 @@ private fun DeleteHighlightAlertDialog(
             ) {
                 Text(
                     text = stringResource(id = R.string.delete_dialog_positive_button_label),
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         },
@@ -236,7 +238,8 @@ private fun DeleteHighlightAlertDialog(
             TextButton(onClick = { hideDeleteDialog() }) {
                 Text(
                     text = stringResource(id = R.string.delete_dialog_negative_button_label),
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         },

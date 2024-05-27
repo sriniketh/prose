@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -245,7 +246,13 @@ private fun BookInfoScreenFloatingActionButton(buttonOnClick: () -> Unit) {
         },
         containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = MaterialTheme.colorScheme.onSecondary,
-        text = { Text(text = stringResource(id = R.string.add_to_shelf_button_text)) }
+        text = {
+            Text(
+                text = stringResource(id = R.string.add_to_shelf_button_text),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     )
 }
 

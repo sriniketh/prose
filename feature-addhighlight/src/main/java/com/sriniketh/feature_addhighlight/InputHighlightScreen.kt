@@ -44,7 +44,7 @@ fun InputHighlightScreen(
             )
         }
 
-        InputHighlightScreenState.EditAndSaveHighlight -> {
+        is InputHighlightScreenState.EditAndSaveHighlight -> {
             EditAndSaveHighlightScreen(
                 modifier = modifier,
                 uiState = editHighlightUiState,
@@ -60,7 +60,7 @@ fun InputHighlightScreen(
             )
         }
 
-        InputHighlightScreenState.SaveHighlightSuccessful -> {
+        is InputHighlightScreenState.SaveHighlightSuccessful -> {
             goBack()
         }
     }

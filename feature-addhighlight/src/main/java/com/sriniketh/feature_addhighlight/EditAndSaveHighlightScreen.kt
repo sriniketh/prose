@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.sriniketh.core_design.ui.components.NavigationBack
@@ -95,7 +96,8 @@ internal fun EditAndSaveHighlightScreen(
                 ) {
                     Text(
                         text = stringResource(id = R.string.cancel_button_text),
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
                 ElevatedButton(
@@ -105,7 +107,8 @@ internal fun EditAndSaveHighlightScreen(
                     onClick = { saveHighlight(uiState.highlightText) }) {
                     Text(
                         text = stringResource(id = R.string.save_button_text),
-                        style = MaterialTheme.typography.labelLarge
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
