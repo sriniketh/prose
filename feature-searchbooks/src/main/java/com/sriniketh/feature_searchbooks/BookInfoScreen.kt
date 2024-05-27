@@ -39,8 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
@@ -53,12 +53,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun BookInfoScreen(
     modifier: Modifier = Modifier,
-    viewModel: BookInfoViewModel = viewModel(),
-    volumeId: String,
+    viewModel: BookInfoViewModel = hiltViewModel(),
+    bookId: String,
     goBack: () -> Unit
 ) {
-    LaunchedEffect(key1 = volumeId) {
-        viewModel.getBookDetail(volumeId)
+    LaunchedEffect(key1 = bookId) {
+        viewModel.getBookDetail(bookId)
     }
     val uiState: BookInfoUiState by viewModel.uiState.collectAsStateWithLifecycle()
     BookInfo(

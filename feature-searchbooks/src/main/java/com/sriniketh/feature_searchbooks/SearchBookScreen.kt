@@ -35,8 +35,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
@@ -46,7 +46,7 @@ import com.sriniketh.core_platform.buildHttpsUri
 @Composable
 fun SearchBookScreen(
     modifier: Modifier = Modifier,
-    viewModel: SearchBookViewModel = viewModel(),
+    viewModel: SearchBookViewModel = hiltViewModel(),
     goToBookInfo: (String) -> Unit
 ) {
     val uiState: BookSearchUiState by viewModel.searchUiState.collectAsStateWithLifecycle()

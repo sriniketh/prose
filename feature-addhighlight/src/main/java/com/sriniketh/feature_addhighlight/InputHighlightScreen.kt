@@ -6,13 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun InputHighlightScreen(
     modifier: Modifier = Modifier,
-    viewModel: InputHighlightViewModel = viewModel(),
+    viewModel: InputHighlightViewModel = hiltViewModel(),
     bookId: String,
     goBack: () -> Unit
 ) {

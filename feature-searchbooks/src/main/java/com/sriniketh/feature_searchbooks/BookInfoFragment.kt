@@ -28,7 +28,7 @@ class BookInfoFragment : Fragment() {
                 AppTheme {
                     AppSurface {
                         BookInfoScreen(
-                            volumeId = args.volumeid,
+                            bookId = args.volumeid,
                             goBack = { findNavController().navigateUp() }
                         )
                     }

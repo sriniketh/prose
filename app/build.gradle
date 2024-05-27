@@ -35,7 +35,12 @@ android {
     buildFeatures {
         viewBinding true
         buildConfig true
+        compose true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = rootProject.ext.compose_compiler_version
+    }
+
     namespace 'com.sriniketh.prose'
 }
 
@@ -56,6 +61,13 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
     implementation "com.jakewharton.timber:timber:$timber_version"
+
+    def composeBom = platform("androidx.compose:compose-bom:$compose_bom_version")
+    implementation composeBom
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    implementation "androidx.navigation:navigation-compose:$compose_nav_version"
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-compiler:$hilt_version"
