@@ -51,4 +51,6 @@ dependencies {
     androidTestImplementation composeBom
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    testImplementation "junit:junit:$junit_version"
 }
