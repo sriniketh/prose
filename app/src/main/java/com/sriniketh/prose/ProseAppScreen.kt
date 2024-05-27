@@ -1,5 +1,7 @@
 package com.sriniketh.prose
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -20,7 +22,31 @@ internal fun ProseAppScreen(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = Screen.BOOKSHELF.route
+        startDestination = Screen.BOOKSHELF.route,
+        enterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(250)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Left,
+                animationSpec = tween(250)
+            )
+        },
+        popEnterTransition = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(250)
+            )
+        },
+        popExitTransition = {
+            slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Companion.Right,
+                animationSpec = tween(250)
+            )
+        }
     ) {
         composable(Screen.BOOKSHELF.route) {
             BookshelfScreen(
