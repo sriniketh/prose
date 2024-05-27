@@ -14,7 +14,7 @@ private val fontProvider = GoogleFont.Provider(
     providerPackage = "com.google.android.gms",
     certificates = R.array.com_google_android_gms_fonts_certs
 )
-private val fontName = GoogleFont("REM")
+private val fontName = GoogleFont("Noto Serif")
 private val fontFamily = FontFamily(
     Font(googleFont = fontName, fontProvider = fontProvider)
 )
