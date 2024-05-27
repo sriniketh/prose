@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -54,6 +56,8 @@ internal fun EditAndSaveHighlightScreen(
             )
         },
     ) { contentPadding ->
+        val haptic = LocalHapticFeedback.current
+
         if (uiState.isLoading) {
             LinearProgressIndicator(modifier = modifier.fillMaxWidth())
         }
@@ -104,7 +108,11 @@ internal fun EditAndSaveHighlightScreen(
                     modifier = modifier.padding(6.dp),
                     enabled = !uiState.isLoading,
                     colors = ButtonDefaults.buttonColors(),
-                    onClick = { saveHighlight(uiState.highlightText) }) {
+                    onClick = {
+                        saveHighlight(uiState.highlightText)
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    }
+                ) {
                     Text(
                         text = stringResource(id = R.string.save_button_text),
                         style = MaterialTheme.typography.labelLarge,

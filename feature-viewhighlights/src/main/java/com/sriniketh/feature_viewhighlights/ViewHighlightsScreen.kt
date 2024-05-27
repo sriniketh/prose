@@ -39,6 +39,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -209,6 +211,7 @@ private fun DeleteHighlightAlertDialog(
     highlightUiState: HighlightUIState,
     hideDeleteDialog: () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     AlertDialog(
         title = {
             Text(
@@ -227,6 +230,7 @@ private fun DeleteHighlightAlertDialog(
                 onClick = {
                     highlightUiState.onDelete()
                     hideDeleteDialog()
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },
                 colors = ButtonDefaults.buttonColors()
             ) {
