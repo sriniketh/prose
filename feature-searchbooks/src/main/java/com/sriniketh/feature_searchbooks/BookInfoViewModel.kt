@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class BookInfoFragmentViewModel @Inject constructor(
+class BookInfoViewModel @Inject constructor(
     private val fetchBookInfoUseCase: FetchBookInfoUseCase,
     private val addBookToShelfUseCase: AddBookToShelfUseCase,
     private val isBookInDbUseCase: IsBookInDbUseCase

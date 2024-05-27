@@ -29,6 +29,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +39,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
@@ -47,9 +50,27 @@ import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_platform.buildHttpsUri
 import kotlinx.coroutines.launch
 
+@Composable
+fun BookInfoScreen(
+    modifier: Modifier = Modifier,
+    viewModel: BookInfoViewModel = viewModel(),
+    volumeId: String,
+    goBack: () -> Unit
+) {
+    LaunchedEffect(key1 = volumeId) {
+        viewModel.getBookDetail(volumeId)
+    }
+    val uiState: BookInfoUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    BookInfo(
+        modifier = modifier,
+        uiState = uiState,
+        goBack = { goBack() }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun BookInfoScreen(
+internal fun BookInfo(
     uiState: BookInfoUiState,
     modifier: Modifier = Modifier,
     goBack: () -> Unit
@@ -246,7 +267,7 @@ private fun BookInfoScreenTitle(uiState: BookInfoUiState) {
 @Composable
 internal fun BookInfoScreenPreview() {
     AppTheme {
-        BookInfoScreen(
+        BookInfo(
             uiState = BookInfoUiState(
                 book = Book(
                     id = "someId",
@@ -274,7 +295,7 @@ internal fun BookInfoScreenPreview() {
 @Composable
 internal fun BookInfoScreenLoadingPreview() {
     AppTheme {
-        BookInfoScreen(
+        BookInfo(
             uiState = BookInfoUiState(isLoading = true),
             goBack = {}
         )
@@ -285,7 +306,7 @@ internal fun BookInfoScreenLoadingPreview() {
 @Composable
 internal fun BookInfoScreenSnackbarPreview() {
     AppTheme {
-        BookInfoScreen(
+        BookInfo(
             uiState = BookInfoUiState(snackBarText = R.string.book_info_load_error_message),
             goBack = {}
         )
