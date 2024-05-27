@@ -88,11 +88,18 @@ internal fun ProseAppScreen(
                 type = NavType.StringType
             })
         ) { backStackEntry ->
+            val bookId = backStackEntry.arguments?.getString(Screen.INPUTHIGHLIGHT.argBookId)
+                .orEmpty()
             InputHighlightScreen(
                 modifier = modifier,
                 bookId = backStackEntry.arguments?.getString(Screen.INPUTHIGHLIGHT.argBookId)
                     .orEmpty(),
-                goBack = { navController.navigateUp() }
+                goBack = {
+                    navController.popBackStack(
+                        "${Screen.INPUTHIGHLIGHT.route}/$bookId",
+                        inclusive = true
+                    )
+                }
             )
         }
         composable(
