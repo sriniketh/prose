@@ -35,15 +35,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
 
+@Composable
+fun SearchBookScreen(
+    modifier: Modifier = Modifier,
+    viewModel: SearchBookViewModel = viewModel(),
+    goToBookInfo: (String) -> Unit
+) {
+    val uiState: BookSearchUiState by viewModel.searchUiState.collectAsStateWithLifecycle()
+    SearchBook(
+        modifier = modifier,
+        uiState = uiState,
+        searchForBooks = { query ->
+            viewModel.searchForBook(query)
+        },
+        navigateToBookInfo = { volumeId ->
+            goToBookInfo(volumeId)
+        },
+        resetSearch = {
+            viewModel.resetSearch()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SearchBookScreen(
+internal fun SearchBook(
     uiState: BookSearchUiState,
     modifier: Modifier = Modifier,
     searchForBooks: (String) -> Unit,
@@ -165,7 +189,7 @@ internal fun SearchBookScreen(
 internal fun SearchBookScreenPreview() {
     AppTheme {
         AppSurface {
-            SearchBookScreen(
+            SearchBook(
                 uiState = BookSearchUiState(
                     bookUiStates = listOf(
                         BookUiState(

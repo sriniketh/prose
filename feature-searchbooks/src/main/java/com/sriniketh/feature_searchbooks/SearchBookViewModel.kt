@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchBookFragmentViewModel @Inject constructor(
+class SearchBookViewModel @Inject constructor(
     private val searchForBookUseCase: SearchForBookUseCase
 ) : ViewModel() {
 
