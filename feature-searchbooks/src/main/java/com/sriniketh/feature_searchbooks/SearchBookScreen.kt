@@ -130,7 +130,7 @@ internal fun SearchBook(
                     )
                 }
             },
-            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
         ) {
             if (uiState.isLoading) {
                 LinearProgressIndicator(modifier = modifier.fillMaxWidth())

@@ -122,7 +122,7 @@ internal fun Bookshelf(
                             .fillMaxWidth()
                             .padding(12.dp)
                             .clickable { goToHighlight(bookUIState.id) },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
                     ) {
                         Row(
                             modifier = modifier
