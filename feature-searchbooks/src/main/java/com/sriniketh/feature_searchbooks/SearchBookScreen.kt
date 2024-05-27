@@ -24,6 +24,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -75,6 +78,7 @@ internal fun SearchBook(
     navigateToBookInfo: (String) -> Unit,
     resetSearch: () -> Unit
 ) {
+    val focusRequester = remember { FocusRequester() }
     var text by rememberSaveable { mutableStateOf("") }
     var active by rememberSaveable { mutableStateOf(false) }
 
@@ -84,7 +88,8 @@ internal fun SearchBook(
         SearchBar(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(contentPadding),
+                .padding(contentPadding)
+                .focusRequester(focusRequester),
             query = text,
             onQueryChange = {
                 text = it
@@ -182,6 +187,10 @@ internal fun SearchBook(
                 }
             }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 
