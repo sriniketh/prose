@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.flowOf
 
 class FakeBookDao : BookDao {
 
+    val booksInDb = mutableListOf<BookEntity>()
+
     var insertedBookEntity: BookEntity? = null
     var shouldInsertBookThrowException = false
     override suspend fun insertBook(book: BookEntity) {
@@ -17,7 +19,6 @@ class FakeBookDao : BookDao {
         insertedBookEntity = book
     }
 
-    val booksInDb = mutableListOf<BookEntity>()
     var shouldGetAllBooksThrowException = false
     override fun getAllBooks(): Flow<List<BookEntity>> {
         if (shouldGetAllBooksThrowException) {
@@ -26,5 +27,13 @@ class FakeBookDao : BookDao {
             }
         }
         return flowOf(booksInDb)
+    }
+
+    var shouldDoesBookExistThrowException = false
+    override fun doesBookExist(bookId: String): Boolean {
+        if (shouldDoesBookExistThrowException) {
+            throw RuntimeException("some error checking if book exists")
+        }
+        return booksInDb.any { it.id == bookId }
     }
 }

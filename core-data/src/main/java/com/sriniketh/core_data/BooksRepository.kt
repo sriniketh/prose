@@ -8,5 +8,6 @@ interface BooksRepository {
     suspend fun searchForBooks(searchQuery: String): Result<BookSearch>
     suspend fun fetchBookInfo(volumeId: String): Result<Book>
     suspend fun insertBookIntoDb(book: Book): Result<Unit>
+    suspend fun doesBookExistInDb(bookId: String): Boolean
     fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>>
 }

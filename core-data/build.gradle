@@ -30,7 +30,7 @@ android {
         jvmTarget = rootProject.ext.jvmTargetVersion
     }
     buildFeatures {
-        buildConfig = true
+        buildConfig true
     }
     namespace 'com.sriniketh.core_data'
 }
@@ -38,6 +38,7 @@ android {
 dependencies {
 
     implementation(project(":core-network"))
+    implementation(project(":core-platform"))
     implementation(project(":core-db"))
     implementation(project(":core-models"))
 

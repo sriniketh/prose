@@ -1,44 +1,51 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     dependencies {
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.45'
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.5.3"
+        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.51'
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.7.7"
     }
 }
 
 plugins {
-    id 'com.android.application' version '8.0.2' apply false
-    id 'com.android.library' version '8.0.2' apply false
-    id 'org.jetbrains.kotlin.android' version '1.8.10' apply false
-    id 'org.jetbrains.kotlin.jvm' version '1.8.10' apply false
-    id 'org.jetbrains.kotlin.kapt' version "1.8.10" apply false
-    id 'com.google.devtools.ksp' version '1.8.10-1.0.9' apply false
+    id 'com.android.application' version '8.3.1' apply false
+    id 'com.android.library' version '8.3.1' apply false
+    id 'org.jetbrains.kotlin.android' version '1.9.23' apply false
+    id 'org.jetbrains.kotlin.jvm' version '1.9.23' apply false
+    id 'org.jetbrains.kotlin.kapt' version '1.9.23' apply false
+    id 'com.google.devtools.ksp' version '1.9.21-1.0.15' apply false
 }
 
 ext {
-    compileSdkVersion = 33
+    compileSdkVersion = 34
     minSdkVersion = 26
     targetSdkVersion = 33
     jvmTargetVersion = 17
 
-    android_ktx_version = '1.10.1'
+    android_ktx_version = '1.13.1'
     appcompat_version = '1.6.1'
-    material_version = '1.9.0'
+    material_version = '1.12.0'
+    compose_compiler_version = '1.5.11'
+    compose_bom_version = '2024.05.00'
+    compose_nav_version = '2.7.7'
+    font_version = '1.6.7'
     constraintlayout_version = '2.1.4'
-    fragment_nav_version = '2.6.0'
-    lifecycle_version = '2.6.1'
-    coroutines_android_version = '1.7.3'
-    hilt_version = '2.47'
+    fragment_nav_version = '2.7.7'
+    lifecycle_version = '2.7.0'
+    activity_version = '1.9.0'
+    coroutines_android_version = '1.8.0'
+    hilt_version = '2.51.1'
+    hilt_navigation_version = '1.2.0'
     timber_version = '5.0.1'
-    retrofit_version = '2.9.0'
-    okhttp_version = '5.0.0-alpha.11'
-    moshi_version = '1.15.0'
-    coil_version = '2.4.0'
+    retrofit_version = '2.11.0'
+    okhttp_version = '5.0.0-alpha.14'
+    moshi_version = '1.15.1'
+    coil_version = '2.6.0'
     phrase_version = '1.2.0'
-    room_version = '2.5.2'
-    camerax_version = '1.2.3'
+    room_version = '2.6.1'
+    camerax_version = '1.3.3'
     mlkit_version = '19.0.0'
-    cashapp_turbine_version = '1.0.0'
+    cashapp_turbine_version = '1.1.0'
+    cropify_version = '0.3.1'
 
     junit_version = '4.13.2'
     android_junit_version = '1.1.5'
@@ -46,5 +53,6 @@ ext {
 }
 
 tasks.register('clean', Delete) {
-    delete rootProject.buildDir
+    group = "Build"
+    delete rootProject.layout.buildDirectory
 }

@@ -14,4 +14,7 @@ interface BookDao {
 
     @Query("SELECT * FROM bookEntity")
     fun getAllBooks(): Flow<List<BookEntity>>
+
+    @Query("SELECT COUNT(*) FROM BookEntity WHERE id = :bookId")
+    fun doesBookExist(bookId: String): Boolean
 }

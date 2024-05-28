@@ -10,6 +10,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -124,19 +125,7 @@ class BooksRepositoryImplTest {
                 ratingsCount = null
             )
         )
-        val bookEntity = BookEntity(
-            id = "someId",
-            title = "some title",
-            subtitle = null,
-            authors = listOf(),
-            thumbnailLink = null,
-            publisher = null,
-            publishedDate = null,
-            description = null,
-            pageCount = null,
-            averageRating = null,
-            ratingsCount = null
-        )
+        val bookEntity = fakeBookEntity("someId")
 
         bookDao.shouldInsertBookThrowException = false
         val result = booksRepositoryImpl.insertBookIntoDb(book)
@@ -171,23 +160,33 @@ class BooksRepositoryImplTest {
         }
 
     @Test
+    fun `doesBookExist returns true when book exists in database`() = runTest {
+        bookDao.booksInDb.add(fakeBookEntity("someId1"))
+        val result = booksRepositoryImpl.doesBookExistInDb("someId1")
+        assertTrue(result)
+    }
+
+    @Test
+    fun `doesBookExist returns false when book does not exist in database`() = runTest {
+        bookDao.booksInDb.add(fakeBookEntity("someId1"))
+        val result = booksRepositoryImpl.doesBookExistInDb("someId2")
+        assertFalse(result)
+    }
+
+    @Test
+    fun `doesBookExist returns false when an exception occurs downstream`() = runTest {
+        bookDao.booksInDb.add(fakeBookEntity("someId1"))
+        bookDao.shouldDoesBookExistThrowException = true
+        val result = booksRepositoryImpl.doesBookExistInDb("someId1")
+        assertFalse(result)
+    }
+
+    @Test
     fun `getAllSavedBooksFromDb returns flow with success result when books are successfully retrieved from db`() =
         runTest {
             bookDao.shouldGetAllBooksThrowException = false
             bookDao.booksInDb.add(
-                BookEntity(
-                    id = "someId",
-                    title = "some title",
-                    subtitle = null,
-                    authors = listOf(),
-                    thumbnailLink = null,
-                    publisher = null,
-                    publishedDate = null,
-                    description = null,
-                    pageCount = null,
-                    averageRating = null,
-                    ratingsCount = null
-                )
+                fakeBookEntity("someId")
             )
             booksRepositoryImpl.getAllSavedBooksFromDb().test {
                 val result = awaitItem()
@@ -205,21 +204,7 @@ class BooksRepositoryImplTest {
     fun `getAllSavedBooksFromDb returns flow with failure result when something goes wrong during retrieval`() =
         runTest {
             bookDao.shouldGetAllBooksThrowException = true
-            bookDao.booksInDb.add(
-                BookEntity(
-                    id = "someId",
-                    title = "some title",
-                    subtitle = null,
-                    authors = listOf(),
-                    thumbnailLink = null,
-                    publisher = null,
-                    publishedDate = null,
-                    description = null,
-                    pageCount = null,
-                    averageRating = null,
-                    ratingsCount = null
-                )
-            )
+            bookDao.booksInDb.add(fakeBookEntity("someId"))
             booksRepositoryImpl.getAllSavedBooksFromDb().test {
                 val result = awaitItem()
                 assertTrue(result.isFailure)
@@ -229,4 +214,18 @@ class BooksRepositoryImplTest {
                 awaitComplete()
             }
         }
+
+    private fun fakeBookEntity(bookId: String) = BookEntity(
+        id = bookId,
+        title = "some title",
+        subtitle = null,
+        authors = listOf(),
+        thumbnailLink = null,
+        publisher = null,
+        publishedDate = null,
+        description = null,
+        pageCount = null,
+        averageRating = null,
+        ratingsCount = null
+    )
 }
