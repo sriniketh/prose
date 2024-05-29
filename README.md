@@ -9,6 +9,10 @@ on-device using [ML Kit](https://developers.google.com/ml-kit/vision/text-recogn
 
 Saved books and highlights are persisted locally using Room for offline availability.
 
+The app also
+uses [DynamicColors API](https://developer.android.com/develop/ui/views/theming/dynamic-colors) to
+align UI colors with the color theme of the wallpaper in both dark and light modes.
+
 <table border="0">
   <tr>
     <td><img src="docs/images/screenshot-bookshelf-compose-light.png" /></td>
@@ -34,10 +38,6 @@ the `core-network` module.
 The app is setup as a multi-module project containing core and feature modules. It follows the
 unidirectional data flow model where data flows from the network/database layers to the presentation
 layer where it's reduced to UI state. This state is then consumed and rendered as UI using Compose.
-
-The app also
-uses [DynamicColors API](https://developer.android.com/develop/ui/views/theming/dynamic-colors) to
-align UI colors with the color theme of the wallpaper in both dark and light modes.
 
 ## License
 
