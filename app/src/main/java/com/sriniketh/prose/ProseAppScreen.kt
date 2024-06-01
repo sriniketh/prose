@@ -9,7 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.sriniketh.feature_addhighlight.InputHighlightScreen
+import com.sriniketh.core_platform.decodeUri
+import com.sriniketh.core_platform.encodeUri
+import com.sriniketh.feature_addhighlight.CaptureAndCropImageScreen
+import com.sriniketh.feature_addhighlight.EditAndSaveHighlightScreen
 import com.sriniketh.feature_bookshelf.BookshelfScreen
 import com.sriniketh.feature_searchbooks.BookInfoScreen
 import com.sriniketh.feature_searchbooks.SearchBookScreen
@@ -78,26 +81,84 @@ internal fun ProseAppScreen(
                 bookId = bookId,
                 goBack = { navController.navigateUp() },
                 goToInputHighlightScreen = {
-                    navController.navigate("${Screen.INPUTHIGHLIGHT.route}/$bookId")
+                    navController.navigate("${Screen.CAPTUREANDCROPIMAGE.route}/$bookId")
                 }
             )
         }
         composable(
-            route = "${Screen.INPUTHIGHLIGHT.route}/{${Screen.INPUTHIGHLIGHT.argBookId}}",
-            arguments = listOf(navArgument(Screen.INPUTHIGHLIGHT.argBookId) {
+            route = "${Screen.CAPTUREANDCROPIMAGE.route}/{${Screen.CAPTUREANDCROPIMAGE.argBookId}}",
+            arguments = listOf(navArgument(Screen.CAPTUREANDCROPIMAGE.argBookId) {
                 type = NavType.StringType
             })
         ) { backStackEntry ->
-            val bookId = backStackEntry.arguments?.getString(Screen.INPUTHIGHLIGHT.argBookId)
+            val bookId = backStackEntry.arguments?.getString(Screen.CAPTUREANDCROPIMAGE.argBookId)
                 .orEmpty()
-            InputHighlightScreen(
+            CaptureAndCropImageScreen(
                 modifier = modifier,
-                bookId = backStackEntry.arguments?.getString(Screen.INPUTHIGHLIGHT.argBookId)
-                    .orEmpty(),
+                onImageCaptured = { imageUri ->
+                    val encodedUri = imageUri.encodeUri()
+                    navController.navigate("${Screen.SAVEHIGHLIGHT_FROMURI.route}/$bookId/$encodedUri")
+                },
                 goBack = {
                     navController.popBackStack(
-                        "${Screen.INPUTHIGHLIGHT.route}/$bookId",
+                        "${Screen.CAPTUREANDCROPIMAGE.route}/$bookId",
                         inclusive = true
+                    )
+                }
+            )
+        }
+        composable(
+            route = "${Screen.SAVEHIGHLIGHT_FROMURI.route}/{${Screen.SAVEHIGHLIGHT_FROMURI.argBookId}}/{${Screen.SAVEHIGHLIGHT_FROMURI.argUri}}",
+            arguments = listOf(
+                navArgument(Screen.SAVEHIGHLIGHT_FROMURI.argBookId) {
+                    type = NavType.StringType
+                },
+                navArgument(Screen.SAVEHIGHLIGHT_FROMURI.argUri) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val bookId =
+                backStackEntry.arguments?.getString(Screen.SAVEHIGHLIGHT_FROMURI.argBookId)
+                    .orEmpty()
+            val uri =
+                backStackEntry.arguments?.getString(Screen.SAVEHIGHLIGHT_FROMURI.argUri)
+                    .orEmpty()
+            EditAndSaveHighlightScreen(
+                uri = uri.decodeUri(),
+                bookId = bookId,
+                goBack = {
+                    navController.popBackStack(
+                        "${Screen.VIEWHIGHLIGHTS.route}/$bookId",
+                        inclusive = false
+                    )
+                }
+            )
+        }
+        composable(
+            route = "${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.route}/{${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argBookId}}/{${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argHighlightId}}",
+            arguments = listOf(
+                navArgument(Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argBookId) {
+                    type = NavType.StringType
+                },
+                navArgument(Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argHighlightId) {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val bookId =
+                backStackEntry.arguments?.getString(Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argBookId)
+                    .orEmpty()
+            val highlightId =
+                backStackEntry.arguments?.getString(Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argHighlightId)
+                    .orEmpty()
+            EditAndSaveHighlightScreen(
+                highlightId = highlightId,
+                bookId = bookId,
+                goBack = {
+                    navController.popBackStack(
+                        "${Screen.VIEWHIGHLIGHTS.route}/$bookId",
+                        inclusive = false
                     )
                 }
             )

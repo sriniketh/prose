@@ -12,8 +12,20 @@ internal sealed interface Screen {
         const val argBookId: String = "bookId"
     }
 
-    data object INPUTHIGHLIGHT : Screen {
-        override val route: String = "input_highlight"
+    data object CAPTUREANDCROPIMAGE : Screen {
+        override val route: String = "capture_and_crop_image"
+        const val argBookId: String = "bookId"
+    }
+
+    data object SAVEHIGHLIGHT_FROMURI : Screen {
+        override val route: String = "save_highlight_from_uri"
+        const val argUri: String = "uri"
+        const val argBookId: String = "bookId"
+    }
+
+    data object SAVEHIGHLIGHT_FROMHIGHLIGHTID : Screen {
+        override val route: String = "save_highlight_from_highlight_id"
+        const val argHighlightId: String = "highlightId"
         const val argBookId: String = "bookId"
     }
 

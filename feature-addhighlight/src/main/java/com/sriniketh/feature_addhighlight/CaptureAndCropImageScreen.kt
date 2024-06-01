@@ -1,5 +1,6 @@
 package com.sriniketh.feature_addhighlight
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -10,14 +11,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
-fun InputHighlightScreen(
+fun CaptureAndCropImageScreen(
     modifier: Modifier = Modifier,
-    viewModel: InputHighlightViewModel = hiltViewModel(),
-    bookId: String,
+    viewModel: CaptureAndCropImageViewModel = hiltViewModel(),
+    onImageCaptured: (Uri) -> Unit,
     goBack: () -> Unit
 ) {
-    val inputHighlightScreenState: InputHighlightScreenState by viewModel.screenState.collectAsStateWithLifecycle()
-    val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.editHighlightUiState.collectAsStateWithLifecycle()
+    val captureAndCropImageScreenState: CaptureAndCropImageScreenState by viewModel.screenState.collectAsStateWithLifecycle()
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
@@ -29,14 +29,14 @@ fun InputHighlightScreen(
         }
     )
 
-    when (val screenState = inputHighlightScreenState) {
-        is InputHighlightScreenState.CaptureImage -> {
+    when (val screenState = captureAndCropImageScreenState) {
+        is CaptureAndCropImageScreenState.CaptureImage -> {
             LaunchedEffect(Unit) {
                 cameraLauncher.launch(screenState.imageUri)
             }
         }
 
-        is InputHighlightScreenState.CropImage -> {
+        is CaptureAndCropImageScreenState.CropImage -> {
             CropImageScreen(
                 modifier = modifier,
                 imageUri = screenState.imageUri,
@@ -44,24 +44,8 @@ fun InputHighlightScreen(
             )
         }
 
-        is InputHighlightScreenState.EditAndSaveHighlight -> {
-            EditAndSaveHighlightScreen(
-                modifier = modifier,
-                uiState = editHighlightUiState,
-                updateHighlightText = { highlightText ->
-                    viewModel.onHighlightTextUpdated(highlightText)
-                },
-                saveHighlight = { highlight ->
-                    viewModel.onHighlightSaved(bookId, highlight)
-                },
-                goBack = {
-                    goBack()
-                }
-            )
-        }
-
-        is InputHighlightScreenState.SaveHighlightSuccessful -> {
-            goBack()
+        is CaptureAndCropImageScreenState.ImageCapturedAndCropped -> {
+            onImageCaptured(screenState.imageUri)
         }
     }
 }

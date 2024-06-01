@@ -18,15 +18,28 @@ class HighlightsRepositoryImpl @Inject constructor(
     private val ioDispatcher: CoroutineDispatcher
 ) : HighlightsRepository {
 
-    override suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit> = withContext(ioDispatcher) {
-        try {
-            localHighlightsDataSource.insertHighlight(highlight.asHighlightEntity())
-            Result.success(Unit)
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            Result.failure(exception)
+    override suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit> =
+        withContext(ioDispatcher) {
+            try {
+                localHighlightsDataSource.insertHighlight(highlight.asHighlightEntity())
+                Result.success(Unit)
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                Result.failure(exception)
+            }
         }
-    }
+
+    override suspend fun loadHighlightFromDb(highlightId: String): Result<Highlight> =
+        withContext(ioDispatcher) {
+            try {
+                val highlight =
+                    localHighlightsDataSource.getHighlightById(highlightId).asHighlight()
+                Result.success(highlight)
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                Result.failure(exception)
+            }
+        }
 
     override fun getAllHighlightsForBookFromDb(bookId: String): Flow<Result<List<Highlight>>> =
         localHighlightsDataSource.getAllHighlightsForBook(bookId)
@@ -38,13 +51,14 @@ class HighlightsRepositoryImpl @Inject constructor(
                 emit(Result.failure(exception))
             }.flowOn(ioDispatcher)
 
-    override suspend fun deleteHighlightFromDb(highlight: Highlight): Result<Unit> = withContext(ioDispatcher) {
-        try {
-            localHighlightsDataSource.deleteHighlight(highlight.asHighlightEntity())
-            Result.success(Unit)
-        } catch (exception: Exception) {
-            Timber.e(exception)
-            Result.failure(exception)
+    override suspend fun deleteHighlightFromDb(highlight: Highlight): Result<Unit> =
+        withContext(ioDispatcher) {
+            try {
+                localHighlightsDataSource.deleteHighlight(highlight.asHighlightEntity())
+                Result.success(Unit)
+            } catch (exception: Exception) {
+                Timber.e(exception)
+                Result.failure(exception)
+            }
         }
-    }
 }

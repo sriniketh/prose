@@ -1,5 +1,6 @@
 package com.sriniketh.feature_addhighlight
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -27,12 +29,79 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sriniketh.core_design.ui.components.NavigationBack
 import kotlinx.coroutines.launch
 
+@Composable
+fun EditAndSaveHighlightScreen(
+    modifier: Modifier = Modifier,
+    viewModel: EditAndSaveHighlightViewModel = hiltViewModel(),
+    uri: Uri,
+    bookId: String,
+    goBack: () -> Unit
+) {
+    LaunchedEffect(key1 = bookId) {
+        viewModel.processImageForHighlightsText(uri)
+    }
+    val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(editHighlightUiState.highlightSaved) {
+        if (editHighlightUiState.highlightSaved) {
+            goBack()
+        }
+    }
+    EditAndSaveHighlight(
+        modifier = modifier,
+        uiState = editHighlightUiState,
+        updateHighlightText = { highlightText ->
+            viewModel.onHighlightTextUpdated(highlightText)
+        },
+        saveHighlight = { highlight ->
+            viewModel.onHighlightSaved(bookId, highlight)
+        },
+        goBack = {
+            goBack()
+        }
+    )
+}
+
+@Composable
+fun EditAndSaveHighlightScreen(
+    modifier: Modifier = Modifier,
+    viewModel: EditAndSaveHighlightViewModel = hiltViewModel(),
+    highlightId: String,
+    bookId: String,
+    goBack: () -> Unit
+) {
+    LaunchedEffect(key1 = bookId) {
+        viewModel.loadHighlightText(highlightId)
+    }
+
+    val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(editHighlightUiState.highlightSaved) {
+        if (editHighlightUiState.highlightSaved) {
+            goBack()
+        }
+    }
+    EditAndSaveHighlight(
+        modifier = modifier,
+        uiState = editHighlightUiState,
+        updateHighlightText = { highlightText ->
+            viewModel.onHighlightTextUpdated(highlightText)
+        },
+        saveHighlight = { highlight ->
+            viewModel.onHighlightSaved(bookId, highlight, highlightId)
+        },
+        goBack = {
+            goBack()
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun EditAndSaveHighlightScreen(
+internal fun EditAndSaveHighlight(
     uiState: EditAndSaveHighlightUiState,
     updateHighlightText: (String) -> Unit,
     saveHighlight: (String) -> Unit,
