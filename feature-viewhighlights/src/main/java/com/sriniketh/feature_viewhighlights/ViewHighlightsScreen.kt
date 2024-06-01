@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -99,6 +101,12 @@ internal fun ViewHighlights(
         })
 
     val snackbarHostState = remember { SnackbarHostState() }
+    val lazyListState = rememberLazyListState()
+    val shouldFabBeVisible by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex < 2
+        }
+    }
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -115,15 +123,17 @@ internal fun ViewHighlights(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA) },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = stringResource(id = R.string.add_fab_cont_desc)
-                )
+            if (shouldFabBeVisible) {
+                FloatingActionButton(
+                    onClick = { cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA) },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = stringResource(id = R.string.add_fab_cont_desc)
+                    )
+                }
             }
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -155,7 +165,8 @@ internal fun ViewHighlights(
             LazyColumn(
                 modifier = modifier
                     .fillMaxSize()
-                    .padding(contentPadding)
+                    .padding(contentPadding),
+                state = lazyListState
             ) {
                 items(uiState.highlights) { highlightUiState ->
                     var showDeleteDialog by remember { mutableStateOf(false) }
