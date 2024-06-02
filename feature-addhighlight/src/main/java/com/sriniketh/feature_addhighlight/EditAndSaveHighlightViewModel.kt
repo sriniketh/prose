@@ -35,7 +35,9 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     internal val uiState: StateFlow<EditAndSaveHighlightUiState> =
         _uiState.asStateFlow()
 
-    internal fun processImageForHighlightsText(uri: Uri) {
+    private var savedOnTimestamp: String? = null
+
+    internal fun processImageForHighlightText(uri: Uri) {
         _uiState.update { state ->
             state.copy(isLoading = true)
         }
@@ -68,12 +70,14 @@ class EditAndSaveHighlightViewModel @Inject constructor(
         viewModelScope.launch {
             val result = loadHighlightUseCase(highlightId)
             if (result.isSuccess) {
+                val highlight = result.getOrNull()
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
-                        highlightText = result.getOrNull()?.text.orEmpty()
+                        highlightText = highlight?.text.orEmpty()
                     )
                 }
+                savedOnTimestamp = highlight?.savedOnTimestamp
             } else {
                 _uiState.update { state ->
                     state.copy(
@@ -85,21 +89,25 @@ class EditAndSaveHighlightViewModel @Inject constructor(
         }
     }
 
-    internal fun onHighlightTextUpdated(highlightText: String) {
+    internal fun updateHighlightText(highlightText: String) {
         _uiState.update { state ->
             state.copy(highlightText = highlightText)
         }
     }
 
-    internal fun onHighlightSaved(bookId: String, highlightText: String) {
-        saveHighlight(bookId, highlightText)
+    internal fun saveHighlight(bookId: String, highlightText: String) {
+        saveHighlightToPersistence(bookId, highlightText)
     }
 
-    internal fun onHighlightSaved(bookId: String, highlightId: String, highlightText: String) {
-        saveHighlight(bookId, highlightText, highlightId)
+    internal fun updateHighlight(bookId: String, highlightText: String, highlightId: String) {
+        saveHighlightToPersistence(
+            bookId = bookId,
+            highlightText = highlightText,
+            highlightId = highlightId
+        )
     }
 
-    private fun saveHighlight(
+    private fun saveHighlightToPersistence(
         bookId: String,
         highlightText: String,
         highlightId: String = UUID.randomUUID().toString()
@@ -113,7 +121,8 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                     id = highlightId,
                     bookId = bookId,
                     text = highlightText,
-                    savedOnTimestamp = formatCurrentDateTimeUseCase(dateTimeSource.now())
+                    savedOnTimestamp = savedOnTimestamp
+                        ?: formatCurrentDateTimeUseCase(dateTimeSource.now())
                 )
             )
             if (result.isSuccess) {
@@ -130,7 +139,6 @@ class EditAndSaveHighlightViewModel @Inject constructor(
             }
         }
     }
-
 }
 
 internal data class EditAndSaveHighlightUiState(

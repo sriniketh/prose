@@ -2,6 +2,7 @@ package com.sriniketh.feature_viewhighlights
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,15 +10,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -42,8 +46,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -58,7 +65,8 @@ fun ViewHighlightsScreen(
     viewModel: ViewHighlightsViewModel = hiltViewModel(),
     bookId: String,
     goBack: () -> Unit,
-    goToInputHighlightScreen: () -> Unit
+    goToAddHighlightScreen: () -> Unit,
+    goToEditHighlightScreen: (String) -> Unit
 ) {
     LaunchedEffect(key1 = bookId) {
         viewModel.getHighlights(bookId)
@@ -74,7 +82,11 @@ fun ViewHighlightsScreen(
                 }
 
                 is ViewHighlightsEvent.OnCameraPermissionGranted -> {
-                    goToInputHighlightScreen()
+                    goToAddHighlightScreen()
+                }
+
+                is ViewHighlightsEvent.OnEditHighlight -> {
+                    goToEditHighlightScreen(event.highlightId)
                 }
 
                 else -> viewModel.processEvent(event)
@@ -99,6 +111,7 @@ internal fun ViewHighlights(
                 onEvent(ViewHighlightsEvent.OnCameraPermissionDenied)
             }
         })
+    val clipboardManager: ClipboardManager = LocalClipboardManager.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
@@ -176,6 +189,8 @@ internal fun ViewHighlights(
                         }
                     }
 
+                    var expandDropDownMenu by remember { mutableStateOf(false) }
+
                     Row(
                         modifier = modifier
                             .fillMaxWidth()
@@ -199,15 +214,58 @@ internal fun ViewHighlights(
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
-                        IconButton(
-                            modifier = modifier
-                                .padding(6.dp)
-                                .align(Alignment.CenterVertically),
-                            onClick = { showDeleteDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = stringResource(id = R.string.highlight_item_delete_cont_desc)
-                            )
+                        Box(
+                            modifier = Modifier
+                                .wrapContentSize(Alignment.TopStart)
+                                .align(Alignment.Top)
+                        ) {
+                            IconButton(onClick = { expandDropDownMenu = true }) {
+                                Icon(
+                                    Icons.Default.MoreVert,
+                                    contentDescription = "Localized description"
+                                )
+                            }
+                            DropdownMenu(
+                                modifier = modifier.clickable { expandDropDownMenu = true },
+                                expanded = expandDropDownMenu,
+                                onDismissRequest = { expandDropDownMenu = false }) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(id = R.string.highlight_menu_item_copy),
+                                            style = MaterialTheme.typography.labelLarge
+                                        )
+                                    },
+                                    onClick = {
+                                        clipboardManager.setText(AnnotatedString(highlightUiState.text))
+                                        expandDropDownMenu = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(id = R.string.highlight_menu_item_edit),
+                                            style = MaterialTheme.typography.labelLarge
+                                        )
+                                    },
+                                    onClick = {
+                                        onEvent(ViewHighlightsEvent.OnEditHighlight(highlightUiState.id))
+                                        expandDropDownMenu = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(id = R.string.highlight_menu_item_delete),
+                                            style = MaterialTheme.typography.labelLarge
+                                        )
+                                    },
+                                    onClick = {
+                                        showDeleteDialog = true
+                                        expandDropDownMenu = false
+                                    }
+                                )
+                            }
                         }
                     }
                     HorizontalDivider(modifier = modifier.fillMaxWidth())

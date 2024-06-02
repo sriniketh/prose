@@ -43,7 +43,7 @@ fun EditAndSaveHighlightScreen(
     goBack: () -> Unit
 ) {
     LaunchedEffect(key1 = bookId) {
-        viewModel.processImageForHighlightsText(uri)
+        viewModel.processImageForHighlightText(uri)
     }
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(editHighlightUiState.highlightSaved) {
@@ -55,10 +55,10 @@ fun EditAndSaveHighlightScreen(
         modifier = modifier,
         uiState = editHighlightUiState,
         updateHighlightText = { highlightText ->
-            viewModel.onHighlightTextUpdated(highlightText)
+            viewModel.updateHighlightText(highlightText)
         },
         saveHighlight = { highlight ->
-            viewModel.onHighlightSaved(bookId, highlight)
+            viewModel.saveHighlight(bookId = bookId, highlightText = highlight)
         },
         goBack = {
             goBack()
@@ -88,10 +88,14 @@ fun EditAndSaveHighlightScreen(
         modifier = modifier,
         uiState = editHighlightUiState,
         updateHighlightText = { highlightText ->
-            viewModel.onHighlightTextUpdated(highlightText)
+            viewModel.updateHighlightText(highlightText)
         },
         saveHighlight = { highlight ->
-            viewModel.onHighlightSaved(bookId, highlight, highlightId)
+            viewModel.updateHighlight(
+                bookId = bookId,
+                highlightText = highlight,
+                highlightId = highlightId
+            )
         },
         goBack = {
             goBack()

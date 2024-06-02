@@ -80,8 +80,11 @@ internal fun ProseAppScreen(
                 modifier = modifier,
                 bookId = bookId,
                 goBack = { navController.navigateUp() },
-                goToInputHighlightScreen = {
+                goToAddHighlightScreen = {
                     navController.navigate("${Screen.CAPTUREANDCROPIMAGE.route}/$bookId")
+                },
+                goToEditHighlightScreen = { highlightId ->
+                    navController.navigate("${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.route}/$bookId/$highlightId")
                 }
             )
         }

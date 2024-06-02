@@ -67,6 +67,7 @@ class ViewHighlightsViewModel @Inject constructor(
     }
 
     private fun Highlight.asHighlightUIState(): HighlightUIState = HighlightUIState(
+        id = id,
         text = text,
         savedOn = savedOnTimestamp,
         onDelete = {
@@ -95,6 +96,7 @@ internal data class ViewHighlightsUIState(
 )
 
 internal data class HighlightUIState(
+    val id: String,
     val text: String,
     val savedOn: String,
     val onDelete: () -> Unit
@@ -104,4 +106,5 @@ internal sealed interface ViewHighlightsEvent {
     data object OnBackPressed : ViewHighlightsEvent
     data object OnCameraPermissionDenied : ViewHighlightsEvent
     data object OnCameraPermissionGranted : ViewHighlightsEvent
+    data class OnEditHighlight(val highlightId: String) : ViewHighlightsEvent
 }
