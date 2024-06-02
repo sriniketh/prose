@@ -44,9 +44,8 @@ class EditAndSaveHighlightViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val visionText = textAnalyzer.analyzeImage(uri)
-                val highlightText = visionText.textBlocks.joinToString("\n") { it.text }
                 _uiState.update { state ->
-                    state.copy(isLoading = false, highlightText = highlightText)
+                    state.copy(isLoading = false, highlightText = visionText.text)
                 }
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
