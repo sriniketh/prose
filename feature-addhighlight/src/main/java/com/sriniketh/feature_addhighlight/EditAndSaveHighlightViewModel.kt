@@ -10,12 +10,14 @@ import com.sriniketh.core_data.usecases.LoadHighlightUseCase
 import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
+import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -44,8 +46,10 @@ class EditAndSaveHighlightViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val visionText = textAnalyzer.analyzeImage(uri)
+                val highlightText = visionText.text.replace("\n", " ")
+                Timber.d("${this.logTag()}: Transformed text: $highlightText")
                 _uiState.update { state ->
-                    state.copy(isLoading = false, highlightText = visionText.text)
+                    state.copy(isLoading = false, highlightText = highlightText)
                 }
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
