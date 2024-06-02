@@ -2,6 +2,7 @@ package com.sriniketh.feature_viewhighlights
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -190,18 +191,32 @@ internal fun ViewHighlights(
                     }
 
                     var expandDropDownMenu by remember { mutableStateOf(false) }
+                    val shortenHighlightText by remember { derivedStateOf { highlightUiState.text.length > 250 } }
+                    var highlightText by remember {
+                        if (shortenHighlightText) {
+                            mutableStateOf(highlightUiState.text.take(250) + " ...")
+                        } else {
+                            mutableStateOf(highlightUiState.text)
+                        }
+                    }
 
                     Row(
                         modifier = modifier
                             .fillMaxWidth()
-                            .padding(12.dp),
+                            .padding(12.dp)
+                            .animateContentSize()
+                            .clickable {
+                                if (shortenHighlightText) {
+                                    highlightText = highlightUiState.text
+                                }
+                            },
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column(modifier = modifier.weight(1f)) {
                             SelectionContainer {
                                 Text(
                                     modifier = modifier.padding(6.dp),
-                                    text = highlightUiState.text,
+                                    text = highlightText,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
