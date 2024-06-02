@@ -36,7 +36,8 @@ class ViewHighlightsViewModel @Inject constructor(
                     _highlightsUIStateFlow.update { state ->
                         state.copy(
                             isLoading = false,
-                            highlights = highlights.map { it.asHighlightUIState() }
+                            highlights = highlights.sortedBy { it.savedOnTimestamp }
+                                .map { it.asHighlightUIState() }
                         )
                     }
                 } else if (result.isFailure) {
