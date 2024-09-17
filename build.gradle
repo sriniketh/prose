@@ -18,7 +18,7 @@ plugins {
 ext {
     compileSdkVersion = 34
     minSdkVersion = 26
-    targetSdkVersion = 33
+    targetSdkVersion = 34
     jvmTargetVersion = 17
 
     android_ktx_version = '1.13.1'
