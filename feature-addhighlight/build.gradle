@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
     id 'kotlin-kapt'
     id 'dagger.hilt.android.plugin'
     id 'androidx.navigation.safeargs.kotlin'
@@ -35,9 +36,6 @@ android {
         viewBinding true
         buildConfig true
         compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.ext.compose_compiler_version
     }
 
     namespace 'com.sriniketh.feature_addhighlight'
