@@ -9,6 +9,10 @@ def apikeyPropertiesFile = file("apikey.properties")
 def apikeyProperties = new Properties()
 apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
 
+kotlin {
+    jvmToolchain(rootProject.ext.jvmToolchainVersion)
+}
+
 android {
     compileSdk rootProject.ext.compileSdkVersion
 
@@ -26,12 +30,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
     kotlinOptions {
-        jvmTarget = rootProject.ext.jvmTargetVersion
         freeCompilerArgs += '-opt-in=kotlin.RequiresOptIn'
     }
     buildFeatures {

@@ -2,49 +2,49 @@
 buildscript {
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.51'
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.8.0"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.8.5"
     }
 }
 
 plugins {
-    id 'com.android.application' version '8.6.0' apply false
-    id 'com.android.library' version '8.6.0' apply false
-    id 'org.jetbrains.kotlin.android' version '2.0.20' apply false
-    id 'org.jetbrains.kotlin.jvm' version '2.0.20' apply false
-    id 'org.jetbrains.kotlin.plugin.compose' version '2.0.20' apply false
-    id 'com.google.devtools.ksp' version '2.0.20-1.0.24' apply false
+    id 'com.android.application' version '8.7.3' apply false
+    id 'com.android.library' version '8.7.3' apply false
+    id 'org.jetbrains.kotlin.android' version '2.1.0' apply false
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0' apply false
+    id 'org.jetbrains.kotlin.plugin.compose' version '2.1.0' apply false
+    id 'com.google.devtools.ksp' version '2.1.0-1.0.28' apply false
 }
 
 ext {
-    compileSdkVersion = 34
+    compileSdkVersion = 35
     minSdkVersion = 26
     targetSdkVersion = 34
-    jvmTargetVersion = 17
+    jvmToolchainVersion = 17
 
-    android_ktx_version = '1.13.1'
+    android_ktx_version = '1.15.0'
     appcompat_version = '1.7.0'
     material_version = '1.12.0'
     compose_compiler_version = '1.5.11'
-    compose_bom_version = '2024.09.01'
-    compose_nav_version = '2.8.0'
-    font_version = '1.7.1'
+    compose_bom_version = '2024.12.01'
+    compose_nav_version = '2.8.5'
+    font_version = '1.7.6'
     constraintlayout_version = '2.1.4'
     fragment_nav_version = '2.7.7'
-    lifecycle_version = '2.8.5'
-    activity_version = '1.9.2'
-    coroutines_android_version = '1.9.0'
-    hilt_version = '2.52'
+    lifecycle_version = '2.8.7'
+    activity_version = '1.9.3'
+    coroutines_android_version = '1.10.1'
+    hilt_version = '2.54'
     hilt_navigation_version = '1.2.0'
     timber_version = '5.0.1'
     retrofit_version = '2.11.0'
     okhttp_version = '5.0.0-alpha.14'
-    moshi_version = '1.15.1'
+    moshi_version = '1.15.2'
     coil_version = '2.7.0'
     phrase_version = '1.2.0'
     room_version = '2.6.1'
     camerax_version = '1.3.3'
     mlkit_version = '19.0.1'
-    cashapp_turbine_version = '1.1.0'
+    cashapp_turbine_version = '1.2.0'
     cropify_version = '0.3.1'
 
     junit_version = '4.13.2'
