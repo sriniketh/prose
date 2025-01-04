@@ -80,7 +80,7 @@ internal fun SearchBook(
 ) {
     val focusRequester = remember { FocusRequester() }
     var text by rememberSaveable { mutableStateOf("") }
-    var active by rememberSaveable { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         modifier = modifier.fillMaxSize()
@@ -90,46 +90,52 @@ internal fun SearchBook(
                 .fillMaxWidth()
                 .padding(contentPadding)
                 .focusRequester(focusRequester),
-            query = text,
-            onQueryChange = {
-                text = it
-                if (text.length > 3) {
-                    searchForBooks(text)
-                }
-            },
-            onSearch = {
-                active = false
-                if (text.length > 3) {
-                    searchForBooks(text)
-                }
-            },
-            active = active,
-            onActiveChange = { active = it },
-            placeholder = {
-                Text(text = stringResource(R.string.search_for_a_book))
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = stringResource(id = R.string.search_icon_cont_desc)
+            inputField = {
+                SearchBarDefaults.InputField(
+                    query = text,
+                    onQueryChange = {
+                        text = it
+                        if (text.length > 3) {
+                            searchForBooks(text)
+                        }
+                    },
+                    onSearch = {
+                        expanded = false
+                        if (text.length > 3) {
+                            searchForBooks(text)
+                        }
+                    },
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    placeholder = {
+                        Text(text = stringResource(R.string.search_for_a_book))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Search,
+                            contentDescription = stringResource(id = R.string.search_icon_cont_desc)
+                        )
+                    },
+                    trailingIcon = {
+                        if (expanded) {
+                            Icon(
+                                modifier = modifier.clickable {
+                                    if (text.isNotEmpty()) {
+                                        text = ""
+                                        resetSearch()
+                                    } else {
+                                        expanded = false
+                                    }
+                                },
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(id = R.string.close_icon_cont_desc)
+                            )
+                        }
+                    }
                 )
             },
-            trailingIcon = {
-                if (active) {
-                    Icon(
-                        modifier = modifier.clickable {
-                            if (text.isNotEmpty()) {
-                                text = ""
-                                resetSearch()
-                            } else {
-                                active = false
-                            }
-                        },
-                        imageVector = Icons.Default.Close,
-                        contentDescription = stringResource(id = R.string.close_icon_cont_desc)
-                    )
-                }
-            },
+            expanded = expanded,
+            onExpandedChange = { expanded = it },
             colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
         ) {
             if (uiState.isLoading) {
