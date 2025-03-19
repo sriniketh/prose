@@ -29,6 +29,7 @@ retrofit-version = "2.11.0"
 okhttp-version = "5.0.0-alpha.14"
 moshi-version = "1.15.2"
 cropify-version = "0.3.1"
+coil-version = "2.7.0"
 
 junit-version = "4.13.2"
 android-junit-version = "1.2.1"
@@ -64,6 +65,7 @@ okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-i
 moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi-version" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi-version" }
 cropify = { group = "com.github.moyuruaizawa", name = "cropify", version.ref = "cropify-version" }
+coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-version" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
