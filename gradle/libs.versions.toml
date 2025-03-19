@@ -13,10 +13,12 @@ android-navigation-safe-args-plugin-version = "2.8.5"
 android-ktx-version = "1.15.0"
 coroutines-android-version = "1.10.1"
 android-appcompat-version = "1.7.0"
+material-version = "1.12.0"
 compose-bom-version = "2024.12.01"
 compose-nav-version = "2.8.5"
 hilt-version = "2.54"
 room-version = "2.6.1"
+google-font-version = "1.7.6"
 
 timber-version = "5.0.1"
 
@@ -29,6 +31,8 @@ turbine-version = "1.2.0"
 android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android-version" }
 android-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "android-appcompat-version" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material-version" }
+google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "google-font-version" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-version" }
 compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
@@ -44,6 +48,8 @@ timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "tim
 
 junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
+compose-junit = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-version" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
