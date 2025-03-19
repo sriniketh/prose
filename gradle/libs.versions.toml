@@ -16,6 +16,7 @@ android-appcompat-version = "1.7.0"
 compose-bom-version = "2024.12.01"
 compose-nav-version = "2.8.5"
 hilt-version = "2.54"
+room-version = "2.6.1"
 
 timber-version = "5.0.1"
 
@@ -35,6 +36,9 @@ compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose-nav-version" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-version" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room-version" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room-version" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room-version" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
 
