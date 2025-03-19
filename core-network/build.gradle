@@ -1,8 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.google.devtools.ksp'
-    id 'dagger.hilt.android.plugin'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.hilt
+    alias libs.plugins.ksp
 }
 
 def apikeyPropertiesFile = file("apikey.properties")
@@ -41,18 +41,18 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-ktx:$android_ktx_version"
-    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
+    implementation libs.android.core.ktx
+    implementation libs.coroutines.android
 
-    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
-    implementation "com.squareup.retrofit2:converter-moshi:$retrofit_version"
-    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
-    ksp "com.squareup.moshi:moshi-kotlin-codegen:$moshi_version"
+    implementation libs.okhttp.logging.interceptor
+    implementation libs.retrofit
+    implementation libs.retrofit.moshi.converter
+    implementation libs.moshi
+    ksp libs.moshi.codegen
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    ksp "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 
-    testImplementation "junit:junit:$junit_version"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_android_version"
+    testImplementation libs.junit
+    testImplementation libs.coroutines.test
 }

@@ -21,6 +21,9 @@ room-version = "2.6.1"
 google-font-version = "1.7.6"
 
 timber-version = "5.0.1"
+retrofit-version = "2.11.0"
+okhttp-version = "5.0.0-alpha.14"
+moshi-version = "1.15.2"
 
 junit-version = "4.13.2"
 android-junit-version = "1.2.1"
@@ -45,6 +48,11 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room-version" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit-version" }
+retrofit-moshi-converter = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit-version" }
+okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp-version" }
+moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi-version" }
+moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi-version" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
