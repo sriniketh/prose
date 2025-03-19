@@ -63,6 +63,7 @@ android-library = { id = "com.android.library", version.ref = "android-library-p
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-android-plugin-version" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm-plugin-version" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-compose-plugin-version" }
+java-library = { id = "java-library" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-plugin-version" }
 android-navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "android-navigation-safe-args-plugin-version" }
