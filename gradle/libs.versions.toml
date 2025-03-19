@@ -1,0 +1,23 @@
+[versions]
+android-ktx-version = "1.15.0"
+coroutines-android-version = "1.10.1"
+hilt-version = "2.54"
+
+timber-version = "5.0.1"
+
+junit-version = "4.13.2"
+turbine-version = "1.2.0"
+
+[libraries]
+android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android-version" }
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-version" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
+
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit-version" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
+cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
+
+[plugins]

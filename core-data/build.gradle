@@ -39,14 +39,14 @@ dependencies {
     implementation(project(":core-db"))
     implementation(project(":core-models"))
 
-    implementation "androidx.core:core-ktx:$android_ktx_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
-    implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation libs.android.core.ktx
+    implementation libs.coroutines.android
+    implementation libs.timber
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    ksp "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 
-    testImplementation "junit:junit:$junit_version"
-    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_android_version"
-    testImplementation "app.cash.turbine:turbine:$cashapp_turbine_version"
+    testImplementation libs.junit
+    testImplementation libs.coroutines.test
+    testImplementation libs.cashapp.turbine
 }
