@@ -1,8 +1,8 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
-    id 'dagger.hilt.android.plugin'
-    id 'com.google.devtools.ksp'
+    alias libs.plugins.android.library
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.hilt
+    alias libs.plugins.ksp
 }
 
 kotlin {
@@ -34,12 +34,12 @@ android {
 
 dependencies {
 
-    implementation "androidx.core:core-ktx:$android_ktx_version"
-    implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation libs.android.core.ktx
+    implementation libs.timber
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    ksp "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$android_junit_version"
+    testImplementation libs.junit
+    androidTestImplementation libs.android.junit
 }
