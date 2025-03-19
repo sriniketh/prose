@@ -1,9 +1,9 @@
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'org.jetbrains.kotlin.plugin.compose'
-    id 'com.google.devtools.ksp'
-    id 'dagger.hilt.android.plugin'
+    alias libs.plugins.android.application
+    alias libs.plugins.kotlin.android
+    alias libs.plugins.kotlin.compose
+    alias libs.plugins.ksp
+    alias libs.plugins.hilt
 }
 
 kotlin {
@@ -48,22 +48,21 @@ dependencies {
     implementation(project(":feature-viewhighlights"))
     implementation(project(":feature-addhighlight"))
 
-    implementation "androidx.core:core-ktx:$android_ktx_version"
-    implementation "androidx.appcompat:appcompat:$appcompat_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_android_version"
-    implementation "com.jakewharton.timber:timber:$timber_version"
+    implementation libs.android.core.ktx
+    implementation libs.android.appcompat
+    implementation libs.coroutines.android
+    implementation libs.timber
 
-    def composeBom = platform("androidx.compose:compose-bom:$compose_bom_version")
+    def composeBom = platform(libs.compose.bom)
     implementation composeBom
-    implementation 'androidx.compose.material3:material3'
-    implementation 'androidx.compose.ui:ui-tooling-preview'
-    debugImplementation 'androidx.compose.ui:ui-tooling'
-    implementation "androidx.navigation:navigation-compose:$compose_nav_version"
+    implementation libs.bundles.compose
+    debugImplementation libs.compose.ui.tooling
+    implementation libs.navigation.compose
 
-    implementation "com.google.dagger:hilt-android:$hilt_version"
-    ksp "com.google.dagger:hilt-compiler:$hilt_version"
+    implementation libs.hilt.android
+    ksp libs.hilt.compiler
 
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$android_junit_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    testImplementation libs.junit
+    androidTestImplementation libs.android.junit
+    androidTestImplementation libs.espresso.core
 }

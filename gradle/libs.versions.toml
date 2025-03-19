@@ -1,23 +1,58 @@
 [versions]
+# Plugin dependencies
+android-application-plugin-version = "8.7.3"
+android-library-plugin-version = "8.7.3"
+kotlin-android-plugin-version = "2.1.0"
+kotlin-jvm-plugin-version = "2.1.0"
+kotlin-compose-plugin-version = "2.1.0"
+ksp-plugin-version = "2.1.0-1.0.28"
+hilt-plugin-version = "2.51"
+android-navigation-safe-args-plugin-version = "2.8.5"
+
+# Library dependencies
 android-ktx-version = "1.15.0"
 coroutines-android-version = "1.10.1"
+android-appcompat-version = "1.7.0"
+compose-bom-version = "2024.12.01"
+compose-nav-version = "2.8.5"
 hilt-version = "2.54"
 
 timber-version = "5.0.1"
 
 junit-version = "4.13.2"
+android-junit-version = "1.2.1"
+espresso-version = "3.6.1"
 turbine-version = "1.2.0"
 
 [libraries]
 android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android-version" }
+android-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "android-appcompat-version" }
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom-version" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose-nav-version" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-version" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit-version" }
+android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-version" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
 
+[bundles]
+compose = ["compose-material3", "compose-ui-tooling-preview"]
+
 [plugins]
+android-application = { id = "com.android.application", version.ref = "android-application-plugin-version" }
+android-library = { id = "com.android.library", version.ref = "android-library-plugin-version" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-android-plugin-version" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm-plugin-version" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-compose-plugin-version" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin-version" }
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-plugin-version" }
+android-navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "android-navigation-safe-args-plugin-version" }
