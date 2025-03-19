@@ -19,11 +19,16 @@ compose-nav-version = "2.8.5"
 hilt-version = "2.54"
 room-version = "2.6.1"
 google-font-version = "1.7.6"
+mlkit-version = "19.0.1"
+lifecycle-version = "2.8.7"
+activity-version = "1.9.3"
+hilt-navigation-version = "1.2.0"
 
 timber-version = "5.0.1"
 retrofit-version = "2.11.0"
 okhttp-version = "5.0.0-alpha.14"
 moshi-version = "1.15.2"
+cropify-version = "0.3.1"
 
 junit-version = "4.13.2"
 android-junit-version = "1.2.1"
@@ -46,6 +51,11 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room-version" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room-version" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room-version" }
+mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "mlkit-version" }
+lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-version" }
+lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-version" }
+activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-version" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-version" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit-version" }
@@ -53,6 +63,7 @@ retrofit-moshi-converter = { group = "com.squareup.retrofit2", name = "converter
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp-version" }
 moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi-version" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi-version" }
+cropify = { group = "com.github.moyuruaizawa", name = "cropify", version.ref = "cropify-version" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
