@@ -1,4 +1,9 @@
 [versions]
+compileSdkVersion = "35"
+minSdkVersion = "26"
+targetSdkVersion = "34"
+jvmToolchainVersion = "17"
+
 # Plugin dependencies
 android-application-plugin-version = "8.9.0"
 android-library-plugin-version = "8.9.0"
