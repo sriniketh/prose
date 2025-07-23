@@ -43,7 +43,7 @@ class HighlightsRepositoryImplTest {
         }
 
     @Test
-    fun `insertHighlightIntoDb returns failure result when something goes wrong during insertion`() =
+    fun `insertHighlightIntoDb returns failure result when exception occurs during insertion`() =
         runTest {
             val highlight = Highlight(
                 id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
@@ -56,6 +56,36 @@ class HighlightsRepositoryImplTest {
             assertTrue(exception is RuntimeException)
             assertEquals("some error inserting highlight", exception?.message)
         }
+
+	@Test
+	fun `loadHighlightFromDb returns success result when highlight present in db`() =
+		runTest {
+			val highlightEntity = HighlightEntity(
+				id = "someid", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+			)
+			highlightDao.highlightEntityToReturn = highlightEntity
+			highlightDao.shouldGetHighlightByIdThrowException = false
+
+			val result = highlightsRepositoryImpl.loadHighlightFromDb("someid")
+			assertTrue(result.isSuccess)
+			val highlight = result.getOrNull()
+			assertEquals("someid", highlight?.id)
+			assertEquals("eius", highlight?.bookId)
+			assertEquals("ignota", highlight?.text)
+			assertEquals("diam", highlight?.savedOnTimestamp)
+		}
+
+	@Test
+	fun `loadHighlightFromDb returns failure result when exception occurs during retrieval`() =
+		runTest {
+			highlightDao.shouldGetHighlightByIdThrowException = true
+
+			val result = highlightsRepositoryImpl.loadHighlightFromDb("someid")
+			assertTrue(result.isFailure)
+			val exception = result.exceptionOrNull()
+			assertTrue(exception is RuntimeException)
+			assertEquals("some error fetching highlight by id", exception?.message)
+		}
 
     @Test
     fun `getAllHighlightsForBookFromDb returns flow with success result when highlights are retrieved from db`() =
@@ -82,7 +112,7 @@ class HighlightsRepositoryImplTest {
         }
 
     @Test
-    fun `getAllHighlightsForBookFromDb returns flow with failure result when something goes wrong during retrieval`() =
+    fun `getAllHighlightsForBookFromDb returns flow with failure result when exception occurs during retrieval`() =
         runTest {
             highlightDao.shouldGetAllHighlightsForBookThrowException = true
             highlightDao.highlightsInDb.add(
@@ -120,7 +150,7 @@ class HighlightsRepositoryImplTest {
         }
 
     @Test
-    fun `deleteHighlightFromDb returns failure result when something goes wrong during deletion`() =
+    fun `deleteHighlightFromDb returns failure result when exception occurs during deletion`() =
         runTest {
             val highlight = Highlight(
                 id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
