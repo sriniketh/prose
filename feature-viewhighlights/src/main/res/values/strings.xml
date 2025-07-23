@@ -9,6 +9,7 @@
     <string name="gethighlights_error_message">Error retrieving saved highlights.</string>
     <string name="permission_denied_error_message">Please allow access to take picture to scan text for highlights.</string>
     <string name="highlight_menu_item_copy">Copy</string>
+    <string name="clipboard_highlight_label">Highlighted text</string>
     <string name="highlight_menu_item_edit">Edit</string>
     <string name="highlight_menu_item_delete">Delete</string>
     <string name="delete_dialog_title">Delete highlight</string>

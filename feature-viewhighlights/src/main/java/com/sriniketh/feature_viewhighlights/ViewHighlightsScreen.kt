@@ -1,5 +1,6 @@
 package com.sriniketh.feature_viewhighlights
 
+import android.content.ClipData
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
@@ -43,21 +44,23 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sriniketh.core_design.ui.components.NavigationBack
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -112,7 +115,8 @@ internal fun ViewHighlights(
                 onEvent(ViewHighlightsEvent.OnCameraPermissionDenied)
             }
         })
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
+    val coroutineScope: CoroutineScope = rememberCoroutineScope()
+    val clipboard: Clipboard = LocalClipboard.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
@@ -192,6 +196,10 @@ internal fun ViewHighlights(
 
                     var expandDropDownMenu by remember { mutableStateOf(false) }
                     val shortenHighlightText by remember { derivedStateOf { highlightUiState.text.length > 250 } }
+                    val clipboardData = ClipData.newPlainText(
+                        stringResource(id = R.string.clipboard_highlight_label),
+                        highlightUiState.text
+                    )
                     var highlightText by remember {
                         if (shortenHighlightText) {
                             mutableStateOf(highlightUiState.text.take(250) + " ...")
@@ -252,7 +260,9 @@ internal fun ViewHighlights(
                                         )
                                     },
                                     onClick = {
-                                        clipboardManager.setText(AnnotatedString(highlightUiState.text))
+                                        coroutineScope.launch {
+                                            clipboard.setClipEntry(clipboardData.toClipEntry())
+                                        }
                                         expandDropDownMenu = false
                                     }
                                 )
