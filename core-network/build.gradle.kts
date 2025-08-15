@@ -14,6 +14,9 @@ apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
 kotlin {
 	jvmToolchain(libs.versions.jvmToolchainVersion.get().toInt())
+	compilerOptions {
+		optIn.add("kotlin.RequiresOptIn")
+	}
 }
 
 android {
@@ -34,9 +37,6 @@ android {
 				"proguard-rules.pro"
 			)
 		}
-	}
-	kotlinOptions {
-		freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
 	}
 	buildFeatures {
 		buildConfig = true

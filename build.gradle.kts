@@ -10,6 +10,14 @@ plugins {
 	alias(libs.plugins.android.navigation.safe.args) apply false
 }
 
+subprojects {
+	tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+		compilerOptions {
+			freeCompilerArgs.add("-Xannotation-default-target=param-property")
+		}
+	}
+}
+
 tasks.register<Delete>("clean") {
 	group = "Build"
 	delete(rootProject.layout.buildDirectory)
