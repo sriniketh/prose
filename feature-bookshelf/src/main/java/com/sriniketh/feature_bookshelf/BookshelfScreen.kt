@@ -33,6 +33,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -135,7 +137,15 @@ internal fun Bookshelf(
                                     .padding(6.dp)
                                     .height(100.dp)
                                     .width(80.dp)
-                                    .clip(RoundedCornerShape(10.dp)),
+                                    .dropShadow(
+                                        RoundedCornerShape(12.dp),
+                                        Shadow(
+                                            radius = 20.dp,
+                                            color = MaterialTheme.colorScheme.scrim,
+                                            alpha = 0.4f
+                                        )
+                                    )
+                                    .clip(RoundedCornerShape(12.dp)),
                                 model = uri,
                                 contentScale = ContentScale.Crop,
                                 contentDescription = null,
@@ -181,49 +191,50 @@ internal fun BookshelfScreenSuccessPreview() {
     AppTheme {
         Bookshelf(
             uiState = BookshelfUIState(
-                books = listOf(BookUIState(
-                    id = "someId",
-                    title = "Some title 1",
-                    authors = listOf("Author 1", "Author 2", "Author 3"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ), BookUIState(
-                    id = "someId2",
-                    title = "Some title 2",
-                    authors = listOf("Author 1"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ), BookUIState(
-                    id = "someId3",
-                    title = "Some title 3",
-                    authors = listOf("Author 1", "Author 2"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ), BookUIState(
-                    id = "someId4",
-                    title = "Some title 4",
-                    authors = listOf("Author 1", "Author 2"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ), BookUIState(
-                    id = "someId5",
-                    title = "Some title 5",
-                    authors = listOf("Author 1", "Author 2"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ), BookUIState(
-                    id = "someId6",
-                    title = "Some title 6",
-                    authors = listOf("Author 1", "Author 2"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ), BookUIState(
-                    id = "someId7",
-                    title = "Some title 7",
-                    authors = listOf("Author 1", "Author 2"),
-                    thumbnailLink = "https://picsum.photos/200/300",
-                    viewBook = {}
-                ))),
+                books = listOf(
+                    BookUIState(
+                        id = "someId",
+                        title = "Some title 1",
+                        authors = listOf("Author 1", "Author 2", "Author 3"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ), BookUIState(
+                        id = "someId2",
+                        title = "Some title 2",
+                        authors = listOf("Author 1"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ), BookUIState(
+                        id = "someId3",
+                        title = "Some title 3",
+                        authors = listOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ), BookUIState(
+                        id = "someId4",
+                        title = "Some title 4",
+                        authors = listOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ), BookUIState(
+                        id = "someId5",
+                        title = "Some title 5",
+                        authors = listOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ), BookUIState(
+                        id = "someId6",
+                        title = "Some title 6",
+                        authors = listOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ), BookUIState(
+                        id = "someId7",
+                        title = "Some title 7",
+                        authors = listOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300",
+                        viewBook = {}
+                    ))),
             goToSearch = {}, goToHighlight = {})
     }
 }
