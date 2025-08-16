@@ -4,8 +4,6 @@ import app.cash.turbine.test
 import com.sriniketh.core_data.fakes.FakeHighlightDao
 import com.sriniketh.core_db.entity.HighlightEntity
 import com.sriniketh.core_models.book.Highlight
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -15,14 +13,12 @@ import org.junit.Test
 class HighlightsRepositoryImplTest {
 
     private lateinit var highlightDao: FakeHighlightDao
-    private lateinit var dispatcher: CoroutineDispatcher
     private lateinit var highlightsRepositoryImpl: HighlightsRepositoryImpl
 
     @Before
     fun setup() {
         highlightDao = FakeHighlightDao()
-        dispatcher = Dispatchers.Unconfined
-        highlightsRepositoryImpl = HighlightsRepositoryImpl(highlightDao, dispatcher)
+        highlightsRepositoryImpl = HighlightsRepositoryImpl(highlightDao)
     }
 
     @Test
@@ -57,35 +53,35 @@ class HighlightsRepositoryImplTest {
             assertEquals("some error inserting highlight", exception?.message)
         }
 
-	@Test
-	fun `loadHighlightFromDb returns success result when highlight present in db`() =
-		runTest {
-			val highlightEntity = HighlightEntity(
-				id = "someid", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
-			)
-			highlightDao.highlightEntityToReturn = highlightEntity
-			highlightDao.shouldGetHighlightByIdThrowException = false
+    @Test
+    fun `loadHighlightFromDb returns success result when highlight present in db`() =
+        runTest {
+            val highlightEntity = HighlightEntity(
+                id = "someid", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+            )
+            highlightDao.highlightEntityToReturn = highlightEntity
+            highlightDao.shouldGetHighlightByIdThrowException = false
 
-			val result = highlightsRepositoryImpl.loadHighlightFromDb("someid")
-			assertTrue(result.isSuccess)
-			val highlight = result.getOrNull()
-			assertEquals("someid", highlight?.id)
-			assertEquals("eius", highlight?.bookId)
-			assertEquals("ignota", highlight?.text)
-			assertEquals("diam", highlight?.savedOnTimestamp)
-		}
+            val result = highlightsRepositoryImpl.loadHighlightFromDb("someid")
+            assertTrue(result.isSuccess)
+            val highlight = result.getOrNull()
+            assertEquals("someid", highlight?.id)
+            assertEquals("eius", highlight?.bookId)
+            assertEquals("ignota", highlight?.text)
+            assertEquals("diam", highlight?.savedOnTimestamp)
+        }
 
-	@Test
-	fun `loadHighlightFromDb returns failure result when exception occurs during retrieval`() =
-		runTest {
-			highlightDao.shouldGetHighlightByIdThrowException = true
+    @Test
+    fun `loadHighlightFromDb returns failure result when exception occurs during retrieval`() =
+        runTest {
+            highlightDao.shouldGetHighlightByIdThrowException = true
 
-			val result = highlightsRepositoryImpl.loadHighlightFromDb("someid")
-			assertTrue(result.isFailure)
-			val exception = result.exceptionOrNull()
-			assertTrue(exception is RuntimeException)
-			assertEquals("some error fetching highlight by id", exception?.message)
-		}
+            val result = highlightsRepositoryImpl.loadHighlightFromDb("someid")
+            assertTrue(result.isFailure)
+            val exception = result.exceptionOrNull()
+            assertTrue(exception is RuntimeException)
+            assertEquals("some error fetching highlight by id", exception?.message)
+        }
 
     @Test
     fun `getAllHighlightsForBookFromDb returns flow with success result when highlights are retrieved from db`() =

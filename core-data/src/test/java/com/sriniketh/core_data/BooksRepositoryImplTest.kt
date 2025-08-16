@@ -6,8 +6,6 @@ import com.sriniketh.core_data.fakes.FakeBooksRemoteDataSource
 import com.sriniketh.core_db.entity.BookEntity
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -20,15 +18,13 @@ class BooksRepositoryImplTest {
 
     private lateinit var booksRemoteDataSource: FakeBooksRemoteDataSource
     private lateinit var bookDao: FakeBookDao
-    private lateinit var dispatcher: CoroutineDispatcher
     private lateinit var booksRepositoryImpl: BooksRepositoryImpl
 
     @Before
     fun setup() {
         booksRemoteDataSource = FakeBooksRemoteDataSource()
         bookDao = FakeBookDao()
-        dispatcher = Dispatchers.Unconfined
-        booksRepositoryImpl = BooksRepositoryImpl(booksRemoteDataSource, bookDao, dispatcher)
+        booksRepositoryImpl = BooksRepositoryImpl(booksRemoteDataSource, bookDao)
     }
 
     @Test

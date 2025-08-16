@@ -8,33 +8,27 @@ import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.search.BookSearch
 import com.sriniketh.core_platform.logTag
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 
 class BooksRepositoryImpl @Inject constructor(
     private val remoteBookDataSource: BooksRemoteDataSource,
-    private val localBookDataSource: BookDao,
-    private val ioDispatcher: CoroutineDispatcher
+    private val localBookDataSource: BookDao
 ) : BooksRepository {
 
     override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> =
-        withContext(ioDispatcher) {
-            try {
-                val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
-                Result.success(books)
-            } catch (exception: Exception) {
-                Timber.e(exception, this.logTag())
-                Result.failure(exception)
-            }
+        try {
+            val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
+            Result.success(books)
+        } catch (exception: Exception) {
+            Timber.e(exception, this.logTag())
+            Result.failure(exception)
         }
 
-    override suspend fun fetchBookInfo(volumeId: String): Result<Book> = withContext(ioDispatcher) {
+    override suspend fun fetchBookInfo(volumeId: String): Result<Book> =
         try {
             val book = remoteBookDataSource.getVolume(volumeId).asBook()
             Result.success(book)
@@ -42,9 +36,8 @@ class BooksRepositoryImpl @Inject constructor(
             Timber.e(exception, this.logTag())
             Result.failure(exception)
         }
-    }
 
-    override suspend fun insertBookIntoDb(book: Book): Result<Unit> = withContext(ioDispatcher) {
+    override suspend fun insertBookIntoDb(book: Book): Result<Unit> =
         try {
             localBookDataSource.insertBook(book.asBookEntity())
             Result.success(Unit)
@@ -52,16 +45,14 @@ class BooksRepositoryImpl @Inject constructor(
             Timber.e(exception, this.logTag())
             Result.failure(exception)
         }
-    }
 
-    override suspend fun doesBookExistInDb(bookId: String): Boolean = withContext(ioDispatcher) {
+    override suspend fun doesBookExistInDb(bookId: String): Boolean =
         try {
             localBookDataSource.doesBookExist(bookId)
         } catch (exception: Exception) {
             Timber.e(exception, this.logTag())
             false
         }
-    }
 
     override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> =
         localBookDataSource.getAllBooks()
@@ -71,5 +62,5 @@ class BooksRepositoryImpl @Inject constructor(
             .catch { exception ->
                 Timber.e(exception, this.logTag())
                 emit(Result.failure(exception))
-            }.flowOn(ioDispatcher)
+            }
 }
