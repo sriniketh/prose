@@ -119,7 +119,7 @@ internal fun EditAndSaveHighlight(
             LargeTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(id = R.string.save_highlight_title_text),
+                        text = stringResource(id = uiState.screenTitle),
                         style = MaterialTheme.typography.headlineMedium,
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis

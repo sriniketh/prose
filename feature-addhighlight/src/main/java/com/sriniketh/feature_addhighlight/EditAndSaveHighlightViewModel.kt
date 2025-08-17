@@ -68,7 +68,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
 
     internal fun loadHighlightText(highlightId: String) {
         _uiState.update { state ->
-            state.copy(isLoading = true)
+            state.copy(isLoading = true, screenTitle = R.string.edit_highlight_title_text)
         }
         viewModelScope.launch {
             val result = loadHighlightUseCase(highlightId)
@@ -146,6 +146,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
 
 internal data class EditAndSaveHighlightUiState(
     val isLoading: Boolean = false,
+    @StringRes val screenTitle: Int = R.string.save_highlight_title_text,
     val highlightText: String = "",
     @StringRes val snackBarText: Int? = null,
     val highlightSaved: Boolean = false
