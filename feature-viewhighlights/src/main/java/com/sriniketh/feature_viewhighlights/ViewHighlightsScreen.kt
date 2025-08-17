@@ -251,7 +251,7 @@ internal fun ViewHighlights(
                             IconButton(onClick = { expandDropDownMenu = true }) {
                                 Icon(
                                     Icons.Default.MoreVert,
-                                    contentDescription = "Localized description"
+                                    contentDescription = "Options Menu"
                                 )
                             }
                             DropdownMenu(
