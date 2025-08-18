@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -139,7 +140,11 @@ internal fun SearchBook(
             colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
         ) {
             if (uiState.isLoading) {
-                LinearProgressIndicator(modifier = modifier.fillMaxWidth())
+                LinearProgressIndicator(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .testTag("SearchBookLoadingIndicator")
+                )
             }
             LazyColumn(
                 modifier = modifier

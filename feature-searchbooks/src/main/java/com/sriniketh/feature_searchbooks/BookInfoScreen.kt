@@ -41,6 +41,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -103,7 +104,11 @@ internal fun BookInfo(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         if (uiState.isLoading) {
-            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .testTag("BookInfoLoadingIndicator")
+            )
         }
 
         uiState.snackBarText?.let { resId ->
