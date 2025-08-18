@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -105,7 +106,11 @@ internal fun Bookshelf(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         if (uiState.isLoading) {
-            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .testTag("BookshelfLoadingIndicator")
+            )
         }
 
         if (uiState.books.isEmpty() && !uiState.isLoading) {
