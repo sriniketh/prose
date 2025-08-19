@@ -40,6 +40,7 @@ junit-version = "4.13.2"
 android-junit-version = "1.3.0"
 espresso-version = "3.7.0"
 turbine-version = "1.2.1"
+mockk-version = "1.14.5"
 
 [libraries]
 android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
@@ -79,6 +80,7 @@ compose-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifes
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-version" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
 
 [bundles]
 compose = ["compose-material3", "compose-ui-tooling-preview"]

@@ -53,7 +53,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 }
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
-            } catch (exception: Exception) {
+            } catch (_: Exception) {
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
