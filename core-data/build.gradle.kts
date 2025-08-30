@@ -51,4 +51,5 @@ dependencies {
 	testImplementation(libs.junit)
 	testImplementation(libs.coroutines.test)
 	testImplementation(libs.cashapp.turbine)
+	testImplementation(libs.mockk)
 }
