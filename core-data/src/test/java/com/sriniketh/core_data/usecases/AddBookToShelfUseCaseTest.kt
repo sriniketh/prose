@@ -23,7 +23,7 @@ class AddBookToShelfUseCaseTest {
     @Test
     fun `when repository insertion succeeds then returns success result`() = runTest {
         val book = createTestBook()
-        booksRepository.shouldInsertBookIntoDboThrowException = false
+        booksRepository.shouldInsertBookIntoDbThrowException = false
         val result = addBookToShelfUseCase(book)
         assertTrue(result.isSuccess)
     }
@@ -31,7 +31,7 @@ class AddBookToShelfUseCaseTest {
     @Test
     fun `when repository insertion succeeds then book is passed to repository`() = runTest {
         val book = createTestBook()
-        booksRepository.shouldInsertBookIntoDboThrowException = false
+        booksRepository.shouldInsertBookIntoDbThrowException = false
         addBookToShelfUseCase(book)
         assertEquals(book, booksRepository.insertedBook)
     }
@@ -39,7 +39,7 @@ class AddBookToShelfUseCaseTest {
     @Test
     fun `when repository insertion fails then returns failure result`() = runTest {
         val book = createTestBook()
-        booksRepository.shouldInsertBookIntoDboThrowException = true
+        booksRepository.shouldInsertBookIntoDbThrowException = true
         val result = addBookToShelfUseCase(book)
         assertTrue(result.isFailure)
     }
@@ -47,7 +47,7 @@ class AddBookToShelfUseCaseTest {
     @Test
     fun `when repository insertion fails then returns failure result with correct exception`() = runTest {
         val book = createTestBook()
-        booksRepository.shouldInsertBookIntoDboThrowException = true
+        booksRepository.shouldInsertBookIntoDbThrowException = true
         val result = addBookToShelfUseCase(book)
         val exception = result.exceptionOrNull()
         assertTrue(exception is RuntimeException)

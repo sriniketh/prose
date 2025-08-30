@@ -9,45 +9,54 @@ import kotlinx.coroutines.flow.flowOf
 
 class FakeBooksRepository : BooksRepository {
 
-    var shouldGetAllSavedBooksFromDbThrowException = false
+	var shouldGetAllSavedBooksFromDbThrowException = false
+	var shouldDeleteBookFromDbThrowException = false
 
-    private val fakeBook = Book(
-        id = "test-id",
-        info = BookInfo(
-            title = "Test Title",
-            subtitle = "Test Subtitle",
-            authors = listOf("Test Author"),
-            thumbnailLink = "test-thumbnail",
-            publisher = "Test Publisher",
-            publishedDate = "2023",
-            description = "Test Description",
-            pageCount = 200,
-            averageRating = 4.5,
-            ratingsCount = 100
-        )
-    )
+	private val fakeBook = Book(
+		id = "test-id",
+		info = BookInfo(
+			title = "Test Title",
+			subtitle = "Test Subtitle",
+			authors = listOf("Test Author"),
+			thumbnailLink = "test-thumbnail",
+			publisher = "Test Publisher",
+			publishedDate = "2023",
+			description = "Test Description",
+			pageCount = 200,
+			averageRating = 4.5,
+			ratingsCount = 100
+		)
+	)
 
-    override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> {
-        return Result.success(BookSearch(items = listOf(fakeBook)))
-    }
+	override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> {
+		return Result.success(BookSearch(items = listOf(fakeBook)))
+	}
 
-    override suspend fun fetchBookInfo(volumeId: String): Result<Book> {
-        return Result.success(fakeBook)
-    }
+	override suspend fun fetchBookInfo(volumeId: String): Result<Book> {
+		return Result.success(fakeBook)
+	}
 
-    override suspend fun insertBookIntoDb(book: Book): Result<Unit> {
-        return Result.success(Unit)
-    }
+	override suspend fun insertBookIntoDb(book: Book): Result<Unit> {
+		return Result.success(Unit)
+	}
 
-    override suspend fun doesBookExistInDb(bookId: String): Boolean {
-        return false
-    }
+	override suspend fun doesBookExistInDb(bookId: String): Boolean {
+		return false
+	}
 
-    override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> {
-        return if (shouldGetAllSavedBooksFromDbThrowException) {
-            flowOf(Result.failure(RuntimeException("Get all books failed")))
-        } else {
-            flowOf(Result.success(listOf(fakeBook)))
-        }
-    }
+	override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> {
+		return if (shouldGetAllSavedBooksFromDbThrowException) {
+			flowOf(Result.failure(RuntimeException("Get all books failed")))
+		} else {
+			flowOf(Result.success(listOf(fakeBook)))
+		}
+	}
+
+	override suspend fun deleteBookFromDb(book: Book): Result<Unit> {
+		return if (shouldDeleteBookFromDbThrowException) {
+			Result.failure(RuntimeException("Delete book failed"))
+		} else {
+			Result.success(Unit)
+		}
+	}
 }

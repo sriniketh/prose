@@ -15,52 +15,61 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class BooksRepositoryImpl @Inject constructor(
-    private val remoteBookDataSource: BooksRemoteDataSource,
-    private val localBookDataSource: BookDao
+	private val remoteBookDataSource: BooksRemoteDataSource,
+	private val localBookDataSource: BookDao
 ) : BooksRepository {
 
-    override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> =
-        try {
-            val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
-            Result.success(books)
-        } catch (exception: Exception) {
-            Timber.e(exception, this.logTag())
-            Result.failure(exception)
-        }
+	override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> =
+		try {
+			val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
+			Result.success(books)
+		} catch (exception: Exception) {
+			Timber.e(exception, this.logTag())
+			Result.failure(exception)
+		}
 
-    override suspend fun fetchBookInfo(volumeId: String): Result<Book> =
-        try {
-            val book = remoteBookDataSource.getVolume(volumeId).asBook()
-            Result.success(book)
-        } catch (exception: Exception) {
-            Timber.e(exception, this.logTag())
-            Result.failure(exception)
-        }
+	override suspend fun fetchBookInfo(volumeId: String): Result<Book> =
+		try {
+			val book = remoteBookDataSource.getVolume(volumeId).asBook()
+			Result.success(book)
+		} catch (exception: Exception) {
+			Timber.e(exception, this.logTag())
+			Result.failure(exception)
+		}
 
-    override suspend fun insertBookIntoDb(book: Book): Result<Unit> =
-        try {
-            localBookDataSource.insertBook(book.asBookEntity())
-            Result.success(Unit)
-        } catch (exception: Exception) {
-            Timber.e(exception, this.logTag())
-            Result.failure(exception)
-        }
+	override suspend fun insertBookIntoDb(book: Book): Result<Unit> =
+		try {
+			localBookDataSource.insertBook(book.asBookEntity())
+			Result.success(Unit)
+		} catch (exception: Exception) {
+			Timber.e(exception, this.logTag())
+			Result.failure(exception)
+		}
 
-    override suspend fun doesBookExistInDb(bookId: String): Boolean =
-        try {
-            localBookDataSource.doesBookExist(bookId)
-        } catch (exception: Exception) {
-            Timber.e(exception, this.logTag())
-            false
-        }
+	override suspend fun doesBookExistInDb(bookId: String): Boolean =
+		try {
+			localBookDataSource.doesBookExist(bookId)
+		} catch (exception: Exception) {
+			Timber.e(exception, this.logTag())
+			false
+		}
 
-    override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> =
-        localBookDataSource.getAllBooks()
-            .map { entities ->
-                Result.success(entities.map { entity -> entity.asBook() })
-            }
-            .catch { exception ->
-                Timber.e(exception, this.logTag())
-                emit(Result.failure(exception))
-            }
+	override fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>> =
+		localBookDataSource.getAllBooks()
+			.map { entities ->
+				Result.success(entities.map { entity -> entity.asBook() })
+			}
+			.catch { exception ->
+				Timber.e(exception, this.logTag())
+				emit(Result.failure(exception))
+			}
+
+	override suspend fun deleteBookFromDb(book: Book): Result<Unit> =
+		try {
+			localBookDataSource.deleteBook(book.asBookEntity())
+			Result.success(Unit)
+		} catch (exception: Exception) {
+			Timber.e(exception, this.logTag())
+			Result.failure(exception)
+		}
 }
