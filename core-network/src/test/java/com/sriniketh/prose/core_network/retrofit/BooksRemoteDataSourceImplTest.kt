@@ -1,5 +1,6 @@
 package com.sriniketh.prose.core_network.retrofit
 
+import com.sriniketh.prose.core_network.BuildConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -24,7 +25,7 @@ class BooksRemoteDataSourceImplTest {
         assertNull(booksApi.projectionPassed)
         val volumes = dataSourceImpl.getVolumes("some search query")
         assertEquals("some search query", booksApi.searchQueryPassed)
-        assertEquals("AIzaSyCgOoQQfwhKe_5VKAEJZzw-OcDD_YJFRiw", booksApi.apiKeyPassed)
+        assertEquals(BuildConfig.BOOKS_API_KEY, booksApi.apiKeyPassed)
         assertEquals("lite", booksApi.projectionPassed)
         assertEquals(2, volumes.items.size)
 
@@ -64,7 +65,7 @@ class BooksRemoteDataSourceImplTest {
         assertNull(booksApi.apiKeyPassed)
         assertNull(booksApi.volumeIdPassed)
         val volume = dataSourceImpl.getVolume("some volume id")
-        assertEquals("AIzaSyCgOoQQfwhKe_5VKAEJZzw-OcDD_YJFRiw", booksApi.apiKeyPassed)
+        assertEquals(BuildConfig.BOOKS_API_KEY, booksApi.apiKeyPassed)
         assertEquals("some volume id", booksApi.volumeIdPassed)
 
         assertEquals("someId1", volume.id)
