@@ -23,6 +23,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
 
+      - name: Create API key properties file  
+        run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
+
       - name: Run unit tests
         run: ./gradlew test
 
@@ -48,6 +51,9 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v3
+
+      - name: Create API key properties file  
+        run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
 
       - name: Enable KVM group perms
         run: |
