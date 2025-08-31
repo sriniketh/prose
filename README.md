@@ -1,3 +1,5 @@
+[![build](https://github.com/sriniketh/prose/actions/workflows/build.yml/badge.svg)](https://github.com/sriniketh/prose/actions/workflows/build.yml)
+
 # ![App icon](docs/images/app-icon.png) Prose
 
 Prose is an Android app to capture and save highlights from physical books.
