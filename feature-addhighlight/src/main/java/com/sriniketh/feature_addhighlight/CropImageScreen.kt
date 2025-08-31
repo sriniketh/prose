@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import io.moyuru.cropify.Cropify
 import io.moyuru.cropify.rememberCropifyState
@@ -32,6 +33,7 @@ internal fun CropImageScreen(
     val cropifyState = rememberCropifyState()
     val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
+        modifier = modifier.testTag("AddHighlightCropImageScreen"),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { cropifyState.crop() },

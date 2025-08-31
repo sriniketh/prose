@@ -25,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -132,7 +133,11 @@ internal fun EditAndSaveHighlight(
         val haptic = LocalHapticFeedback.current
 
         if (uiState.isLoading) {
-            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
+            LinearProgressIndicator(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .testTag("AddHighlightLoadingIndicator")
+            )
         }
 
         uiState.snackBarText?.let { resId ->
@@ -153,7 +158,8 @@ internal fun EditAndSaveHighlight(
                 modifier = modifier
                     .weight(0.8f)
                     .fillMaxWidth()
-                    .padding(12.dp),
+                    .padding(12.dp)
+                    .testTag("AddHighlightTextField"),
                 value = uiState.highlightText,
                 onValueChange = { updateHighlightText(it) },
                 enabled = !uiState.isLoading,
