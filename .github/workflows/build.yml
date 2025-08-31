@@ -34,7 +34,9 @@ jobs:
         if: always()
         with:
           name: unit-test-results
-          path: '**/build/test-results/test*/**/*.xml'
+          path: |
+            **/build/test-results/test*/**/*.xml
+            **/build/reports/tests/test*/**/*
 
   ui-tests:
     runs-on: ubuntu-latest
