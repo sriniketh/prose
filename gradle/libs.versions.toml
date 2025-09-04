@@ -5,7 +5,7 @@ targetSdkVersion = "35"
 jvmToolchainVersion = "17"
 
 # Plugin dependencies
-android-application-plugin-version = "8.12.2"
+android-application-plugin-version = "8.13.0"
 android-library-plugin-version = "8.13.0"
 kotlin-android-plugin-version = "2.2.10"
 kotlin-jvm-plugin-version = "2.2.10"
