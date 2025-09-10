@@ -12,7 +12,7 @@ kotlin-jvm-plugin-version = "2.2.10"
 kotlin-compose-plugin-version = "2.2.10"
 ksp-plugin-version = "2.2.10-2.0.2"
 hilt-plugin-version = "2.57.1"
-android-navigation-safe-args-plugin-version = "2.9.3"
+android-navigation-safe-args-plugin-version = "2.9.4"
 
 # Library dependencies
 android-ktx-version = "1.17.0"
