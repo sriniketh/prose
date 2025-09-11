@@ -26,7 +26,7 @@ room-version = "2.8.0"
 google-font-version = "1.9.1"
 mlkit-version = "19.0.1"
 lifecycle-version = "2.9.3"
-activity-version = "1.10.1"
+activity-version = "1.11.0"
 hilt-navigation-version = "1.3.0"
 
 timber-version = "5.0.1"
