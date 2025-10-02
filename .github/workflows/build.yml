@@ -21,7 +21,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Create API key properties file  
         run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
@@ -52,7 +52,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Create API key properties file  
         run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
