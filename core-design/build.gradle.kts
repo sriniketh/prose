@@ -36,8 +36,6 @@ android {
 }
 
 dependencies {
-	implementation(libs.material)
-
 	val composeBom = platform(libs.compose.bom)
 	implementation(composeBom)
 	implementation(libs.bundles.compose)
