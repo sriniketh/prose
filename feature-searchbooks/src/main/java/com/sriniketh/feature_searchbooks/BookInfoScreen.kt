@@ -35,8 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -140,7 +138,7 @@ private fun BookInfoLayout(
         ) {
             Row(
                 modifier = modifier
-                    .padding(18.dp)
+                    .padding(12.dp)
                     .align(Alignment.Start)
             ) {
                 val uri = bookInfo.thumbnailLink?.buildHttpsUri()
@@ -149,15 +147,7 @@ private fun BookInfoLayout(
                         .padding(6.dp)
                         .height(160.dp)
                         .width(120.dp)
-                        .dropShadow(
-                            RoundedCornerShape(12.dp),
-                            Shadow(
-                                radius = 20.dp,
-                                color = MaterialTheme.colorScheme.scrim,
-                                alpha = 0.2f
-                            )
-                        )
-                        .clip(RoundedCornerShape(12.dp)),
+                        .clip(RoundedCornerShape(10.dp)),
                     model = uri,
                     contentScale = ContentScale.Crop,
                     contentDescription = null,
