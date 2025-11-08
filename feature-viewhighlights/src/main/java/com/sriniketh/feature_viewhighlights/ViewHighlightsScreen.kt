@@ -17,9 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -55,6 +52,7 @@ import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.toClipEntry
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -154,7 +152,7 @@ internal fun ViewHighlights(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Add,
+                        painter = painterResource(com.sriniketh.core_design.R.drawable.ic_add),
                         contentDescription = stringResource(id = R.string.add_fab_cont_desc)
                     )
                 }
@@ -250,7 +248,7 @@ internal fun ViewHighlights(
                         ) {
                             IconButton(onClick = { expandDropDownMenu = true }) {
                                 Icon(
-                                    Icons.Default.MoreVert,
+                                    painter = painterResource(com.sriniketh.core_design.R.drawable.ic_more_vert),
                                     contentDescription = "Options Menu"
                                 )
                             }

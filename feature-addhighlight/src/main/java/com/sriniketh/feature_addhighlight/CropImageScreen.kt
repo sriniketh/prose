@@ -4,8 +4,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +17,7 @@ import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import io.moyuru.cropify.Cropify
 import io.moyuru.cropify.rememberCropifyState
@@ -41,7 +40,7 @@ internal fun CropImageScreen(
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Done,
+                    painter = painterResource(com.sriniketh.core_design.R.drawable.ic_done),
                     contentDescription = stringResource(id = R.string.done_fab_cont_desc)
                 )
             }

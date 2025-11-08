@@ -11,9 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,6 +34,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -113,7 +111,7 @@ internal fun SearchBook(
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            painter = painterResource(com.sriniketh.core_design.R.drawable.ic_search),
                             contentDescription = stringResource(id = R.string.search_icon_cont_desc)
                         )
                     },
@@ -128,7 +126,7 @@ internal fun SearchBook(
                                         expanded = false
                                     }
                                 },
-                                imageVector = Icons.Default.Close,
+                                painter = painterResource(com.sriniketh.core_design.R.drawable.ic_close),
                                 contentDescription = stringResource(id = R.string.close_icon_cont_desc)
                             )
                         }
