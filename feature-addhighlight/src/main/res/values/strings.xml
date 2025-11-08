@@ -4,8 +4,7 @@
     <string name="inputhighlight_fragment_label">Edit highlight</string>
     <string name="save_highlight_title_text">Save highlight</string>
     <string name="edit_highlight_title_text">Edit highlight</string>
-    <string name="save_button_text">Save</string>
-    <string name="cancel_button_text">Cancel</string>
+    <string name="save_button_cont_desc">Save</string>
     <string name="save_highlight_error_message">Error saving highlight.</string>
     <string name="image_processing_failure_error_message">Error processing image for highlight text.</string>
 </resources>

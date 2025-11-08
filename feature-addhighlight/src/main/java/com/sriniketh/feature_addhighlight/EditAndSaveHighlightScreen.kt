@@ -1,38 +1,48 @@
 package com.sriniketh.feature_addhighlight
 
 import android.net.Uri
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
+import com.sriniketh.core_design.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 @Composable
@@ -104,7 +114,7 @@ fun EditAndSaveHighlightScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun EditAndSaveHighlight(
     uiState: EditAndSaveHighlightUiState,
@@ -114,6 +124,9 @@ internal fun EditAndSaveHighlight(
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val haptic = LocalHapticFeedback.current
+    val focusRequester = remember { FocusRequester() }
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
@@ -126,7 +139,30 @@ internal fun EditAndSaveHighlight(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                navigationIcon = { NavigationBack { goBack() } }
+                navigationIcon = { NavigationBack { goBack() } },
+                actions = {
+                    TooltipBox(
+                        positionProvider =
+                            TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Above),
+                        tooltip = { PlainTooltip { Text(stringResource(id = R.string.save_button_cont_desc)) } },
+                        state = rememberTooltipState(),
+                    ) {
+                        FilledIconButton(
+                            onClick = {
+                                saveHighlight(uiState.highlightText)
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            },
+                            shape = IconButtonDefaults.smallPressedShape
+                        ) {
+                            Row {
+                                Icon(
+                                    painter = painterResource(com.sriniketh.core_design.R.drawable.ic_done),
+                                    contentDescription = stringResource(id = R.string.save_button_cont_desc)
+                                )
+                            }
+                        }
+                    }
+                }
             )
         },
     ) { contentPadding ->
@@ -154,51 +190,42 @@ internal fun EditAndSaveHighlight(
                 .padding(contentPadding)
                 .fillMaxSize()
         ) {
-            OutlinedTextField(
+            BasicTextField(
                 modifier = modifier
                     .weight(0.8f)
                     .fillMaxWidth()
-                    .padding(12.dp)
-                    .testTag("AddHighlightTextField"),
+                    .padding(18.dp)
+                    .testTag("AddHighlightTextField")
+                    .focusRequester(focusRequester),
                 value = uiState.highlightText,
                 onValueChange = { updateHighlightText(it) },
                 enabled = !uiState.isLoading,
-                textStyle = MaterialTheme.typography.bodyLarge
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface
+                ),
+                cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
             )
-            Row(
-                modifier = modifier
-                    .weight(0.2f)
-                    .fillMaxWidth()
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.End
-            ) {
-                TextButton(
-                    modifier = modifier.padding(6.dp),
-                    enabled = !uiState.isLoading,
-                    onClick = { goBack() }
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.cancel_button_text),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-                ElevatedButton(
-                    modifier = modifier.padding(6.dp),
-                    enabled = !uiState.isLoading,
-                    colors = ButtonDefaults.buttonColors(),
-                    onClick = {
-                        saveHighlight(uiState.highlightText)
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    }
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.save_button_text),
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.SemiBold
-                    )
+
+            LaunchedEffect(uiState.isLoading) {
+                if (!uiState.isLoading) {
+                    focusRequester.requestFocus()
                 }
             }
         }
+    }
+}
+
+@PreviewLightDark
+@Composable
+internal fun EditAndSaveHighlightPreview() {
+    AppTheme {
+        EditAndSaveHighlight(
+            uiState = EditAndSaveHighlightUiState(
+                highlightText = "This is a highlight text",
+            ),
+            updateHighlightText = {},
+            saveHighlight = {},
+            goBack = {}
+        )
     }
 }
