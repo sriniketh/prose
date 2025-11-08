@@ -194,7 +194,7 @@ private fun BookInfoLayout(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(12.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
             ) {
                 Column(modifier = modifier.padding(12.dp)) {
                     val averageRating = bookInfo.averageRating
