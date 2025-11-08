@@ -20,191 +20,169 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class EditAndSaveHighlightScreenTest {
 
-	@get:Rule
-	val composeTestRule = createComposeRule()
+    @get:Rule
+    val composeTestRule = createComposeRule()
 
-	@Test
-	fun whenUIStateIsLoadingThenProgressIndicatorIsDisplayed() {
-		val uiState = EditAndSaveHighlightUiState(isLoading = true)
+    @Test
+    fun whenUIStateIsLoadingThenProgressIndicatorIsDisplayed() {
+        val uiState = EditAndSaveHighlightUiState(isLoading = true)
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = {}
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = {},
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithTag("AddHighlightLoadingIndicator").assertIsDisplayed()
-		composeTestRule.onNodeWithText("Save").assertIsDisplayed().assertIsNotEnabled()
-		composeTestRule.onNodeWithText("Cancel").assertIsDisplayed().assertIsNotEnabled()
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("AddHighlightLoadingIndicator").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("SaveHighlightButton").assertIsDisplayed()
+            .assertIsNotEnabled()
+    }
 
-	@Test
-	fun whenUIStateIsNotLoadingThenProgressIndicatorIsNotDisplayed() {
-		val uiState = EditAndSaveHighlightUiState(isLoading = false)
+    @Test
+    fun whenUIStateIsNotLoadingThenProgressIndicatorIsNotDisplayed() {
+        val uiState = EditAndSaveHighlightUiState(isLoading = false)
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = {}
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = {},
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithTag("AddHighlightLoadingIndicator").assertIsNotDisplayed()
-		composeTestRule.onNodeWithText("Save").assertIsDisplayed().assertIsEnabled()
-		composeTestRule.onNodeWithText("Cancel").assertIsDisplayed().assertIsEnabled()
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("AddHighlightLoadingIndicator").assertIsNotDisplayed()
+        composeTestRule.onNodeWithTag("SaveHighlightButton").assertIsDisplayed().assertIsEnabled()
+    }
 
-	@Test
-	fun whenScreenIsDisplayedThenPageTitleShowsCorrectText() {
-		val uiState = EditAndSaveHighlightUiState()
+    @Test
+    fun whenScreenIsDisplayedThenPageTitleShowsCorrectText() {
+        val uiState = EditAndSaveHighlightUiState()
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = {}
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = {},
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithText("Save highlight").assertIsDisplayed()
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("Save highlight").assertIsDisplayed()
+    }
 
-	@Test
-	fun whenBackButtonIsClickedThenGoBackIsTriggered() {
-		val uiState = EditAndSaveHighlightUiState()
-		var goBackCalled = false
+    @Test
+    fun whenBackButtonIsClickedThenGoBackIsTriggered() {
+        val uiState = EditAndSaveHighlightUiState()
+        var goBackCalled = false
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = { goBackCalled = true }
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = {},
+                    goBack = { goBackCalled = true }
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithContentDescription("Go back").performClick()
-		assertTrue(goBackCalled)
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription("Go back").performClick()
+        assertTrue(goBackCalled)
+    }
 
-	@Test
-	fun whenHighlightTextIsProvidedThenTextFieldDisplaysText() {
-		val testText = "This is a test highlight text"
-		val uiState = EditAndSaveHighlightUiState(highlightText = testText)
+    @Test
+    fun whenHighlightTextIsProvidedThenTextFieldDisplaysText() {
+        val testText = "This is a test highlight text"
+        val uiState = EditAndSaveHighlightUiState(highlightText = testText)
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = {}
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = {},
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithText(testText).assertIsDisplayed()
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText(testText).assertIsDisplayed()
+    }
 
-	@Test
-	fun whenTextFieldIsChangedThenOnHighlightTextChangedIsCalled() {
-		val uiState = EditAndSaveHighlightUiState()
-		var changedText = ""
+    @Test
+    fun whenTextFieldIsChangedThenOnHighlightTextChangedIsCalled() {
+        val uiState = EditAndSaveHighlightUiState()
+        var changedText = ""
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = { changedText = it },
-					saveHighlight = {},
-					goBack = {}
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = { changedText = it },
+                    saveHighlight = {},
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		val newText = "Updated highlight text"
-		composeTestRule.onNodeWithTag("AddHighlightTextField").performTextInput(newText)
-		assertTrue(changedText.contains(newText))
-	}
+        composeTestRule.waitForIdle()
+        val newText = "Updated highlight text"
+        composeTestRule.onNodeWithTag("AddHighlightTextField").performTextInput(newText)
+        assertTrue(changedText.contains(newText))
+    }
 
-	@Test
-	fun whenSaveButtonIsClickedThenOnSaveHighlightIsCalled() {
-		val uiState = EditAndSaveHighlightUiState(highlightText = "Some text")
-		var saveHighlightCalled = false
+    @Test
+    fun whenSaveButtonIsClickedThenOnSaveHighlightIsCalled() {
+        val uiState = EditAndSaveHighlightUiState(highlightText = "Some text")
+        var saveHighlightCalled = false
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = { saveHighlightCalled = true },
-					goBack = {}
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = { saveHighlightCalled = true },
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithText("Save").performClick()
-		assertTrue(saveHighlightCalled)
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("SaveHighlightButton").performClick()
+        assertTrue(saveHighlightCalled)
+    }
 
-	@Test
-	fun whenCancelButtonIsClickedThenGoBackIsCalled() {
-		val uiState = EditAndSaveHighlightUiState()
-		var goBackCalled = false
+    @Test
+    fun whenTextFieldIsDisplayedThenItAcceptsInput() {
+        val uiState = EditAndSaveHighlightUiState(highlightText = "")
 
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = { goBackCalled = true }
-				)
-			}
-		}
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = {},
+                    goBack = {}
+                )
+            }
+        }
 
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithText("Cancel").performClick()
-		assertTrue(goBackCalled)
-	}
-
-	@Test
-	fun whenTextFieldIsDisplayedThenItAcceptsInput() {
-		val uiState = EditAndSaveHighlightUiState(highlightText = "")
-
-		composeTestRule.setContent {
-			AppTheme {
-				EditAndSaveHighlight(
-					uiState = uiState,
-					updateHighlightText = {},
-					saveHighlight = {},
-					goBack = {}
-				)
-			}
-		}
-
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithTag("AddHighlightTextField").assertIsDisplayed().assertIsEnabled()
-	}
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("AddHighlightTextField").assertIsDisplayed().assertIsEnabled()
+    }
 }

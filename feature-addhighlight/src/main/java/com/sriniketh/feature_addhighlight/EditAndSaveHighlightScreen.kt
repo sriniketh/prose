@@ -148,11 +148,13 @@ internal fun EditAndSaveHighlight(
                         state = rememberTooltipState(),
                     ) {
                         FilledIconButton(
+                            modifier = modifier.testTag("SaveHighlightButton"),
                             onClick = {
                                 saveHighlight(uiState.highlightText)
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             },
-                            shape = IconButtonDefaults.smallPressedShape
+                            shape = IconButtonDefaults.smallPressedShape,
+                            enabled = !uiState.isLoading
                         ) {
                             Row {
                                 Icon(
@@ -166,8 +168,6 @@ internal fun EditAndSaveHighlight(
             )
         },
     ) { contentPadding ->
-        val haptic = LocalHapticFeedback.current
-
         if (uiState.isLoading) {
             LinearProgressIndicator(
                 modifier = modifier
