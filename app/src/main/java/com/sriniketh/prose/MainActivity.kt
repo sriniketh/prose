@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -16,9 +15,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                AppSurface {
-                    ProseAppScreen()
-                }
+                ProseAppScreen()
             }
         }
     }

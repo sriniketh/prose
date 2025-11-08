@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sriniketh.core_design.ui.components.NavigationBack
+import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -117,7 +117,7 @@ internal fun EditAndSaveHighlight(
     Scaffold(
         modifier = modifier.fillMaxSize(),
         topBar = {
-            LargeTopAppBar(
+            ProseTopAppBar(
                 title = {
                     Text(
                         text = stringResource(id = uiState.screenTitle),

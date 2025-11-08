@@ -17,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
@@ -78,7 +78,7 @@ internal fun Bookshelf(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
+            ProseTopAppBar(
                 title = {
                     Text(
                         text = stringResource(id = R.string.bookshelf_pagetitle),
@@ -132,7 +132,7 @@ internal fun Bookshelf(
                             .fillMaxWidth()
                             .padding(12.dp)
                             .clickable { goToHighlight(bookUIState.id) },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         Row(
                             modifier = modifier

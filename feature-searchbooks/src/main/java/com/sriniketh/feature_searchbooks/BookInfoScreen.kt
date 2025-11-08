@@ -18,7 +18,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -48,6 +47,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.components.NavigationBack
+import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_models.book.Book
@@ -87,7 +87,7 @@ internal fun BookInfo(
             .fillMaxSize()
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            LargeTopAppBar(
+            ProseTopAppBar(
                 title = { BookInfoScreenTitle(uiState) },
                 navigationIcon = { NavigationBack(goBack) },
                 scrollBehavior = scrollBehavior
@@ -180,7 +180,7 @@ private fun BookInfoLayout(
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                 ) {
                     Text(
                         modifier = modifier.padding(12.dp),

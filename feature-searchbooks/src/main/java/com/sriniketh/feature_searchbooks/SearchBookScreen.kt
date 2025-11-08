@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.sriniketh.core_design.ui.components.AppSurface
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
@@ -135,7 +135,7 @@ internal fun SearchBook(
             },
             expanded = expanded,
             onExpandedChange = { expanded = it },
-            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
         ) {
             if (uiState.isLoading) {
                 LinearProgressIndicator(
@@ -207,7 +207,7 @@ internal fun SearchBook(
 @Composable
 internal fun SearchBookScreenPreview() {
     AppTheme {
-        AppSurface {
+        Surface {
             SearchBook(
                 uiState = BookSearchUiState(
                     bookUiStates = listOf(
