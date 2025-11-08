@@ -10,7 +10,7 @@ android-library-plugin-version = "8.13.0"
 kotlin-android-plugin-version = "2.2.21"
 kotlin-jvm-plugin-version = "2.2.21"
 kotlin-compose-plugin-version = "2.2.21"
-ksp-plugin-version = "2.3.1"
+ksp-plugin-version = "2.3.2"
 hilt-plugin-version = "2.57.2"
 android-navigation-safe-args-plugin-version = "2.9.5"
 
