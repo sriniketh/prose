@@ -6,7 +6,7 @@ jvmToolchainVersion = "17"
 
 # Plugin dependencies
 android-application-plugin-version = "8.13.1"
-android-library-plugin-version = "8.13.1"
+android-library-plugin-version = "8.13.2"
 kotlin-android-plugin-version = "2.2.21"
 kotlin-jvm-plugin-version = "2.2.21"
 kotlin-compose-plugin-version = "2.2.21"
