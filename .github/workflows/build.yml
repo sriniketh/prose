@@ -30,7 +30,7 @@ jobs:
         run: ./gradlew test
 
       - name: Upload unit test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: unit-test-results
@@ -101,7 +101,7 @@ jobs:
           script: ./gradlew :feature-bookshelf:connectedDebugAndroidTest :feature-searchbooks:connectedDebugAndroidTest :feature-viewhighlights:connectedDebugAndroidTest :feature-addhighlight:connectedDebugAndroidTest
 
       - name: Upload UI test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ui-test-results
