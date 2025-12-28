@@ -26,7 +26,7 @@ material3-version = "1.5.0-alpha11"
 google-font-version = "1.10.0"
 mlkit-version = "19.0.1"
 lifecycle-version = "2.10.0"
-activity-version = "1.12.1"
+activity-version = "1.12.2"
 hilt-navigation-version = "1.3.0"
 
 timber-version = "5.0.1"
