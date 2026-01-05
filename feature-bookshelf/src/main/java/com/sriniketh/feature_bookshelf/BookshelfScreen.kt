@@ -41,8 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.sriniketh.core_design.ui.AnimationConstants
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
+import com.sriniketh.core_design.ui.sharedBoundsTransition
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
 import kotlinx.coroutines.launch
@@ -75,8 +77,8 @@ internal fun Bookshelf(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier
-            .fillMaxSize()
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .fillMaxSize(),
         topBar = {
             ProseTopAppBar(
                 title = {
@@ -92,7 +94,8 @@ internal fun Bookshelf(
             FloatingActionButton(
                 onClick = goToSearch,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = modifier.sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)
             ) {
                 Icon(
                     painter = painterResource(com.sriniketh.core_design.R.drawable.ic_search),

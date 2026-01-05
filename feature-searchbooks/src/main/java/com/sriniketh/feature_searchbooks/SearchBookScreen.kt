@@ -42,7 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.sriniketh.core_design.ui.AnimationConstants
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
+import com.sriniketh.core_design.ui.sharedBoundsTransition
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
 
@@ -82,13 +84,15 @@ internal fun SearchBook(
     var expanded by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)
+            .fillMaxSize()
     ) { contentPadding ->
         SearchBar(
             modifier = modifier
-                .fillMaxWidth()
                 .padding(contentPadding)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .fillMaxWidth(),
             inputField = {
                 SearchBarDefaults.InputField(
                     query = text,
@@ -135,7 +139,8 @@ internal fun SearchBook(
             },
             expanded = expanded,
             onExpandedChange = { expanded = it },
-            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
+            colors = SearchBarDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+            windowInsets = SearchBarDefaults.fullScreenWindowInsets
         ) {
             if (uiState.isLoading) {
                 LinearProgressIndicator(
@@ -146,8 +151,8 @@ internal fun SearchBook(
             }
             LazyColumn(
                 modifier = modifier
-                    .fillMaxSize()
                     .padding(contentPadding)
+                    .fillMaxSize()
             ) {
                 itemsIndexed(uiState.bookUiStates) { _, item ->
                     Row(
