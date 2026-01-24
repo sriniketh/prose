@@ -21,7 +21,9 @@ object DatabaseModule {
     fun providesBookDatabase(
         @ApplicationContext context: Context
     ): BookDatabase {
-        return Room.databaseBuilder(context, BookDatabase::class.java, "book-db").build()
+        return Room.databaseBuilder(context, BookDatabase::class.java, "book-db")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
