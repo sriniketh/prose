@@ -1,5 +1,6 @@
 package com.sriniketh.prose.core_network.di
 
+import com.sriniketh.prose.core_network.BuildConfig
 import com.sriniketh.prose.core_network.BooksRemoteDataSource
 import com.sriniketh.prose.core_network.retrofit.BooksApi
 import com.sriniketh.prose.core_network.retrofit.BooksRemoteDataSourceImpl
@@ -30,7 +31,10 @@ object NetworkModule {
             OkHttpClient.Builder()
                 .addInterceptor(
                     HttpLoggingInterceptor().apply {
-                        setLevel(HttpLoggingInterceptor.Level.BODY)
+                        setLevel(
+                            if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
+                            else HttpLoggingInterceptor.Level.NONE
+                        )
                     }
                 )
                 .build()
