@@ -30,7 +30,7 @@ class FakeBookDao : BookDao {
 	}
 
 	var shouldDoesBookExistThrowException = false
-	override fun doesBookExist(bookId: String): Boolean {
+	override suspend fun doesBookExist(bookId: String): Boolean {
 		if (shouldDoesBookExistThrowException) {
 			throw RuntimeException("some error checking if book exists")
 		}

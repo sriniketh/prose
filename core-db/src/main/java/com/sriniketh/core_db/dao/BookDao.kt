@@ -17,7 +17,7 @@ interface BookDao {
 	fun getAllBooks(): Flow<List<BookEntity>>
 
 	@Query("SELECT COUNT(*) FROM BookEntity WHERE id = :bookId")
-	fun doesBookExist(bookId: String): Boolean
+	suspend fun doesBookExist(bookId: String): Boolean
 
 	@Delete
 	suspend fun deleteBook(book: BookEntity)
