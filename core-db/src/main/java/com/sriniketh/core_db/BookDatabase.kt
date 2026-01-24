@@ -9,7 +9,7 @@ import com.sriniketh.core_db.dao.HighlightDao
 import com.sriniketh.core_db.entity.BookEntity
 import com.sriniketh.core_db.entity.HighlightEntity
 
-@Database(entities = [BookEntity::class, HighlightEntity::class], version = 1, exportSchema = false)
+@Database(entities = [BookEntity::class, HighlightEntity::class], version = 1, exportSchema = true)
 @TypeConverters(ListTypeConverter::class)
 abstract class BookDatabase : RoomDatabase() {
 

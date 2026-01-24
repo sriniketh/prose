@@ -9,6 +9,10 @@ kotlin {
 	jvmToolchain(libs.versions.jvmToolchainVersion.get().toInt())
 }
 
+ksp {
+	arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 android {
 	compileSdk = libs.versions.compileSdkVersion.get().toInt()
 
