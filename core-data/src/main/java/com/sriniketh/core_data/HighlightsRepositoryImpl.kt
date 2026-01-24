@@ -25,9 +25,12 @@ class HighlightsRepositoryImpl @Inject constructor(
 
     override suspend fun loadHighlightFromDb(highlightId: String): Result<Highlight> =
         try {
-            val highlight =
-                localHighlightsDataSource.getHighlightById(highlightId).asHighlight()
-            Result.success(highlight)
+            val highlightEntity = localHighlightsDataSource.getHighlightById(highlightId)
+            if (highlightEntity != null) {
+                Result.success(highlightEntity.asHighlight())
+            } else {
+                Result.failure(NoSuchElementException("Highlight with id $highlightId not found"))
+            }
         } catch (exception: Exception) {
             Timber.e(exception)
             Result.failure(exception)

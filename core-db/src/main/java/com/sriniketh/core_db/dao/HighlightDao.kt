@@ -15,7 +15,7 @@ interface HighlightDao {
     suspend fun insertHighlight(highlightEntity: HighlightEntity)
 
     @Query("SELECT * FROM highlightEntity WHERE id = :id")
-    suspend fun getHighlightById(id: String): HighlightEntity
+    suspend fun getHighlightById(id: String): HighlightEntity?
 
     @Query("SELECT * FROM highlightEntity WHERE bookId = :bookId")
     fun getAllHighlightsForBook(bookId: String): Flow<List<HighlightEntity>>

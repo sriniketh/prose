@@ -19,11 +19,11 @@ class FakeHighlightDao : HighlightDao {
 
 	var highlightEntityToReturn: HighlightEntity? = null
 	var shouldGetHighlightByIdThrowException = false
-	override suspend fun getHighlightById(id: String): HighlightEntity {
+	override suspend fun getHighlightById(id: String): HighlightEntity? {
 		if (shouldGetHighlightByIdThrowException) {
 			throw RuntimeException("some error fetching highlight by id")
 		}
-		return highlightEntityToReturn ?: HighlightEntity(id, "bookId", "text", "timestamp")
+		return highlightEntityToReturn
 	}
 
     val highlightsInDb = mutableListOf<HighlightEntity>()
