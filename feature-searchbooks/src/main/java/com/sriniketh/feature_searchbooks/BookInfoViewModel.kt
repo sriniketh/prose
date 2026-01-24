@@ -32,12 +32,13 @@ class BookInfoViewModel @Inject constructor(
             }
             val result = fetchBookInfoUseCase(volumeId)
             if (result.isSuccess) {
+                val book = result.getOrThrow()
+                val isInDb = isBookInDbUseCase(book)
                 _uiState.update { state ->
-                    val book = result.getOrThrow()
                     state.copy(
                         isLoading = false,
                         book = book,
-                        canAddToShelf = !isBookInDbUseCase(book),
+                        canAddToShelf = !isInDb,
                         addBookToShelf = { addBookToShelf(book) }
                     )
                 }
