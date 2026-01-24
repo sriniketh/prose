@@ -31,7 +31,12 @@ internal object ImageRotater {
                 val matrix = Matrix()
                 if (rotationDegrees != 0) matrix.postRotate(rotationDegrees.toFloat())
                 val bitmap = context.contentResolver.openInputStream(imageUri)
-                    .use { BitmapFactory.decodeStream(it) }
+                    ?.use { BitmapFactory.decodeStream(it) }
+
+                if (bitmap == null) {
+                    Timber.e("${this.logTag()}: Failed to decode bitmap from URI")
+                    return null
+                }
 
                 Timber.d("${this.logTag()}: Bitmap rotated successfully")
                 return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
