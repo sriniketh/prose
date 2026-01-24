@@ -190,7 +190,7 @@ internal fun ViewHighlights(
                     .padding(contentPadding),
                 state = lazyListState
             ) {
-                items(uiState.highlights) { highlightUiState ->
+                items(uiState.highlights, key = { it.id }) { highlightUiState ->
                     var showDeleteDialog by remember { mutableStateOf(false) }
                     if (showDeleteDialog) {
                         DeleteHighlightAlertDialog(highlightUiState) {

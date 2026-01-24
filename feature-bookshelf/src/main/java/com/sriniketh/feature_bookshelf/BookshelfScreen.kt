@@ -129,7 +129,7 @@ internal fun Bookshelf(
                     .fillMaxSize()
                     .padding(contentPadding)
             ) {
-                itemsIndexed(uiState.books) { _, bookUIState ->
+                itemsIndexed(uiState.books, key = { _, book -> book.id }) { _, bookUIState ->
                     Card(
                         modifier = modifier
                             .fillMaxWidth()

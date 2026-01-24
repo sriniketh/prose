@@ -154,7 +154,7 @@ internal fun SearchBook(
                     .padding(contentPadding)
                     .fillMaxSize()
             ) {
-                itemsIndexed(uiState.bookUiStates) { _, item ->
+                itemsIndexed(uiState.bookUiStates, key = { _, item -> item.id }) { _, item ->
                     Row(
                         modifier = modifier
                             .padding(12.dp)
