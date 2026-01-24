@@ -179,7 +179,7 @@ internal fun Bookshelf(
 
         uiState.snackBarText?.let { message ->
             val errorMessage = stringResource(id = message)
-            LaunchedEffect(key1 = null) {
+            LaunchedEffect(key1 = message) {
                 launch {
                     snackbarHostState.showSnackbar(errorMessage)
                 }

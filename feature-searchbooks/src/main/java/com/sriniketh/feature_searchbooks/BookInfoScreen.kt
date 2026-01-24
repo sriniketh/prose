@@ -110,7 +110,7 @@ internal fun BookInfo(
 
         uiState.snackBarText?.let { resId ->
             val snackbarMessage = stringResource(id = resId)
-            LaunchedEffect(key1 = null) {
+            LaunchedEffect(key1 = resId) {
                 launch {
                     snackbarHostState.showSnackbar(snackbarMessage)
                 }
