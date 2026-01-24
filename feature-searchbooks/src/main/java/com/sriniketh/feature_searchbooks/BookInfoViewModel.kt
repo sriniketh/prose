@@ -10,6 +10,7 @@ import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,9 +22,9 @@ class BookInfoViewModel @Inject constructor(
     private val isBookInDbUseCase: IsBookInDbUseCase
 ) : ViewModel() {
 
-    private var _uiState: MutableStateFlow<BookInfoUiState> =
+    private val _uiState: MutableStateFlow<BookInfoUiState> =
         MutableStateFlow(BookInfoUiState())
-    internal val uiState: StateFlow<BookInfoUiState> = _uiState
+    internal val uiState: StateFlow<BookInfoUiState> = _uiState.asStateFlow()
 
     fun getBookDetail(volumeId: String) {
         viewModelScope.launch {
