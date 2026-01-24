@@ -80,6 +80,3 @@ lint/generated/
 lint/outputs/
 lint/tmp/
 # lint/reports/
-
-# LLM files
-CLAUDE.md
