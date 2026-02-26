@@ -86,7 +86,7 @@ fun EditAndSaveHighlightScreen(
     bookId: String,
     goBack: () -> Unit
 ) {
-    LaunchedEffect(key1 = bookId) {
+    LaunchedEffect(key1 = highlightId) {
         viewModel.loadHighlightText(highlightId)
     }
 
