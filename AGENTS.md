@@ -29,15 +29,15 @@ BOOKS_API_KEY="your-google-books-api-key"
 
 ## Architecture Overview
 
-Prose is a multi-module Android app for capturing book highlights using OCR. It follows unidirectional data flow (UDF) with Jetpack Compose UI.
+Prose is a multi-module Android app for capturing book highlights from physical books using OCR (ML Kit). It follows unidirectional data flow (UDF) with Jetpack Compose UI. Uses JVM toolchain 17.
 
 ### Module Structure
 
 **Core Modules:**
-- `core-network` - Retrofit API client for Google Books API
+- `core-network` - Retrofit API client for Google Books API (Moshi for JSON)
 - `core-db` - Room database with `BookEntity` and `HighlightEntity`
 - `core-data` - Repositories and UseCases that combine network/db operations
-- `core-models` - Domain models (`Book`, `Highlight`, `BookSearch`)
+- `core-models` - Domain models (`Book`, `Highlight`, `BookSearch`) — pure Kotlin, no Android deps
 - `core-design` - Shared Compose theme and components
 - `core-platform` - Platform utilities (file operations, URI encoding)
 
@@ -67,10 +67,24 @@ Hilt is used throughout. Each module has a `di/` package with `@Module` classes:
 
 ### Navigation
 
-Navigation Compose with routes defined in `app/.../Navigation.kt`. The `ProseAppScreen` composable sets up the NavHost with all destinations. Screen arguments are passed via route paths (e.g., `view_highlights/{bookId}`).
+Navigation Compose with routes defined in `app/src/main/java/com/sriniketh/prose/Navigation.kt`. The `ProseAppScreen` composable sets up the NavHost with all destinations. Screen arguments are passed via route paths (e.g., `view_highlights/{bookId}`).
+
+### Key Libraries
+
+- **Compose BOM** for UI with Material 3 + DynamicColors
+- **Retrofit 3 + Moshi** for networking
+- **Room** for local persistence
+- **Coil** for image loading
+- **Cropify** for image cropping
+- **Timber** for logging
 
 ### Testing Patterns
 
-- ViewModels are tested with Turbine for Flow assertions and fake repositories
+- ViewModels are tested with **Turbine** for Flow assertions and fake repositories
 - Use `StandardTestDispatcher()` with `Dispatchers.setMain()` for coroutine tests
 - Fake implementations live in `src/test/.../fakes/` directories
+- **MockK** is available for mocking
+
+### Version Catalog
+
+All dependency versions are managed in `gradle/libs.versions.toml`. Use version catalog references (`libs.versions.*`, `libs.plugins.*`, `libs.*`) rather than hardcoded versions.
