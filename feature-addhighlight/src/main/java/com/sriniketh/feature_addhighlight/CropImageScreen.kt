@@ -4,12 +4,14 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,9 +21,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import io.moyuru.cropify.Cropify
 import io.moyuru.cropify.rememberCropifyState
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun CropImageScreen(
     modifier: Modifier = Modifier,
@@ -34,16 +38,23 @@ internal fun CropImageScreen(
     Scaffold(
         modifier = modifier.testTag("AddHighlightCropImageScreen"),
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = { cropifyState.crop() },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-            ) {
-                Icon(
-                    painter = painterResource(com.sriniketh.core_design.R.drawable.ic_done),
-                    contentDescription = stringResource(id = R.string.done_fab_cont_desc)
-                )
-            }
+                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                icon = {
+                    Icon(
+                        painter = painterResource(com.sriniketh.core_design.R.drawable.ic_done),
+                        contentDescription = stringResource(id = R.string.done_fab_cont_desc)
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(id = R.string.select_fab_text),
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->

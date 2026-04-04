@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="done_fab_cont_desc">Done cropping button</string>
+    <string name="select_fab_text">Select</string>
     <string name="inputhighlight_fragment_label">Edit highlight</string>
     <string name="save_highlight_title_text">Save highlight</string>
     <string name="edit_highlight_title_text">Edit highlight</string>
