@@ -2,7 +2,10 @@ package com.sriniketh.feature_viewhighlights
 
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
+import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
+import com.sriniketh.feature_viewhighlights.fakes.FakeBooksRepository
+import com.sriniketh.feature_viewhighlights.fakes.FakeFileSource
 import com.sriniketh.feature_viewhighlights.fakes.FakeHighlightsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +16,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -22,19 +26,26 @@ import org.junit.Test
 class ViewHighlightsViewModelTest {
 
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
+    private lateinit var fakeBooksRepository: FakeBooksRepository
+    private lateinit var fakeFileSource: FakeFileSource
     private lateinit var getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
     private lateinit var deleteHighlightUseCase: DeleteHighlightUseCase
+    private lateinit var exportHighlightsUseCase: ExportHighlightsUseCase
     private lateinit var viewModel: ViewHighlightsViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeHighlightsRepository = FakeHighlightsRepository()
+        fakeBooksRepository = FakeBooksRepository()
+        fakeFileSource = FakeFileSource()
         getAllSavedHighlightsUseCase = GetAllSavedHighlightsUseCase(fakeHighlightsRepository)
         deleteHighlightUseCase = DeleteHighlightUseCase(fakeHighlightsRepository)
+        exportHighlightsUseCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
         viewModel = ViewHighlightsViewModel(
             getAllSavedHighlightsUseCase,
-            deleteHighlightUseCase
+            deleteHighlightUseCase,
+            exportHighlightsUseCase
         )
     }
 
@@ -217,6 +228,65 @@ class ViewHighlightsViewModelTest {
             assertEquals("test-highlight-id", highlightUIState.id)
             assertEquals("Test highlight text", highlightUIState.text)
             assertEquals("2023-01-01 12:00 PM", highlightUIState.savedOn)
+        }
+    }
+
+    @Test
+    fun `when exportHighlights is called then sets loading state to true`() = runTest {
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+
+            viewModel.exportHighlights("test-book-id")
+
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isLoading)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `when exportHighlights succeeds then emits export uri and clears loading`() = runTest {
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+
+            viewModel.exportHighlights("test-book-id")
+
+            awaitItem() // loading
+            val successState = awaitItem()
+            assertFalse(successState.isLoading)
+            assertNotNull(successState.exportUri)
+        }
+    }
+
+    @Test
+    fun `when exportHighlights fails then shows error and clears loading`() = runTest {
+        fakeBooksRepository.shouldGetBookByIdFromDbThrowException = true
+
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+
+            viewModel.exportHighlights("test-book-id")
+
+            awaitItem() // loading
+            val errorState = awaitItem()
+            assertFalse(errorState.isLoading)
+            assertEquals(R.string.export_error_message, errorState.snackBarText)
+        }
+    }
+
+    @Test
+    fun `when clearExportUri is called then clears the uri`() = runTest {
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+
+            viewModel.exportHighlights("test-book-id")
+            awaitItem() // loading
+            awaitItem() // success with uri
+
+            viewModel.clearExportUri()
+            val clearedState = awaitItem()
+            assertNull(clearedState.exportUri)
         }
     }
 }

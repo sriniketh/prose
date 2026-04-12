@@ -1,9 +1,11 @@
 package com.sriniketh.feature_viewhighlights
 
+import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
+import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ViewHighlightsViewModel @Inject constructor(
     private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase,
-    private val deleteHighlightUseCase: DeleteHighlightUseCase
+    private val deleteHighlightUseCase: DeleteHighlightUseCase,
+    private val exportHighlightsUseCase: ExportHighlightsUseCase
 ) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
@@ -67,6 +70,36 @@ class ViewHighlightsViewModel @Inject constructor(
         }
     }
 
+    internal fun exportHighlights(bookId: String) {
+        viewModelScope.launch {
+            _highlightsUIStateFlow.update { state ->
+                state.copy(isLoading = true)
+            }
+            val result = exportHighlightsUseCase(bookId)
+            if (result.isSuccess) {
+                _highlightsUIStateFlow.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        exportUri = result.getOrThrow()
+                    )
+                }
+            } else {
+                _highlightsUIStateFlow.update { state ->
+                    state.copy(
+                        isLoading = false,
+                        snackBarText = R.string.export_error_message
+                    )
+                }
+            }
+        }
+    }
+
+    internal fun clearExportUri() {
+        _highlightsUIStateFlow.update { state ->
+            state.copy(exportUri = null)
+        }
+    }
+
     private fun Highlight.asHighlightUIState(): HighlightUIState = HighlightUIState(
         id = id,
         text = text,
@@ -93,7 +126,8 @@ class ViewHighlightsViewModel @Inject constructor(
 internal data class ViewHighlightsUIState(
     val isLoading: Boolean = false,
     val highlights: List<HighlightUIState> = emptyList(),
-    @StringRes val snackBarText: Int? = null
+    @StringRes val snackBarText: Int? = null,
+    val exportUri: Uri? = null
 )
 
 internal data class HighlightUIState(
@@ -108,4 +142,5 @@ internal sealed interface ViewHighlightsEvent {
     data object OnCameraPermissionDenied : ViewHighlightsEvent
     data object OnCameraPermissionGranted : ViewHighlightsEvent
     data class OnEditHighlight(val highlightId: String) : ViewHighlightsEvent
+    data object OnExportHighlights : ViewHighlightsEvent
 }
