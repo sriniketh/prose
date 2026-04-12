@@ -13,6 +13,9 @@ This file provides guidance to AI coding agents like Claude Code (claude.ai/code
 # Run unit tests for a specific module
 ./gradlew :feature-bookshelf:test
 
+# Run a specific test class (must use testDebugUnitTest, not test, with --tests)
+./gradlew :feature-bookshelf:testDebugUnitTest --tests "com.sriniketh.feature_bookshelf.SomeTest"
+
 # Run instrumented/UI tests (requires emulator or device)
 ./gradlew connectedDebugAndroidTest
 
