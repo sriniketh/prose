@@ -83,6 +83,10 @@ class FakeBooksRepository : BooksRepository {
 		}
 	}
 
+	override suspend fun getBookByIdFromDb(bookId: String): Result<Book> {
+		return Result.success(fakeBook)
+	}
+
 	override suspend fun deleteBookFromDb(book: Book): Result<Unit> {
 		deletedBook = book
 		return if (shouldDeleteBookFromDbThrowException) {
