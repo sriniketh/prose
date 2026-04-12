@@ -48,7 +48,8 @@ class ExportHighlightsUseCase @Inject constructor(
         val adapter = moshi.adapter(HighlightsExport::class.java).indent("  ")
         val json = adapter.toJson(export)
 
-        val uri = fileSource.writeToFile("highlights_export.json", json)
+        val fileName = "${book.info.title.lowercase().replace(" ", "_")}_export.json"
+        val uri = fileSource.writeToFile(fileName, json)
         Result.success(uri)
     } catch (exception: Exception) {
         Result.failure(exception)

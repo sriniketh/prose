@@ -43,7 +43,7 @@ class ExportHighlightsUseCaseTest {
         assertTrue(writtenContent.contains("\"publisher\""))
         assertTrue(writtenContent.contains("\"highlights\""))
         assertTrue(writtenContent.contains("Test highlight text"))
-        assertEquals("highlights_export.json", fakeFileSource.lastWrittenFileName)
+        assertEquals("test_title_export.json", fakeFileSource.lastWrittenFileName)
     }
 
     @Test
