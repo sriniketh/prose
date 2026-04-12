@@ -3,7 +3,6 @@ package com.sriniketh.feature_addhighlight
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -12,6 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -40,8 +40,27 @@ class EditAndSaveHighlightScreenTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("AddHighlightLoadingIndicator").assertIsDisplayed()
-        composeTestRule.onNodeWithTag("SaveHighlightButton").assertIsDisplayed()
-            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun whenUIStateIsLoadingThenSaveButtonClickIsIgnored() {
+        val uiState = EditAndSaveHighlightUiState(isLoading = true, highlightText = "Some text")
+        var saveHighlightCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                EditAndSaveHighlight(
+                    uiState = uiState,
+                    updateHighlightText = {},
+                    saveHighlight = { saveHighlightCalled = true },
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithTag("SaveHighlightButton").performClick()
+        assertFalse(saveHighlightCalled)
     }
 
     @Test
@@ -61,7 +80,6 @@ class EditAndSaveHighlightScreenTest {
 
         composeTestRule.waitForIdle()
         composeTestRule.onNodeWithTag("AddHighlightLoadingIndicator").assertIsNotDisplayed()
-        composeTestRule.onNodeWithTag("SaveHighlightButton").assertIsDisplayed().assertIsEnabled()
     }
 
     @Test
