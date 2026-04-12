@@ -45,6 +45,9 @@ dependencies {
 	implementation(libs.coroutines.android)
 	implementation(libs.timber)
 
+	implementation(libs.moshi)
+	ksp(libs.moshi.codegen)
+
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
 

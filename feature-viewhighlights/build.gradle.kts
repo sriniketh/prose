@@ -65,9 +65,11 @@ dependencies {
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
 
+	testImplementation(project(":core-platform"))
 	testImplementation(libs.junit)
 	testImplementation(libs.coroutines.test)
 	testImplementation(libs.cashapp.turbine)
+	testImplementation(libs.mockk)
 	androidTestImplementation(libs.android.junit)
 	androidTestImplementation(libs.compose.junit)
 	debugImplementation(libs.compose.test.manifest)

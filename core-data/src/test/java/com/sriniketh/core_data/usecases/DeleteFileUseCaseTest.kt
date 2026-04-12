@@ -12,7 +12,7 @@ class DeleteFileUseCaseTest {
 
 	@Test
 	fun `when invoked then deletes file using file source`() {
-		val file = fileSource.createNewFile()
+		val file = fileSource.createNewFile("test.jpg")
 		val result = deleteFileUseCase(file)
 		assertTrue(result)
 		assertTrue(fileSource.deletedUris.contains(file))
@@ -21,7 +21,7 @@ class DeleteFileUseCaseTest {
 	@Test
 	fun `when file source fails to delete file then returns false`() {
 		fileSource.shouldDeleteFail = true
-		val file = fileSource.createNewFile()
+		val file = fileSource.createNewFile("test.jpg")
 		val result = deleteFileUseCase(file)
 		assertFalse(result)
 	}

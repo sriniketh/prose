@@ -28,6 +28,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -45,6 +46,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -63,6 +65,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -81,6 +84,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -98,6 +102,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -114,6 +119,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -130,6 +136,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -147,6 +154,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = { eventTriggered = it }
                 )
             }
@@ -165,6 +173,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -187,6 +196,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = { eventTriggered = it }
                 )
             }
@@ -207,6 +217,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -234,6 +245,7 @@ class ViewHighlightsScreenTest {
                             )
                         )
                     ),
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }
@@ -254,6 +266,7 @@ class ViewHighlightsScreenTest {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
+                    bookId = "test-book-id",
                     onEvent = {}
                 )
             }

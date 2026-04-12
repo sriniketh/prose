@@ -52,6 +52,10 @@ class FakeBooksRepository : BooksRepository {
 		}
 	}
 
+	override suspend fun getBookByIdFromDb(bookId: String): Result<Book> {
+		return Result.success(fakeBook)
+	}
+
 	override suspend fun deleteBookFromDb(book: Book): Result<Unit> {
 		return if (shouldDeleteBookFromDbThrowException) {
 			Result.failure(RuntimeException("Delete book failed"))

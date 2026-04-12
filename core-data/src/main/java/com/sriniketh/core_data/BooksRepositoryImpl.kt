@@ -64,6 +64,19 @@ class BooksRepositoryImpl @Inject constructor(
 				emit(Result.failure(exception))
 			}
 
+	override suspend fun getBookByIdFromDb(bookId: String): Result<Book> =
+		try {
+			val entity = localBookDataSource.getBookById(bookId)
+			if (entity != null) {
+				Result.success(entity.asBook())
+			} else {
+				Result.failure(NoSuchElementException("Book not found: $bookId"))
+			}
+		} catch (exception: Exception) {
+			Timber.e(exception, this.logTag())
+			Result.failure(exception)
+		}
+
 	override suspend fun deleteBookFromDb(book: Book): Result<Unit> =
 		try {
 			localBookDataSource.deleteBook(book.asBookEntity())

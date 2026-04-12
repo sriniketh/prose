@@ -3,7 +3,7 @@ package com.sriniketh.feature_addhighlight
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.sriniketh.core_data.usecases.CreateFileUseCase
+import com.sriniketh.core_data.usecases.CreateTempImageFileUseCase
 import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,13 +14,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CaptureAndCropImageViewModel @Inject constructor(
-    private val createFileUseCase: CreateFileUseCase,
+    private val createTempImageFileUseCase: CreateTempImageFileUseCase,
     private val deleteFileUseCase: DeleteFileUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val imageUri: Uri by lazy {
-        savedStateHandle.get<Uri>("imageUri") ?: createFileUseCase().also {
+        savedStateHandle.get<Uri>("imageUri") ?: createTempImageFileUseCase().also {
             savedStateHandle["imageUri"] = it
         }
     }

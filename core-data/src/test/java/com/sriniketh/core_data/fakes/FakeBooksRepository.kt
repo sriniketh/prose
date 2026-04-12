@@ -15,6 +15,7 @@ class FakeBooksRepository : BooksRepository {
 	var shouldGetAllSavedBooksFromDbThrowException = false
 	var shouldDoesBookExistInDbThrowException = false
 	var shouldDeleteBookFromDbThrowException = false
+	var shouldGetBookByIdFromDbThrowException = false
 
 	var searchQueryPassed: String? = null
 	var volumeIdPassed: String? = null
@@ -80,6 +81,14 @@ class FakeBooksRepository : BooksRepository {
 			emit(Result.failure(RuntimeException("Get all books failed")))
 		} else {
 			emit(Result.success(listOf(fakeBook)))
+		}
+	}
+
+	override suspend fun getBookByIdFromDb(bookId: String): Result<Book> {
+		return if (shouldGetBookByIdFromDbThrowException) {
+			Result.failure(NoSuchElementException("Book not found"))
+		} else {
+			Result.success(fakeBook)
 		}
 	}
 

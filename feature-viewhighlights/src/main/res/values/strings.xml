@@ -17,4 +17,6 @@
     <string name="delete_dialog_positive_button_label">Delete</string>
     <string name="delete_dialog_negative_button_label">Cancel</string>
     <string name="delete_error_message">Unable to delete highlight.</string>
+    <string name="export_error_message">Unable to export highlights.</string>
+    <string name="share_button_cont_desc">Share highlights</string>
 </resources>
