@@ -98,6 +98,7 @@ fun ViewHighlightsScreen(
     ViewHighlights(
         modifier = modifier,
         uiState = uiState,
+        bookId = bookId,
         onEvent = { event ->
             when (event) {
                 is ViewHighlightsEvent.OnBackPressed -> {
@@ -112,10 +113,6 @@ fun ViewHighlightsScreen(
                     goToEditHighlightScreen(event.highlightId)
                 }
 
-                is ViewHighlightsEvent.OnExportHighlights -> {
-                    viewModel.exportHighlights(bookId)
-                }
-
                 else -> viewModel.processEvent(event)
             }
         }
@@ -126,6 +123,7 @@ fun ViewHighlightsScreen(
 @Composable
 internal fun ViewHighlights(
     uiState: ViewHighlightsUIState,
+    bookId: String,
     modifier: Modifier = Modifier,
     onEvent: (ViewHighlightsEvent) -> Unit
 ) {
@@ -165,7 +163,7 @@ internal fun ViewHighlights(
                 },
                 navigationIcon = { NavigationBack { onEvent(ViewHighlightsEvent.OnBackPressed) } },
                 actions = {
-                    IconButton(onClick = { onEvent(ViewHighlightsEvent.OnExportHighlights) }) {
+                    IconButton(onClick = { onEvent(ViewHighlightsEvent.OnExportHighlights(bookId)) }) {
                         Icon(
                             painter = painterResource(com.sriniketh.core_design.R.drawable.ic_share),
                             contentDescription = stringResource(id = R.string.share_button_cont_desc)

@@ -66,11 +66,15 @@ class ViewHighlightsViewModel @Inject constructor(
                 }
             }
 
+            is ViewHighlightsEvent.OnExportHighlights -> {
+                exportHighlights(event.bookId)
+            }
+
             else -> Unit
         }
     }
 
-    internal fun exportHighlights(bookId: String) {
+    private fun exportHighlights(bookId: String) {
         viewModelScope.launch {
             _highlightsUIStateFlow.update { state ->
                 state.copy(isLoading = true)
@@ -142,5 +146,5 @@ internal sealed interface ViewHighlightsEvent {
     data object OnCameraPermissionDenied : ViewHighlightsEvent
     data object OnCameraPermissionGranted : ViewHighlightsEvent
     data class OnEditHighlight(val highlightId: String) : ViewHighlightsEvent
-    data object OnExportHighlights : ViewHighlightsEvent
+    data class OnExportHighlights(val bookId: String) : ViewHighlightsEvent
 }

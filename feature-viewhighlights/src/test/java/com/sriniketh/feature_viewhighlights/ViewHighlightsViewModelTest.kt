@@ -232,11 +232,11 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when exportHighlights is called then sets loading state to true`() = runTest {
+    fun `when OnExportHighlights event is processed then sets loading state to true`() = runTest {
         viewModel.highlightsUIStateFlow.test {
             awaitItem()
 
-            viewModel.exportHighlights("test-book-id")
+            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
 
             val loadingState = awaitItem()
             assertTrue(loadingState.isLoading)
@@ -246,11 +246,11 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when exportHighlights succeeds then emits export uri and clears loading`() = runTest {
+    fun `when OnExportHighlights event succeeds then emits export uri and clears loading`() = runTest {
         viewModel.highlightsUIStateFlow.test {
             awaitItem()
 
-            viewModel.exportHighlights("test-book-id")
+            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
 
             awaitItem() // loading
             val successState = awaitItem()
@@ -260,13 +260,13 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when exportHighlights fails then shows error and clears loading`() = runTest {
+    fun `when OnExportHighlights event fails then shows error and clears loading`() = runTest {
         fakeBooksRepository.shouldGetBookByIdFromDbThrowException = true
 
         viewModel.highlightsUIStateFlow.test {
             awaitItem()
 
-            viewModel.exportHighlights("test-book-id")
+            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
 
             awaitItem() // loading
             val errorState = awaitItem()
@@ -280,7 +280,7 @@ class ViewHighlightsViewModelTest {
         viewModel.highlightsUIStateFlow.test {
             awaitItem()
 
-            viewModel.exportHighlights("test-book-id")
+            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
             awaitItem() // loading
             awaitItem() // success with uri
 
