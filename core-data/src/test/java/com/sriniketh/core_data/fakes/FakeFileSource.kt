@@ -27,7 +27,9 @@ class FakeFileSource : FileSource {
 		}
 		lastWrittenFileName = fileName
 		lastWrittenContent = content
-		return Uri.parse("content://com.test.fileProvider/cache/$fileName")
+		val mockUri = mockk<Uri>()
+		every { mockUri.toString() } returns "content://com.test.fileProvider/cache/$fileName"
+		return mockUri
 	}
 
 	override fun deleteFile(uri: Uri): Boolean {
