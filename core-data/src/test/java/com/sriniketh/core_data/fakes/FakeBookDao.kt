@@ -37,6 +37,14 @@ class FakeBookDao : BookDao {
 		return booksInDb.any { it.id == bookId }
 	}
 
+	var shouldGetBookByIdThrowException = false
+	override suspend fun getBookById(bookId: String): BookEntity? {
+		if (shouldGetBookByIdThrowException) {
+			throw RuntimeException("some error fetching book by id")
+		}
+		return booksInDb.find { it.id == bookId }
+	}
+
 	var shouldDeleteBookThrowException = false
 	var deletedBookEntity: BookEntity? = null
 	override suspend fun deleteBook(book: BookEntity) {
