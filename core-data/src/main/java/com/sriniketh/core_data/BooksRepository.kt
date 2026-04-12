@@ -10,5 +10,6 @@ interface BooksRepository {
 	suspend fun insertBookIntoDb(book: Book): Result<Unit>
 	suspend fun doesBookExistInDb(bookId: String): Boolean
 	fun getAllSavedBooksFromDb(): Flow<Result<List<Book>>>
+	suspend fun getBookByIdFromDb(bookId: String): Result<Book>
 	suspend fun deleteBookFromDb(book: Book): Result<Unit>
 }

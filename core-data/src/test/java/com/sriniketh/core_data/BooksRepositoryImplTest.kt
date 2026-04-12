@@ -209,6 +209,32 @@ class BooksRepositoryImplTest {
 			assertEquals("some error deleting book", exception?.message)
 		}
 
+	@Test
+	fun `getBookByIdFromDb returns success Result when book exists in db`() = runTest {
+		bookDao.booksInDb.add(fakeBookEntity("someId"))
+		val result = booksRepositoryImpl.getBookByIdFromDb("someId")
+		assertTrue(result.isSuccess)
+		val book = result.getOrNull()!!
+		assertEquals("someId", book.id)
+		assertEquals("some title", book.info.title)
+	}
+
+	@Test
+	fun `getBookByIdFromDb returns failure Result when book does not exist in db`() = runTest {
+		val result = booksRepositoryImpl.getBookByIdFromDb("nonexistent")
+		assertTrue(result.isFailure)
+		assertTrue(result.exceptionOrNull() is NoSuchElementException)
+	}
+
+	@Test
+	fun `getBookByIdFromDb returns failure Result when exception occurs`() = runTest {
+		bookDao.shouldGetBookByIdThrowException = true
+		val result = booksRepositoryImpl.getBookByIdFromDb("someId")
+		assertTrue(result.isFailure)
+		assertTrue(result.exceptionOrNull() is RuntimeException)
+		assertEquals("some error fetching book by id", result.exceptionOrNull()?.message)
+	}
+
 	private fun fakeBook(bookId: String): Book = Book(
 		id = bookId, info = BookInfo(
 			title = "some title",
