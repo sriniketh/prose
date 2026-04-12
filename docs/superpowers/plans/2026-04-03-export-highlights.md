@@ -16,7 +16,7 @@ The app captures book highlights via OCR but has no way to export them. Users ne
 
 ---
 
-### Task 1: Refactor FileSource.createNewFile to accept fileName and rename CreateFileUseCase
+### Task 1: Refactor FileSource.createNewFile to accept fileName and rename CreateFileUseCase ✅
 
 **Files:**
 - Modify: `core-platform/src/main/java/com/sriniketh/core_platform/FileSource.kt`
@@ -27,7 +27,7 @@ The app captures book highlights via OCR but has no way to export them. Users ne
 - Modify: `core-data/src/test/java/com/sriniketh/core_data/fakes/FakeFileSource.kt`
 - Modify: `feature-addhighlight/src/test/java/com/sriniketh/feature_addhighlight/fakes/FakeFileSource.kt`
 
-- [ ] **Step 1: Update FileSource interface to accept fileName**
+- [x] **Step 1: Update FileSource interface to accept fileName**
 
 In `core-platform/src/main/java/com/sriniketh/core_platform/FileSource.kt`:
 
@@ -43,7 +43,7 @@ interface FileSource {
 }
 ```
 
-- [ ] **Step 2: Update FileSourceImpl**
+- [x] **Step 2: Update FileSourceImpl**
 
 In `app/src/main/java/com/sriniketh/prose/files/FileSourceImpl.kt`:
 
@@ -92,7 +92,7 @@ class FileSourceImpl @Inject constructor(
 }
 ```
 
-- [ ] **Step 3: Update FakeFileSource in core-data test fakes**
+- [x] **Step 3: Update FakeFileSource in core-data test fakes**
 
 In `core-data/src/test/java/com/sriniketh/core_data/fakes/FakeFileSource.kt`:
 
@@ -136,7 +136,7 @@ class FakeFileSource : FileSource {
 }
 ```
 
-- [ ] **Step 4: Update FakeFileSource in feature-addhighlight test fakes**
+- [x] **Step 4: Update FakeFileSource in feature-addhighlight test fakes**
 
 In `feature-addhighlight/src/test/java/com/sriniketh/feature_addhighlight/fakes/FakeFileSource.kt`:
 
@@ -167,7 +167,7 @@ class FakeFileSource : FileSource {
 }
 ```
 
-- [ ] **Step 5: Rename CreateFileUseCase to CreateTempImageFileUseCase**
+- [x] **Step 5: Rename CreateFileUseCase to CreateTempImageFileUseCase**
 
 Delete `core-data/src/main/java/com/sriniketh/core_data/usecases/CreateFileUseCase.kt` and create `core-data/src/main/java/com/sriniketh/core_data/usecases/CreateTempImageFileUseCase.kt`:
 
@@ -186,7 +186,7 @@ class CreateTempImageFileUseCase @Inject constructor(
 }
 ```
 
-- [ ] **Step 6: Rename and update CreateFileUseCaseTest**
+- [x] **Step 6: Rename and update CreateFileUseCaseTest**
 
 Delete `core-data/src/test/java/com/sriniketh/core_data/usecases/CreateFileUseCaseTest.kt` and create `core-data/src/test/java/com/sriniketh/core_data/usecases/CreateTempImageFileUseCaseTest.kt`:
 
@@ -211,7 +211,7 @@ class CreateTempImageFileUseCaseTest {
 }
 ```
 
-- [ ] **Step 7: Update CaptureAndCropImageViewModel to use renamed use case**
+- [x] **Step 7: Update CaptureAndCropImageViewModel to use renamed use case**
 
 In `feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt`, update the import and constructor:
 
@@ -242,7 +242,7 @@ to:
 savedStateHandle.get<Uri>("imageUri") ?: createTempImageFileUseCase().also {
 ```
 
-- [ ] **Step 8: Verify the project compiles and existing tests pass**
+- [x] **Step 8: Verify the project compiles and existing tests pass**
 
 Run: `./gradlew compileDebugKotlin`
 Expected: BUILD SUCCESSFUL
@@ -250,7 +250,7 @@ Expected: BUILD SUCCESSFUL
 Run: `./gradlew :core-data:test --tests "com.sriniketh.core_data.usecases.CreateTempImageFileUseCaseTest" --info`
 Expected: PASS
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add core-platform/src/main/java/com/sriniketh/core_platform/FileSource.kt \
@@ -267,13 +267,13 @@ git commit -m "refactor: rename CreateFileUseCase to CreateTempImageFileUseCase 
 
 ---
 
-### Task 2: Add `getBookById` to BookDao and FakeBookDao
+### Task 2: Add `getBookById` to BookDao and FakeBookDao ✅
 
 **Files:**
 - Modify: `core-db/src/main/java/com/sriniketh/core_db/dao/BookDao.kt`
 - Modify: `core-data/src/test/java/com/sriniketh/core_data/fakes/FakeBookDao.kt`
 
-- [ ] **Step 1: Add the query method to BookDao**
+- [x] **Step 1: Add the query method to BookDao**
 
 In `core-db/src/main/java/com/sriniketh/core_db/dao/BookDao.kt`, add after the `doesBookExist` method:
 
@@ -282,7 +282,7 @@ In `core-db/src/main/java/com/sriniketh/core_db/dao/BookDao.kt`, add after the `
 suspend fun getBookById(bookId: String): BookEntity?
 ```
 
-- [ ] **Step 2: Add the method to FakeBookDao**
+- [x] **Step 2: Add the method to FakeBookDao**
 
 In `core-data/src/test/java/com/sriniketh/core_data/fakes/FakeBookDao.kt`, add:
 
@@ -296,12 +296,12 @@ override suspend fun getBookById(bookId: String): BookEntity? {
 }
 ```
 
-- [ ] **Step 3: Verify the project compiles**
+- [x] **Step 3: Verify the project compiles**
 
 Run: `./gradlew :core-db:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add core-db/src/main/java/com/sriniketh/core_db/dao/BookDao.kt \
@@ -311,7 +311,7 @@ git commit -m "feat: add getBookById query to BookDao and FakeBookDao"
 
 ---
 
-### Task 3: Add `getBookByIdFromDb` to BooksRepository with fakes and tests
+### Task 3: Add `getBookByIdFromDb` to BooksRepository with fakes and tests ✅
 
 **Files:**
 - Modify: `core-data/src/main/java/com/sriniketh/core_data/BooksRepository.kt`
@@ -319,7 +319,7 @@ git commit -m "feat: add getBookById query to BookDao and FakeBookDao"
 - Modify: `core-data/src/test/java/com/sriniketh/core_data/BooksRepositoryImplTest.kt`
 - Modify: `core-data/src/test/java/com/sriniketh/core_data/fakes/FakeBooksRepository.kt`
 
-- [ ] **Step 1: Write failing tests for getBookByIdFromDb**
+- [x] **Step 1: Write failing tests for getBookByIdFromDb**
 
 Add to `core-data/src/test/java/com/sriniketh/core_data/BooksRepositoryImplTest.kt`:
 
@@ -351,12 +351,12 @@ fun `getBookByIdFromDb returns failure Result when exception occurs`() = runTest
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `./gradlew :core-data:test --tests "com.sriniketh.core_data.BooksRepositoryImplTest" --info`
 Expected: FAIL — `getBookByIdFromDb` does not exist yet.
 
-- [ ] **Step 3: Add the method to the BooksRepository interface**
+- [x] **Step 3: Add the method to the BooksRepository interface**
 
 In `core-data/src/main/java/com/sriniketh/core_data/BooksRepository.kt`, add after the `doesBookExistInDb` method:
 
@@ -364,7 +364,7 @@ In `core-data/src/main/java/com/sriniketh/core_data/BooksRepository.kt`, add aft
 suspend fun getBookByIdFromDb(bookId: String): Result<Book>
 ```
 
-- [ ] **Step 4: Implement in BooksRepositoryImpl**
+- [x] **Step 4: Implement in BooksRepositoryImpl**
 
 In `core-data/src/main/java/com/sriniketh/core_data/BooksRepositoryImpl.kt`, add after the `doesBookExistInDb` method:
 
@@ -385,7 +385,7 @@ override suspend fun getBookByIdFromDb(bookId: String): Result<Book> =
 
 Note: `asBook()` extension is defined in `core-data/src/main/java/com/sriniketh/core_data/transformers/Book.kt`.
 
-- [ ] **Step 5: Update FakeBooksRepository**
+- [x] **Step 5: Update FakeBooksRepository**
 
 In `core-data/src/test/java/com/sriniketh/core_data/fakes/FakeBooksRepository.kt`, add the flag and method:
 
@@ -405,12 +405,12 @@ override suspend fun getBookByIdFromDb(bookId: String): Result<Book> {
 }
 ```
 
-- [ ] **Step 6: Run tests to verify they pass**
+- [x] **Step 6: Run tests to verify they pass**
 
 Run: `./gradlew :core-data:test --tests "com.sriniketh.core_data.BooksRepositoryImplTest" --info`
 Expected: All tests PASS (both existing and new)
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add core-data/src/main/java/com/sriniketh/core_data/BooksRepository.kt \
@@ -422,7 +422,7 @@ git commit -m "feat: add getBookByIdFromDb to BooksRepository with tests"
 
 ---
 
-### Task 4: Create HighlightsExport model and ExportHighlightsUseCase
+### Task 4: Create HighlightsExport model and ExportHighlightsUseCase ✅
 
 **Files:**
 - Create: `core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt`
@@ -432,7 +432,7 @@ git commit -m "feat: add getBookByIdFromDb to BooksRepository with tests"
 
 The use case fetches the full `Book` and `List<Highlight>` domain models, wraps them in a `HighlightsExport` model (Moshi codegen), serializes to JSON, writes to cache via `FileSource.writeToFile`, and returns a `Uri`.
 
-- [ ] **Step 1: Add Moshi dependencies to core-data**
+- [x] **Step 1: Add Moshi dependencies to core-data**
 
 In `core-data/build.gradle.kts`, add to the dependencies block:
 
@@ -441,7 +441,7 @@ implementation(libs.moshi)
 ksp(libs.moshi.codegen)
 ```
 
-- [ ] **Step 2: Create the HighlightsExport model**
+- [x] **Step 2: Create the HighlightsExport model**
 
 Create: `core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt`
 
@@ -482,7 +482,7 @@ data class HighlightExport(
 
 Note: We need separate `@JsonClass`-annotated export copies of `BookInfo` and `Highlight` because the originals in `core-models` have no Moshi annotations and core-models has no Moshi dependency. The use case maps domain models to these export models before serialization.
 
-- [ ] **Step 3: Write the failing test**
+- [x] **Step 3: Write the failing test**
 
 Create: `core-data/src/test/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCaseTest.kt`
 
@@ -558,12 +558,12 @@ class ExportHighlightsUseCaseTest {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it fails**
+- [x] **Step 4: Run the test to verify it fails**
 
 Run: `./gradlew :core-data:test --tests "com.sriniketh.core_data.usecases.ExportHighlightsUseCaseTest" --info`
 Expected: FAIL — `ExportHighlightsUseCase` does not exist yet.
 
-- [ ] **Step 5: Create the ExportHighlightsUseCase**
+- [x] **Step 5: Create the ExportHighlightsUseCase**
 
 Create: `core-data/src/main/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCase.kt`
 
@@ -626,12 +626,12 @@ class ExportHighlightsUseCase @Inject constructor(
 }
 ```
 
-- [ ] **Step 6: Run the tests to verify they pass**
+- [x] **Step 6: Run the tests to verify they pass**
 
 Run: `./gradlew :core-data:test --tests "com.sriniketh.core_data.usecases.ExportHighlightsUseCaseTest" --info`
 Expected: All 5 tests PASS
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt \
@@ -643,7 +643,7 @@ git commit -m "feat: add HighlightsExport model and ExportHighlightsUseCase with
 
 ---
 
-### Task 5: Add export action to ViewHighlightsViewModel
+### Task 5: Add export action to ViewHighlightsViewModel ✅
 
 **Files:**
 - Modify: `feature-viewhighlights/src/main/java/com/sriniketh/feature_viewhighlights/ViewHighlightsViewModel.kt`
@@ -652,7 +652,7 @@ git commit -m "feat: add HighlightsExport model and ExportHighlightsUseCase with
 - Create: `feature-viewhighlights/src/test/java/com/sriniketh/feature_viewhighlights/fakes/FakeBooksRepository.kt`
 - Create: `feature-viewhighlights/src/test/java/com/sriniketh/feature_viewhighlights/fakes/FakeFileSource.kt`
 
-- [ ] **Step 1: Write failing tests for export functionality**
+- [x] **Step 1: Write failing tests for export functionality**
 
 Add to `ViewHighlightsViewModelTest.kt`:
 
@@ -717,12 +717,12 @@ fun `when clearExportUri is called then clears the uri`() = runTest {
 }
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `./gradlew :feature-viewhighlights:test --tests "com.sriniketh.feature_viewhighlights.ViewHighlightsViewModelTest" --info`
 Expected: FAIL — `exportHighlights` method and `exportUri` field don't exist.
 
-- [ ] **Step 3: Create FakeBooksRepository in feature-viewhighlights test fakes**
+- [x] **Step 3: Create FakeBooksRepository in feature-viewhighlights test fakes**
 
 Create: `feature-viewhighlights/src/test/java/com/sriniketh/feature_viewhighlights/fakes/FakeBooksRepository.kt`
 
@@ -788,7 +788,7 @@ class FakeBooksRepository : BooksRepository {
 }
 ```
 
-- [ ] **Step 4: Create FakeFileSource in feature-viewhighlights test fakes**
+- [x] **Step 4: Create FakeFileSource in feature-viewhighlights test fakes**
 
 Create: `feature-viewhighlights/src/test/java/com/sriniketh/feature_viewhighlights/fakes/FakeFileSource.kt`
 
@@ -812,7 +812,7 @@ class FakeFileSource : FileSource {
 }
 ```
 
-- [ ] **Step 5: Add `OnExportHighlights` event to ViewHighlightsEvent**
+- [x] **Step 5: Add `OnExportHighlights` event to ViewHighlightsEvent**
 
 In `ViewHighlightsViewModel.kt`, add to `ViewHighlightsEvent`:
 
@@ -820,7 +820,7 @@ In `ViewHighlightsViewModel.kt`, add to `ViewHighlightsEvent`:
 data object OnExportHighlights : ViewHighlightsEvent
 ```
 
-- [ ] **Step 6: Update ViewHighlightsUIState to include exportUri**
+- [x] **Step 6: Update ViewHighlightsUIState to include exportUri**
 
 In `ViewHighlightsViewModel.kt`, update the data class:
 
@@ -835,7 +835,7 @@ internal data class ViewHighlightsUIState(
 
 Add import: `import android.net.Uri`
 
-- [ ] **Step 7: Add ExportHighlightsUseCase to ViewModel and implement export methods**
+- [x] **Step 7: Add ExportHighlightsUseCase to ViewModel and implement export methods**
 
 Update constructor:
 
@@ -884,7 +884,7 @@ internal fun clearExportUri() {
 }
 ```
 
-- [ ] **Step 8: Add string resources**
+- [x] **Step 8: Add string resources**
 
 In `feature-viewhighlights/src/main/res/values/strings.xml`, add before `</resources>`:
 
@@ -893,7 +893,7 @@ In `feature-viewhighlights/src/main/res/values/strings.xml`, add before `</resou
 <string name="share_button_cont_desc">Share highlights</string>
 ```
 
-- [ ] **Step 9: Update test setup to include new dependencies**
+- [x] **Step 9: Update test setup to include new dependencies**
 
 In `ViewHighlightsViewModelTest.kt`, add fields:
 
@@ -932,12 +932,12 @@ import com.sriniketh.feature_viewhighlights.fakes.FakeFileSource
 import org.junit.Assert.assertNotNull
 ```
 
-- [ ] **Step 10: Run the tests to verify they pass**
+- [x] **Step 10: Run the tests to verify they pass**
 
 Run: `./gradlew :feature-viewhighlights:test --tests "com.sriniketh.feature_viewhighlights.ViewHighlightsViewModelTest" --info`
 Expected: All tests PASS (both existing and new)
 
-- [ ] **Step 11: Commit**
+- [x] **Step 11: Commit**
 
 ```bash
 git add feature-viewhighlights/src/main/java/com/sriniketh/feature_viewhighlights/ViewHighlightsViewModel.kt \
@@ -950,12 +950,12 @@ git commit -m "feat: add export action to ViewHighlightsViewModel"
 
 ---
 
-### Task 6: Add share icon button and share sheet to ViewHighlightsScreen
+### Task 6: Add share icon button and share sheet to ViewHighlightsScreen ✅
 
 **Files:**
 - Modify: `feature-viewhighlights/src/main/java/com/sriniketh/feature_viewhighlights/ViewHighlightsScreen.kt`
 
-- [ ] **Step 1: Add the share icon button in the ProseTopAppBar actions slot**
+- [x] **Step 1: Add the share icon button in the ProseTopAppBar actions slot**
 
 In `ViewHighlightsScreen.kt`, update the `ProseTopAppBar` to include the `actions` parameter:
 
@@ -982,7 +982,7 @@ ProseTopAppBar(
 )
 ```
 
-- [ ] **Step 2: Add the share sheet launcher and export URI handling in ViewHighlightsScreen**
+- [x] **Step 2: Add the share sheet launcher and export URI handling in ViewHighlightsScreen**
 
 In the outer `ViewHighlightsScreen` composable, add after `collectAsStateWithLifecycle()`:
 
@@ -1013,12 +1013,12 @@ is ViewHighlightsEvent.OnExportHighlights -> viewModel.exportHighlights(bookId)
 
 Add import: `import android.content.Intent`
 
-- [ ] **Step 3: Verify the project compiles**
+- [x] **Step 3: Verify the project compiles**
 
 Run: `./gradlew :feature-viewhighlights:compileDebugKotlin`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add feature-viewhighlights/src/main/java/com/sriniketh/feature_viewhighlights/ViewHighlightsScreen.kt
@@ -1027,21 +1027,21 @@ git commit -m "feat: add share icon button with share sheet for highlight export
 
 ---
 
-### Task 7: Run all tests and verify
+### Task 7: Run all tests and verify ✅
 
 **Files:** No changes — verification only.
 
-- [ ] **Step 1: Run all unit tests**
+- [x] **Step 1: Run all unit tests**
 
 Run: `./gradlew test`
 Expected: All tests PASS
 
-- [ ] **Step 2: Run the full debug build**
+- [x] **Step 2: Run the full debug build**
 
 Run: `./gradlew assembleDebug`
 Expected: BUILD SUCCESSFUL
 
-- [ ] **Step 3: Final commit if any fixes were needed**
+- [x] **Step 3: Final commit if any fixes were needed**
 
 If any fixes were required, commit them with an appropriate message.
 
