@@ -237,6 +237,7 @@ class ViewHighlightsViewModelTest {
             awaitItem()
 
             viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
+            testScheduler.advanceUntilIdle()
 
             val loadingState = awaitItem()
             assertTrue(loadingState.isLoading)
