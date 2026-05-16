@@ -5,13 +5,12 @@ targetSdkVersion = "35"
 jvmToolchainVersion = "17"
 
 # Plugin dependencies
-android-application-plugin-version = "8.13.2"
-android-library-plugin-version = "8.13.2"
-kotlin-android-plugin-version = "2.3.10"
+android-application-plugin-version = "9.1.1"
+android-library-plugin-version = "9.1.1"
 kotlin-jvm-plugin-version = "2.3.10"
 kotlin-compose-plugin-version = "2.3.10"
 ksp-plugin-version = "2.3.6"
-hilt-plugin-version = "2.57.2"
+hilt-plugin-version = "2.59.2"
 android-navigation-safe-args-plugin-version = "2.9.7"
 
 # Library dependencies
@@ -87,7 +86,6 @@ compose = ["compose-material3", "compose-ui-tooling-preview"]
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-application-plugin-version" }
 android-library = { id = "com.android.library", version.ref = "android-library-plugin-version" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-android-plugin-version" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm-plugin-version" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-compose-plugin-version" }
 java-library = { id = "java-library" }
