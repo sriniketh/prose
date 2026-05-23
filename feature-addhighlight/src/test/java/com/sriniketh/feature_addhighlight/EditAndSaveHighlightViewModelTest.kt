@@ -72,8 +72,6 @@ class EditAndSaveHighlightViewModelTest {
             assertFalse(initialState.isLoading)
             assertEquals(R.string.save_highlight_title_text, initialState.screenTitle)
             assertEquals("", initialState.highlightText)
-            assertEquals(null, initialState.snackBarText)
-            assertFalse(initialState.highlightSaved)
         }
     }
 
@@ -130,16 +128,16 @@ class EditAndSaveHighlightViewModelTest {
         val fakeUri = mockk<Uri>()
         fakeTextAnalyzer.shouldThrowException = true
 
-        viewModel.uiState.test {
-            awaitItem()
-
+        viewModel.effects.test {
             viewModel.processImageForHighlightText(fakeUri)
-            skipItems(1)
 
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.image_processing_failure_error_message, errorState.snackBarText)
+            assertEquals(
+                EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -168,33 +166,30 @@ class EditAndSaveHighlightViewModelTest {
     }
 
     @Test
-    fun `when save highlight succeeds then highlight saved is set to true`() = runTest {
-        viewModel.uiState.test {
-            awaitItem()
-
+    fun `when save highlight succeeds then highlight saved effect is emitted`() = runTest {
+        viewModel.effects.test {
             viewModel.saveHighlight("book-id", "highlight text")
-            skipItems(1)
 
-            val savedState = awaitItem()
-            assertFalse(savedState.isLoading)
-            assertTrue(savedState.highlightSaved)
+            assertEquals(EditAndSaveHighlightEffect.HighlightSaved, awaitItem())
         }
+
+        assertFalse(viewModel.uiState.value.isLoading)
     }
 
     @Test
     fun `when save highlight fails then error is shown`() = runTest {
         fakeHighlightsRepository.shouldInsertHighlightIntoDbThrowException = true
 
-        viewModel.uiState.test {
-            awaitItem()
-
+        viewModel.effects.test {
             viewModel.saveHighlight("book-id", "highlight text")
-            skipItems(1)
 
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.save_highlight_error_message, errorState.snackBarText)
+            assertEquals(
+                EditAndSaveHighlightEffect.ShowMessage(R.string.save_highlight_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -231,16 +226,16 @@ class EditAndSaveHighlightViewModelTest {
     fun `when load highlight text fails then error is shown`() = runTest {
         fakeHighlightsRepository.shouldLoadHighlightFromDbThrowException = true
 
-        viewModel.uiState.test {
-            awaitItem()
-
+        viewModel.effects.test {
             viewModel.loadHighlightText("highlight-id")
-            skipItems(1)
 
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.image_processing_failure_error_message, errorState.snackBarText)
+            assertEquals(
+                EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.uiState.value.isLoading)
     }
 
     @Test
@@ -259,32 +254,29 @@ class EditAndSaveHighlightViewModelTest {
     }
 
     @Test
-    fun `when update highlight succeeds then highlight saved is set to true`() = runTest {
-        viewModel.uiState.test {
-            awaitItem()
-
+    fun `when update highlight succeeds then highlight saved effect is emitted`() = runTest {
+        viewModel.effects.test {
             viewModel.updateHighlight("book-id", "updated highlight text", "highlight-id")
-            skipItems(1)
 
-            val savedState = awaitItem()
-            assertFalse(savedState.isLoading)
-            assertTrue(savedState.highlightSaved)
+            assertEquals(EditAndSaveHighlightEffect.HighlightSaved, awaitItem())
         }
+
+        assertFalse(viewModel.uiState.value.isLoading)
     }
 
     @Test
     fun `when update highlight fails then error is shown`() = runTest {
         fakeHighlightsRepository.shouldInsertHighlightIntoDbThrowException = true
 
-        viewModel.uiState.test {
-            awaitItem()
-
+        viewModel.effects.test {
             viewModel.updateHighlight("book-id", "updated highlight text", "highlight-id")
-            skipItems(1)
 
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.save_highlight_error_message, errorState.snackBarText)
+            assertEquals(
+                EditAndSaveHighlightEffect.ShowMessage(R.string.save_highlight_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.uiState.value.isLoading)
     }
 }

@@ -19,12 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -34,7 +36,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.theme.AppTheme
@@ -52,14 +57,29 @@ fun EditAndSaveHighlightScreen(
         viewModel.processImageForHighlightText(uri)
     }
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(editHighlightUiState.highlightSaved) {
-        if (editHighlightUiState.highlightSaved) {
-            goBack()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    is EditAndSaveHighlightEffect.ShowMessage -> scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                    }
+
+                    EditAndSaveHighlightEffect.HighlightSaved -> goBack()
+                }
+            }
         }
     }
+
     EditAndSaveHighlight(
         modifier = modifier,
         uiState = editHighlightUiState,
+        snackbarHostState = snackbarHostState,
         updateHighlightText = { highlightText ->
             viewModel.updateHighlightText(highlightText)
         },
@@ -85,14 +105,29 @@ fun EditAndSaveHighlightScreen(
     }
 
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(editHighlightUiState.highlightSaved) {
-        if (editHighlightUiState.highlightSaved) {
-            goBack()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    is EditAndSaveHighlightEffect.ShowMessage -> scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                    }
+
+                    EditAndSaveHighlightEffect.HighlightSaved -> goBack()
+                }
+            }
         }
     }
+
     EditAndSaveHighlight(
         modifier = modifier,
         uiState = editHighlightUiState,
+        snackbarHostState = snackbarHostState,
         updateHighlightText = { highlightText ->
             viewModel.updateHighlightText(highlightText)
         },
@@ -116,9 +151,9 @@ internal fun EditAndSaveHighlight(
     updateHighlightText: (String) -> Unit,
     saveHighlight: (String) -> Unit,
     goBack: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val haptic = LocalHapticFeedback.current
     val focusRequester = remember { FocusRequester() }
 
@@ -172,15 +207,6 @@ internal fun EditAndSaveHighlight(
                     .fillMaxWidth()
                     .testTag("AddHighlightLoadingIndicator")
             )
-        }
-
-        uiState.snackBarText?.let { resId ->
-            val snackbarMessage = stringResource(id = resId)
-            LaunchedEffect(key1 = resId) {
-                launch {
-                    snackbarHostState.showSnackbar(snackbarMessage)
-                }
-            }
         }
 
         Column(

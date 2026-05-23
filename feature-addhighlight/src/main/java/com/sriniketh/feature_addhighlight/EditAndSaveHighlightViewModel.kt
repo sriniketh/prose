@@ -12,9 +12,12 @@ import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
 import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -37,6 +40,9 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     internal val uiState: StateFlow<EditAndSaveHighlightUiState> =
         _uiState.asStateFlow()
 
+    private val _effects = Channel<EditAndSaveHighlightEffect>(Channel.BUFFERED)
+    internal val effects: Flow<EditAndSaveHighlightEffect> = _effects.receiveAsFlow()
+
     private var savedOnTimestamp: String? = null
 
     internal fun processImageForHighlightText(uri: Uri) {
@@ -55,11 +61,9 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 throw cancellationException
             } catch (_: Exception) {
                 _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.image_processing_failure_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))
             } finally {
                 deleteFileUseCase(uri)
             }
@@ -83,11 +87,9 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 savedOnTimestamp = highlight?.savedOnTimestamp
             } else {
                 _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.image_processing_failure_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))
             }
         }
     }
@@ -130,15 +132,14 @@ class EditAndSaveHighlightViewModel @Inject constructor(
             )
             if (result.isSuccess) {
                 _uiState.update { state ->
-                    state.copy(isLoading = false, highlightSaved = true)
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(EditAndSaveHighlightEffect.HighlightSaved)
             } else if (result.isFailure) {
                 _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.save_highlight_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.save_highlight_error_message))
             }
         }
     }
@@ -147,7 +148,10 @@ class EditAndSaveHighlightViewModel @Inject constructor(
 internal data class EditAndSaveHighlightUiState(
     val isLoading: Boolean = false,
     @StringRes val screenTitle: Int = R.string.save_highlight_title_text,
-    val highlightText: String = "",
-    @StringRes val snackBarText: Int? = null,
-    val highlightSaved: Boolean = false
+    val highlightText: String = ""
 )
+
+internal sealed interface EditAndSaveHighlightEffect {
+    data class ShowMessage(@StringRes val messageRes: Int) : EditAndSaveHighlightEffect
+    data object HighlightSaved : EditAndSaveHighlightEffect
+}
