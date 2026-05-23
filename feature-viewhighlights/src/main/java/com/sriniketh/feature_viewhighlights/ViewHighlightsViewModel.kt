@@ -9,9 +9,12 @@ import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +30,9 @@ class ViewHighlightsViewModel @Inject constructor(
         MutableStateFlow(ViewHighlightsUIState())
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
+
+    private val _effects = Channel<ViewHighlightsEffect>(Channel.BUFFERED)
+    internal val effects: Flow<ViewHighlightsEffect> = _effects.receiveAsFlow()
 
     internal fun getHighlights(bookId: String) {
         viewModelScope.launch {
@@ -45,29 +51,25 @@ class ViewHighlightsViewModel @Inject constructor(
                     }
                 } else if (result.isFailure) {
                     _highlightsUIStateFlow.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            snackBarText = R.string.gethighlights_error_message
-                        )
+                        state.copy(isLoading = false)
                     }
+                    _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.gethighlights_error_message))
                 }
             }
         }
     }
 
-    internal fun processEvent(event: ViewHighlightsEvent) {
-        when (event) {
-            ViewHighlightsEvent.OnCameraPermissionDenied -> {
+    internal fun processAction(action: ViewHighlightsAction) {
+        when (action) {
+            ViewHighlightsAction.OnCameraPermissionDenied -> {
                 _highlightsUIStateFlow.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.permission_denied_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.permission_denied_error_message))
             }
 
-            is ViewHighlightsEvent.OnExportHighlights -> {
-                exportHighlights(event.bookId)
+            is ViewHighlightsAction.OnExportHighlights -> {
+                exportHighlights(action.bookId)
             }
 
             else -> Unit
@@ -82,25 +84,15 @@ class ViewHighlightsViewModel @Inject constructor(
             val result = exportHighlightsUseCase(bookId)
             if (result.isSuccess) {
                 _highlightsUIStateFlow.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        exportUri = result.getOrThrow()
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(ViewHighlightsEffect.ShareHighlights(result.getOrThrow()))
             } else {
                 _highlightsUIStateFlow.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.export_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.export_error_message))
             }
-        }
-    }
-
-    internal fun clearExportUri() {
-        _highlightsUIStateFlow.update { state ->
-            state.copy(exportUri = null)
         }
     }
 
@@ -116,11 +108,9 @@ class ViewHighlightsViewModel @Inject constructor(
                 val result = deleteHighlightUseCase.invoke(this@asHighlightUIState)
                 if (result.isFailure) {
                     _highlightsUIStateFlow.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            snackBarText = R.string.delete_error_message
-                        )
+                        state.copy(isLoading = false)
                     }
+                    _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.delete_error_message))
                 }
             }
         }
@@ -129,9 +119,7 @@ class ViewHighlightsViewModel @Inject constructor(
 
 internal data class ViewHighlightsUIState(
     val isLoading: Boolean = false,
-    val highlights: List<HighlightUIState> = emptyList(),
-    @StringRes val snackBarText: Int? = null,
-    val exportUri: Uri? = null
+    val highlights: List<HighlightUIState> = emptyList()
 )
 
 internal data class HighlightUIState(
@@ -141,10 +129,15 @@ internal data class HighlightUIState(
     val onDelete: () -> Unit
 )
 
-internal sealed interface ViewHighlightsEvent {
-    data object OnBackPressed : ViewHighlightsEvent
-    data object OnCameraPermissionDenied : ViewHighlightsEvent
-    data object OnCameraPermissionGranted : ViewHighlightsEvent
-    data class OnEditHighlight(val highlightId: String) : ViewHighlightsEvent
-    data class OnExportHighlights(val bookId: String) : ViewHighlightsEvent
+internal sealed interface ViewHighlightsAction {
+    data object OnBackPressed : ViewHighlightsAction
+    data object OnCameraPermissionDenied : ViewHighlightsAction
+    data object OnCameraPermissionGranted : ViewHighlightsAction
+    data class OnEditHighlight(val highlightId: String) : ViewHighlightsAction
+    data class OnExportHighlights(val bookId: String) : ViewHighlightsAction
+}
+
+internal sealed interface ViewHighlightsEffect {
+    data class ShowMessage(@StringRes val messageRes: Int) : ViewHighlightsEffect
+    data class ShareHighlights(val uri: Uri) : ViewHighlightsEffect
 }

@@ -17,7 +17,6 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -102,16 +101,16 @@ class ViewHighlightsViewModelTest {
         val bookId = "test-book-id"
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = true
 
-        viewModel.highlightsUIStateFlow.test {
-            awaitItem()
-
+        viewModel.effects.test {
             viewModel.getHighlights(bookId)
 
-            awaitItem()
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.gethighlights_error_message, errorState.snackBarText)
+            assertEquals(
+                ViewHighlightsEffect.ShowMessage(R.string.gethighlights_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
@@ -131,25 +130,27 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when processing OnCameraPermissionDenied event then shows permission error`() = runTest {
-        viewModel.processEvent(ViewHighlightsEvent.OnCameraPermissionDenied)
+    fun `when processing OnCameraPermissionDenied action then shows permission error`() = runTest {
+        viewModel.effects.test {
+            viewModel.processAction(ViewHighlightsAction.OnCameraPermissionDenied)
 
-        viewModel.highlightsUIStateFlow.test {
-            val state = awaitItem()
-            assertEquals(R.string.permission_denied_error_message, state.snackBarText)
-            assertFalse(state.isLoading)
+            assertEquals(
+                ViewHighlightsEffect.ShowMessage(R.string.permission_denied_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
-    fun `when processing other events then does nothing`() = runTest {
-        viewModel.processEvent(ViewHighlightsEvent.OnBackPressed)
+    fun `when processing other actions then does nothing`() = runTest {
+        viewModel.processAction(ViewHighlightsAction.OnBackPressed)
 
         viewModel.highlightsUIStateFlow.test {
             val state = awaitItem()
             assertFalse(state.isLoading)
             assertTrue(state.highlights.isEmpty())
-            assertNull(state.snackBarText)
         }
     }
 
@@ -199,17 +200,16 @@ class ViewHighlightsViewModelTest {
         viewModel.getHighlights(bookId)
         this.testScheduler.advanceUntilIdle()
 
-        viewModel.highlightsUIStateFlow.test {
-            val state = awaitItem()
-            state.highlights.first().onDelete()
+        viewModel.effects.test {
+            viewModel.highlightsUIStateFlow.value.highlights.first().onDelete()
 
-            val loadingState = awaitItem()
-            assertTrue(loadingState.isLoading)
-
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.delete_error_message, errorState.snackBarText)
+            assertEquals(
+                ViewHighlightsEffect.ShowMessage(R.string.delete_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
@@ -232,11 +232,11 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when OnExportHighlights event is processed then sets loading state to true`() = runTest {
+    fun `when OnExportHighlights action is processed then sets loading state to true`() = runTest {
         viewModel.highlightsUIStateFlow.test {
             awaitItem()
 
-            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
+            viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
             testScheduler.advanceUntilIdle()
 
             val loadingState = awaitItem()
@@ -247,47 +247,31 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when OnExportHighlights event succeeds then emits export uri and clears loading`() = runTest {
-        viewModel.highlightsUIStateFlow.test {
-            awaitItem()
+    fun `when OnExportHighlights action succeeds then emits share effect and clears loading`() = runTest {
+        viewModel.effects.test {
+            viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
 
-            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
-
-            awaitItem() // loading
-            val successState = awaitItem()
-            assertFalse(successState.isLoading)
-            assertNotNull(successState.exportUri)
+            val effect = awaitItem()
+            assertTrue(effect is ViewHighlightsEffect.ShareHighlights)
+            assertNotNull((effect as ViewHighlightsEffect.ShareHighlights).uri)
         }
+
+        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
-    fun `when OnExportHighlights event fails then shows error and clears loading`() = runTest {
+    fun `when OnExportHighlights action fails then shows error and clears loading`() = runTest {
         fakeBooksRepository.shouldGetBookByIdFromDbThrowException = true
 
-        viewModel.highlightsUIStateFlow.test {
-            awaitItem()
+        viewModel.effects.test {
+            viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
 
-            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
-
-            awaitItem() // loading
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.export_error_message, errorState.snackBarText)
+            assertEquals(
+                ViewHighlightsEffect.ShowMessage(R.string.export_error_message),
+                awaitItem()
+            )
         }
-    }
 
-    @Test
-    fun `when clearExportUri is called then clears the uri`() = runTest {
-        viewModel.highlightsUIStateFlow.test {
-            awaitItem()
-
-            viewModel.processEvent(ViewHighlightsEvent.OnExportHighlights("test-book-id"))
-            awaitItem() // loading
-            awaitItem() // success with uri
-
-            viewModel.clearExportUri()
-            val clearedState = awaitItem()
-            assertNull(clearedState.exportUri)
-        }
+        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 }

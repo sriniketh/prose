@@ -23,17 +23,17 @@ class ViewHighlightsScreenTest {
     @Test
     fun whenHighlightsListIsEmptyThenEmptyMessageIsDisplayed() {
         val uiState = ViewHighlightsUIState(highlights = emptyList())
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithText("No saved highlights").assertIsDisplayed()
     }
 
@@ -41,17 +41,17 @@ class ViewHighlightsScreenTest {
     fun whenHighlightsListIsNotEmptyThenEmptyMessageIsNotDisplayed() {
         val highlights = listOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithText("No saved highlights").assertIsNotDisplayed()
     }
 
@@ -60,17 +60,17 @@ class ViewHighlightsScreenTest {
         val highlightText = "This is a test highlight"
         val highlights = listOf(createTestHighlightUIState(text = highlightText))
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithText(highlightText).assertIsDisplayed()
     }
 
@@ -79,17 +79,17 @@ class ViewHighlightsScreenTest {
         val savedOn = "2023-12-25"
         val highlights = listOf(createTestHighlightUIState(savedOn = savedOn))
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithText("Saved on: $savedOn").assertIsDisplayed()
     }
 
@@ -97,88 +97,88 @@ class ViewHighlightsScreenTest {
     fun whenHighlightsArePresentThenMoreOptionsButtonIsDisplayed() {
         val highlights = listOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Options Menu").assertIsDisplayed()
     }
 
     @Test
     fun whenPageTitleIsDisplayedThenShowsCorrectText() {
         val uiState = ViewHighlightsUIState()
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithText("Saved highlights").assertIsDisplayed()
     }
 
     @Test
     fun whenFloatingActionButtonIsDisplayedThenShowsAddIcon() {
         val uiState = ViewHighlightsUIState()
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Add highlight").assertIsDisplayed()
     }
 
     @Test
     fun whenBackButtonIsClickedThenOnBackPressedEventIsTriggered() {
         val uiState = ViewHighlightsUIState()
-        var eventTriggered: ViewHighlightsEvent? = null
-        
+        var actionTriggered: ViewHighlightsAction? = null
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = { eventTriggered = it }
+                    onAction = { actionTriggered = it }
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Go back").performClick()
-        assertEquals(ViewHighlightsEvent.OnBackPressed, eventTriggered)
+        assertEquals(ViewHighlightsAction.OnBackPressed, actionTriggered)
     }
 
     @Test
     fun whenMoreOptionsIsClickedThenDropdownMenuIsDisplayed() {
         val highlights = listOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithText("Copy").assertIsDisplayed()
         composeTestRule.onNodeWithText("Edit").assertIsDisplayed()
@@ -190,39 +190,39 @@ class ViewHighlightsScreenTest {
         val highlightId = "test-highlight-id"
         val highlights = listOf(createTestHighlightUIState(id = highlightId))
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        var eventTriggered: ViewHighlightsEvent? = null
-        
+        var actionTriggered: ViewHighlightsAction? = null
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = { eventTriggered = it }
+                    onAction = { actionTriggered = it }
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithText("Edit").performClick()
-        assertTrue(eventTriggered is ViewHighlightsEvent.OnEditHighlight)
-        assertEquals(highlightId, (eventTriggered as ViewHighlightsEvent.OnEditHighlight).highlightId)
+        assertTrue(actionTriggered is ViewHighlightsAction.OnEditHighlight)
+        assertEquals(highlightId, (actionTriggered as ViewHighlightsAction.OnEditHighlight).highlightId)
     }
 
     @Test
     fun whenDeleteMenuItemIsClickedThenDeleteDialogIsDisplayed() {
         val highlights = listOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithText("Delete").performClick()
         composeTestRule.onNodeWithText("Delete highlight").assertIsDisplayed()
@@ -234,7 +234,7 @@ class ViewHighlightsScreenTest {
         val highlights = listOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
         var onDeleteCalled = false
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
@@ -246,11 +246,11 @@ class ViewHighlightsScreenTest {
                         )
                     ),
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithText("Delete").performClick()
         composeTestRule.onNodeWithText("Delete").performClick()
@@ -261,17 +261,17 @@ class ViewHighlightsScreenTest {
     fun whenDeleteDialogCancelIsClickedThenDialogIsDismissed() {
         val highlights = listOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
-        
+
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
                     uiState = uiState,
                     bookId = "test-book-id",
-                    onEvent = {}
+                    onAction = {}
                 )
             }
         }
-        
+
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithText("Delete").performClick()
         composeTestRule.onNodeWithText("Cancel").performClick()
