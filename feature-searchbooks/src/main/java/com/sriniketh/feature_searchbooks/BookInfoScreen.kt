@@ -65,7 +65,8 @@ fun BookInfoScreen(
     modifier: Modifier = Modifier,
     viewModel: BookInfoViewModel = hiltViewModel(),
     bookId: String,
-    goBack: () -> Unit
+    goBack: () -> Unit,
+    onBookAddedToShelf: () -> Unit = {}
 ) {
     LaunchedEffect(key1 = bookId) {
         viewModel.getBookDetail(bookId)
@@ -83,7 +84,7 @@ fun BookInfoScreen(
                     is BookInfoEffect.ShowMessage -> scope.launch {
                         snackbarHostState.showSnackbar(context.getString(effect.messageRes))
                     }
-                    BookInfoEffect.NavigateToBookshelf -> goBack()
+                    BookInfoEffect.NavigateToBookshelf -> onBookAddedToShelf()
                 }
             }
         }
