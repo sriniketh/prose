@@ -43,7 +43,6 @@ class BookshelfViewModelTest {
 
             assertFalse(initialState.isLoading)
             assertTrue(initialState.books.isEmpty())
-            assertEquals(null, initialState.snackBarText)
         }
     }
 
@@ -90,15 +89,38 @@ class BookshelfViewModelTest {
         fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
         val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository))
 
-        failingViewModel.bookshelfUIState.test {
-            skipItems(2)
-
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertTrue(errorState.books.isEmpty())
-            assertEquals(R.string.getallbooks_error_message, errorState.snackBarText)
+        failingViewModel.effects.test {
+            assertEquals(
+                BookshelfEffect.ShowMessage(R.string.getallbooks_error_message),
+                awaitItem()
+            )
         }
+
+        val finalState = failingViewModel.bookshelfUIState.value
+        assertFalse(finalState.isLoading)
+        assertTrue(finalState.books.isEmpty())
     }
+
+    @Test
+    fun `when error occurs then effect is delivered once and not re-delivered to a new collector`() =
+        runTest {
+            fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
+            val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository))
+
+            // First collector consumes the single effect.
+            failingViewModel.effects.test {
+                assertEquals(
+                    BookshelfEffect.ShowMessage(R.string.getallbooks_error_message),
+                    awaitItem()
+                )
+                expectNoEvents()
+            }
+
+            // A new collector (as created after a configuration change) sees no replay.
+            failingViewModel.effects.test {
+                expectNoEvents()
+            }
+        }
 
     @Test
     fun `when view highlights for book is set then book view action uses it`() = runTest {

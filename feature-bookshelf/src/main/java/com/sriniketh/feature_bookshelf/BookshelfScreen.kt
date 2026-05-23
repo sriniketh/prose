@@ -28,18 +28,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.AnimationConstants
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
@@ -57,8 +62,26 @@ fun BookshelfScreen(
     goToHighlight: (String) -> Unit
 ) {
     val uiState: BookshelfUIState by viewModel.bookshelfUIState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    is BookshelfEffect.ShowMessage -> scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                    }
+                }
+            }
+        }
+    }
+
     Bookshelf(
         uiState = uiState,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
         goToSearch = { goToSearch() },
         goToHighlight = { goToHighlight(it) }
@@ -69,11 +92,11 @@ fun BookshelfScreen(
 @Composable
 internal fun Bookshelf(
     uiState: BookshelfUIState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier,
     goToSearch: () -> Unit,
     goToHighlight: (String) -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier
@@ -177,14 +200,6 @@ internal fun Bookshelf(
             }
         }
 
-        uiState.snackBarText?.let { message ->
-            val errorMessage = stringResource(id = message)
-            LaunchedEffect(key1 = message) {
-                launch {
-                    snackbarHostState.showSnackbar(errorMessage)
-                }
-            }
-        }
     }
 }
 
@@ -262,12 +277,3 @@ internal fun BookshelfScreenSuccessNoBooksPreview() {
     }
 }
 
-@PreviewLightDark
-@Composable
-internal fun BookshelfScreenFailurePreview() {
-    AppTheme {
-        Bookshelf(
-            uiState = BookshelfUIState(snackBarText = R.string.getallbooks_error_message),
-            goToSearch = {}, goToHighlight = {})
-    }
-}
