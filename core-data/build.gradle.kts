@@ -1,5 +1,6 @@
 plugins {
 	alias(libs.plugins.android.library)
+	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.hilt)
 	alias(libs.plugins.ksp)
 }
@@ -44,8 +45,7 @@ dependencies {
 	implementation(libs.coroutines.android)
 	implementation(libs.timber)
 
-	implementation(libs.moshi)
-	ksp(libs.moshi.codegen)
+	implementation(libs.kotlinx.serialization.json)
 
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)

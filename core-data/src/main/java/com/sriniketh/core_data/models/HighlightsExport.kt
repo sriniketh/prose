@@ -1,15 +1,15 @@
 package com.sriniketh.core_data.models
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class HighlightsExport(
     val id: String,
     val info: BookInfoExport,
     val highlights: List<HighlightExport>
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class BookInfoExport(
     val title: String,
     val subtitle: String?,
@@ -23,7 +23,7 @@ data class BookInfoExport(
     val ratingsCount: Int?
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class HighlightExport(
     val id: String,
     val bookId: String,

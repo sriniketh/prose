@@ -3,7 +3,10 @@ package com.sriniketh.core_data.usecases
 import com.sriniketh.core_data.fakes.FakeBooksRepository
 import com.sriniketh.core_data.fakes.FakeFileSource
 import com.sriniketh.core_data.fakes.FakeHighlightsRepository
+import com.sriniketh.core_data.models.HighlightsExport
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -65,5 +68,15 @@ class ExportHighlightsUseCaseTest {
         fakeFileSource.shouldWriteToFileFail = true
         val result = useCase("test-book-id")
         assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `written json round-trips back into HighlightsExport`() = runTest {
+        useCase("test-book-id")
+        val writtenContent = fakeFileSource.lastWrittenContent!!
+        val decoded = Json.decodeFromString<HighlightsExport>(writtenContent)
+        assertEquals("Test Title", decoded.info.title)
+        assertEquals("Test Author", decoded.info.authors[0])
+        assertEquals("Test highlight text", decoded.highlights[0].text)
     }
 }

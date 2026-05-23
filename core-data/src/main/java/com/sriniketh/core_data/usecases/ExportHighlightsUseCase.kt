@@ -7,9 +7,17 @@ import com.sriniketh.core_data.models.BookInfoExport
 import com.sriniketh.core_data.models.HighlightExport
 import com.sriniketh.core_data.models.HighlightsExport
 import com.sriniketh.core_platform.FileSource
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.first
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
+
+@OptIn(ExperimentalSerializationApi::class)
+private val exportJson = Json {
+    prettyPrint = true
+    prettyPrintIndent = "  "
+}
 
 class ExportHighlightsUseCase @Inject constructor(
     private val booksRepository: BooksRepository,
@@ -44,9 +52,7 @@ class ExportHighlightsUseCase @Inject constructor(
             }
         )
 
-        val moshi = Moshi.Builder().build()
-        val adapter = moshi.adapter(HighlightsExport::class.java).indent("  ")
-        val json = adapter.toJson(export)
+        val json = exportJson.encodeToString(export)
 
         val fileName = "${book.info.title.lowercase().replace(" ", "_")}_export.json"
         val uri = fileSource.writeToFile(fileName, json)
