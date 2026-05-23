@@ -29,6 +29,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,9 +71,27 @@ fun BookInfoScreen(
         viewModel.getBookDetail(bookId)
     }
     val uiState: BookInfoUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(Unit) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    is BookInfoEffect.ShowMessage -> scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                    }
+                }
+            }
+        }
+    }
+
     BookInfo(
         modifier = modifier,
         uiState = uiState,
+        snackbarHostState = snackbarHostState,
         goBack = { goBack() }
     )
 }
@@ -77,10 +100,10 @@ fun BookInfoScreen(
 @Composable
 internal fun BookInfo(
     uiState: BookInfoUiState,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier,
     goBack: () -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(
         modifier = modifier
@@ -106,15 +129,6 @@ internal fun BookInfo(
                     .fillMaxWidth()
                     .testTag("BookInfoLoadingIndicator")
             )
-        }
-
-        uiState.snackBarText?.let { resId ->
-            val snackbarMessage = stringResource(id = resId)
-            LaunchedEffect(key1 = resId) {
-                launch {
-                    snackbarHostState.showSnackbar(snackbarMessage)
-                }
-            }
         }
 
         BookInfoLayout(uiState, modifier, contentPadding)
@@ -326,13 +340,3 @@ internal fun BookInfoScreenLoadingPreview() {
     }
 }
 
-@PreviewLightDark
-@Composable
-internal fun BookInfoScreenSnackbarPreview() {
-    AppTheme {
-        BookInfo(
-            uiState = BookInfoUiState(snackBarText = R.string.book_info_load_error_message),
-            goBack = {}
-        )
-    }
-}

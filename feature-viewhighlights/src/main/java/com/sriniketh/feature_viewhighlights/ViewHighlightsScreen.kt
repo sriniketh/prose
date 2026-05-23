@@ -50,6 +50,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
@@ -58,7 +59,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import kotlinx.coroutines.CoroutineScope
@@ -78,42 +82,56 @@ fun ViewHighlightsScreen(
     }
     val uiState: ViewHighlightsUIState by viewModel.highlightsUIStateFlow.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
     val shareLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
-    ) {
-        viewModel.clearExportUri()
-    }
+    ) {}
 
-    uiState.exportUri?.let { uri ->
-        LaunchedEffect(uri) {
-            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                type = "application/json"
-                putExtra(Intent.EXTRA_STREAM, uri)
-                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    LaunchedEffect(Unit) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            viewModel.effects.collect { effect ->
+                when (effect) {
+                    is ViewHighlightsEffect.ShowMessage -> scope.launch {
+                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                    }
+
+                    is ViewHighlightsEffect.ShareHighlights -> {
+                        val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                            type = "application/json"
+                            putExtra(Intent.EXTRA_STREAM, effect.uri)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                        shareLauncher.launch(Intent.createChooser(shareIntent, null))
+                    }
+                }
             }
-            shareLauncher.launch(Intent.createChooser(shareIntent, null))
         }
     }
 
     ViewHighlights(
         modifier = modifier,
         uiState = uiState,
+        snackbarHostState = snackbarHostState,
         bookId = bookId,
-        onEvent = { event ->
-            when (event) {
-                is ViewHighlightsEvent.OnBackPressed -> {
+        onAction = { action ->
+            when (action) {
+                is ViewHighlightsAction.OnBackPressed -> {
                     goBack()
                 }
 
-                is ViewHighlightsEvent.OnCameraPermissionGranted -> {
+                is ViewHighlightsAction.OnCameraPermissionGranted -> {
                     goToAddHighlightScreen()
                 }
 
-                is ViewHighlightsEvent.OnEditHighlight -> {
-                    goToEditHighlightScreen(event.highlightId)
+                is ViewHighlightsAction.OnEditHighlight -> {
+                    goToEditHighlightScreen(action.highlightId)
                 }
 
-                else -> viewModel.processEvent(event)
+                else -> viewModel.processAction(action)
             }
         }
     )
@@ -124,22 +142,22 @@ fun ViewHighlightsScreen(
 internal fun ViewHighlights(
     uiState: ViewHighlightsUIState,
     bookId: String,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier,
-    onEvent: (ViewHighlightsEvent) -> Unit
+    onAction: (ViewHighlightsAction) -> Unit
 ) {
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
             if (granted) {
-                onEvent(ViewHighlightsEvent.OnCameraPermissionGranted)
+                onAction(ViewHighlightsAction.OnCameraPermissionGranted)
             } else {
-                onEvent(ViewHighlightsEvent.OnCameraPermissionDenied)
+                onAction(ViewHighlightsAction.OnCameraPermissionDenied)
             }
         })
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val clipboard: Clipboard = LocalClipboard.current
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val lazyListState = rememberLazyListState()
     val shouldFabBeVisible by remember {
         derivedStateOf {
@@ -161,9 +179,9 @@ internal fun ViewHighlights(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                navigationIcon = { NavigationBack { onEvent(ViewHighlightsEvent.OnBackPressed) } },
+                navigationIcon = { NavigationBack { onAction(ViewHighlightsAction.OnBackPressed) } },
                 actions = {
-                    IconButton(onClick = { onEvent(ViewHighlightsEvent.OnExportHighlights(bookId)) }) {
+                    IconButton(onClick = { onAction(ViewHighlightsAction.OnExportHighlights(bookId)) }) {
                         Icon(
                             painter = painterResource(com.sriniketh.core_design.R.drawable.ic_share),
                             contentDescription = stringResource(id = R.string.share_button_cont_desc)
@@ -191,15 +209,6 @@ internal fun ViewHighlights(
     ) { contentPadding ->
         if (uiState.isLoading) {
             LinearProgressIndicator(modifier = modifier.fillMaxWidth())
-        }
-
-        uiState.snackBarText?.let { resId ->
-            val snackbarMessage = stringResource(id = resId)
-            LaunchedEffect(key1 = resId) {
-                launch {
-                    snackbarHostState.showSnackbar(snackbarMessage)
-                }
-            }
         }
 
         if (uiState.highlights.isEmpty()) {
@@ -307,7 +316,7 @@ internal fun ViewHighlights(
                                         )
                                     },
                                     onClick = {
-                                        onEvent(ViewHighlightsEvent.OnEditHighlight(highlightUiState.id))
+                                        onAction(ViewHighlightsAction.OnEditHighlight(highlightUiState.id))
                                         expandDropDownMenu = false
                                     }
                                 )

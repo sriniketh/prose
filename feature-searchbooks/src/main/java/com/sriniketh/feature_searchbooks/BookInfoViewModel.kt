@@ -8,9 +8,12 @@ import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
 import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +28,9 @@ class BookInfoViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<BookInfoUiState> =
         MutableStateFlow(BookInfoUiState())
     internal val uiState: StateFlow<BookInfoUiState> = _uiState.asStateFlow()
+
+    private val _effects = Channel<BookInfoEffect>(Channel.BUFFERED)
+    internal val effects: Flow<BookInfoEffect> = _effects.receiveAsFlow()
 
     fun getBookDetail(volumeId: String) {
         viewModelScope.launch {
@@ -45,11 +51,9 @@ class BookInfoViewModel @Inject constructor(
                 }
             } else if (result.isFailure) {
                 _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.book_info_load_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(BookInfoEffect.ShowMessage(R.string.book_info_load_error_message))
             }
         }
     }
@@ -64,17 +68,15 @@ class BookInfoViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
-                        snackBarText = R.string.add_to_bookshelf_success_message,
                         canAddToShelf = false
                     )
                 }
+                _effects.trySend(BookInfoEffect.ShowMessage(R.string.add_to_bookshelf_success_message))
             } else if (result.isFailure) {
                 _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        snackBarText = R.string.add_to_bookshelf_error_message
-                    )
+                    state.copy(isLoading = false)
                 }
+                _effects.trySend(BookInfoEffect.ShowMessage(R.string.add_to_bookshelf_error_message))
             }
         }
     }
@@ -82,8 +84,11 @@ class BookInfoViewModel @Inject constructor(
 
 data class BookInfoUiState(
     val isLoading: Boolean = false,
-    @StringRes val snackBarText: Int? = null,
     val book: Book? = null,
     val canAddToShelf: Boolean = false,
     val addBookToShelf: () -> Unit = {}
 )
+
+internal sealed interface BookInfoEffect {
+    data class ShowMessage(@StringRes val messageRes: Int) : BookInfoEffect
+}

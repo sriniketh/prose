@@ -6,9 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,6 +24,9 @@ class BookshelfViewModel @Inject constructor(
     private val _bookshelfUIState: MutableStateFlow<BookshelfUIState> =
         MutableStateFlow(BookshelfUIState())
     internal val bookshelfUIState: StateFlow<BookshelfUIState> = _bookshelfUIState.asStateFlow()
+
+    private val _effects = Channel<BookshelfEffect>(Channel.BUFFERED)
+    internal val effects: Flow<BookshelfEffect> = _effects.receiveAsFlow()
 
     var viewHighlightsForBook: (String) -> Unit = {}
 
@@ -40,11 +46,9 @@ class BookshelfViewModel @Inject constructor(
                     }
                 } else if (result.isFailure) {
                     _bookshelfUIState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            snackBarText = R.string.getallbooks_error_message
-                        )
+                        state.copy(isLoading = false)
                     }
+                    _effects.trySend(BookshelfEffect.ShowMessage(R.string.getallbooks_error_message))
                 }
             }
         }
@@ -63,8 +67,7 @@ class BookshelfViewModel @Inject constructor(
 
 internal data class BookshelfUIState(
     val isLoading: Boolean = false,
-    val books: List<BookUIState> = emptyList(),
-    @StringRes val snackBarText: Int? = null
+    val books: List<BookUIState> = emptyList()
 )
 
 internal data class BookUIState(
@@ -74,3 +77,7 @@ internal data class BookUIState(
     val thumbnailLink: String?,
     var viewBook: (String) -> Unit
 )
+
+internal sealed interface BookshelfEffect {
+    data class ShowMessage(@StringRes val messageRes: Int) : BookshelfEffect
+}
