@@ -72,17 +72,16 @@ class SearchBookViewModelTest {
     fun `when search for book fails then loading is set to false and error is shown`() = runTest {
         fakeBooksRepository.shouldSearchForBooksThrowException = true
 
-        viewModel.searchUiState.test {
-            awaitItem()
-
+        viewModel.effects.test {
             viewModel.searchForBook("test query")
 
-            skipItems(1)
-
-            val errorState = awaitItem()
-            assertFalse(errorState.isLoading)
-            assertEquals(R.string.search_error_message, errorState.snackBarText)
+            assertEquals(
+                SearchBookEffect.ShowMessage(R.string.search_error_message),
+                awaitItem()
+            )
         }
+
+        assertFalse(viewModel.searchUiState.value.isLoading)
     }
 
     @Test
@@ -125,7 +124,6 @@ class SearchBookViewModelTest {
 
             assertFalse(initialState.isLoading)
             assertTrue(initialState.bookUiStates.isEmpty())
-            assertEquals(null, initialState.snackBarText)
         }
     }
 }
