@@ -107,7 +107,6 @@ class BookshelfViewModelTest {
             fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
             val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository))
 
-            // First collector consumes the single effect.
             failingViewModel.effects.test {
                 assertEquals(
                     BookshelfEffect.ShowMessage(R.string.getallbooks_error_message),
@@ -116,7 +115,6 @@ class BookshelfViewModelTest {
                 expectNoEvents()
             }
 
-            // A new collector (as created after a configuration change) sees no replay.
             failingViewModel.effects.test {
                 expectNoEvents()
             }

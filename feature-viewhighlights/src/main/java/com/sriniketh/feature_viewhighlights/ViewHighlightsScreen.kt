@@ -89,7 +89,7 @@ fun ViewHighlightsScreen(
 
     val shareLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
-    ) { /* no-op: the share sheet result requires no follow-up */ }
+    ) {}
 
     LaunchedEffect(Unit) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
