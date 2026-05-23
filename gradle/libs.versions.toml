@@ -32,6 +32,7 @@ timber-version = "5.0.1"
 retrofit-version = "3.0.0"
 okhttp-version = "5.3.2"
 moshi-version = "1.15.2"
+kotlinx-serialization-version = "1.11.0"
 cropify-version = "0.5.2"
 coil-version = "2.7.0"
 
@@ -68,6 +69,8 @@ retrofit-moshi-converter = { group = "com.squareup.retrofit2", name = "converter
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp-version" }
 moshi = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi-version" }
 moshi-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi-version" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-version" }
+retrofit-kotlinx-serialization-converter = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit-version" }
 cropify = { group = "com.github.moyuruaizawa", name = "cropify", version.ref = "cropify-version" }
 coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil-version" }
 
@@ -88,6 +91,7 @@ android-application = { id = "com.android.application", version.ref = "android-a
 android-library = { id = "com.android.library", version.ref = "android-library-plugin-version" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin-jvm-plugin-version" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-compose-plugin-version" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin-jvm-plugin-version" }
 java-library = { id = "java-library" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-plugin-version" }
