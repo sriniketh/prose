@@ -1,6 +1,7 @@
 package com.sriniketh.feature_bookshelf
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase
@@ -16,9 +17,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+const val BOOKSHELF_SHOW_ADDED_MESSAGE = "bookshelf_show_added_message"
+
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
-    private val getAllSavedBooksUseCase: GetAllSavedBooksUseCase
+    private val getAllSavedBooksUseCase: GetAllSavedBooksUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _bookshelfUIState: MutableStateFlow<BookshelfUIState> =
@@ -31,6 +35,15 @@ class BookshelfViewModel @Inject constructor(
     var viewHighlightsForBook: (String) -> Unit = {}
 
     init {
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow(BOOKSHELF_SHOW_ADDED_MESSAGE, false)
+                .collect { showAddedMessage ->
+                    if (showAddedMessage) {
+                        _effects.trySend(BookshelfEffect.ShowMessage(R.string.book_added_to_shelf_message))
+                        savedStateHandle[BOOKSHELF_SHOW_ADDED_MESSAGE] = false
+                    }
+                }
+        }
         viewModelScope.launch {
             _bookshelfUIState.update { state ->
                 state.copy(isLoading = true)
