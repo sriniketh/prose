@@ -83,6 +83,7 @@ fun BookInfoScreen(
                     is BookInfoEffect.ShowMessage -> scope.launch {
                         snackbarHostState.showSnackbar(context.getString(effect.messageRes))
                     }
+                    BookInfoEffect.NavigateToBookshelf -> goBack()
                 }
             }
         }

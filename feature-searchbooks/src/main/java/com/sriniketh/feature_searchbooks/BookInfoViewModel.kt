@@ -71,7 +71,7 @@ class BookInfoViewModel @Inject constructor(
                         canAddToShelf = false
                     )
                 }
-                _effects.trySend(BookInfoEffect.ShowMessage(R.string.add_to_bookshelf_success_message))
+                _effects.trySend(BookInfoEffect.NavigateToBookshelf)
             } else if (result.isFailure) {
                 _uiState.update { state ->
                     state.copy(isLoading = false)
@@ -91,4 +91,5 @@ data class BookInfoUiState(
 
 internal sealed interface BookInfoEffect {
     data class ShowMessage(@StringRes val messageRes: Int) : BookInfoEffect
+    data object NavigateToBookshelf : BookInfoEffect
 }
