@@ -15,6 +15,7 @@ import com.sriniketh.core_platform.decodeUri
 import com.sriniketh.core_platform.encodeUri
 import com.sriniketh.feature_addhighlight.CaptureAndCropImageScreen
 import com.sriniketh.feature_addhighlight.EditAndSaveHighlightScreen
+import com.sriniketh.feature_bookshelf.BOOKSHELF_SHOW_ADDED_MESSAGE
 import com.sriniketh.feature_bookshelf.BookshelfScreen
 import com.sriniketh.feature_searchbooks.BookInfoScreen
 import com.sriniketh.feature_searchbooks.SearchBookScreen
@@ -162,7 +163,12 @@ internal fun ProseAppScreen(
                         modifier = modifier,
                         bookId = backStackEntry.arguments?.getString(Screen.BOOKINFO.argBookId)
                             .orEmpty(),
-                        goBack = { navController.navigateUp() }
+                        goBack = { navController.navigateUp() },
+                        onBookAddedToShelf = {
+                            navController.getBackStackEntry(Screen.BOOKSHELF.route)
+                                .savedStateHandle[BOOKSHELF_SHOW_ADDED_MESSAGE] = true
+                            navController.popBackStack(Screen.BOOKSHELF.route, inclusive = false)
+                        }
                     )
                 }
             }
