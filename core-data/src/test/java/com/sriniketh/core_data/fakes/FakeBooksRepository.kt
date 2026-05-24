@@ -23,9 +23,8 @@ class FakeBooksRepository : BooksRepository {
 	var insertedBook: Book? = null
 	var deletedBook: Book? = null
 	var doesBookExistResult = false
-	var bookByIdOverride: Book? = null
 
-	private val fakeBook = Book(
+	var fakeBookToReturn = Book(
 		id = "test-id",
 		info = BookInfo(
 			title = "Test Title",
@@ -46,7 +45,7 @@ class FakeBooksRepository : BooksRepository {
 		return if (shouldSearchForBooksThrowException) {
 			Result.failure(RuntimeException("Search failed"))
 		} else {
-			Result.success(BookSearch(items = listOf(fakeBook)))
+			Result.success(BookSearch(items = listOf(fakeBookToReturn)))
 		}
 	}
 
@@ -55,7 +54,7 @@ class FakeBooksRepository : BooksRepository {
 		return if (shouldFetchBookInfoThrowException) {
 			Result.failure(RuntimeException("Fetch book info failed"))
 		} else {
-			Result.success(fakeBook)
+			Result.success(fakeBookToReturn)
 		}
 	}
 
@@ -81,7 +80,7 @@ class FakeBooksRepository : BooksRepository {
 		if (shouldGetAllSavedBooksFromDbThrowException) {
 			emit(Result.failure(RuntimeException("Get all books failed")))
 		} else {
-			emit(Result.success(listOf(fakeBook)))
+			emit(Result.success(listOf(fakeBookToReturn)))
 		}
 	}
 
@@ -89,7 +88,7 @@ class FakeBooksRepository : BooksRepository {
 		return if (shouldGetBookByIdFromDbThrowException) {
 			Result.failure(NoSuchElementException("Book not found"))
 		} else {
-			Result.success(bookByIdOverride ?: fakeBook)
+			Result.success(fakeBookToReturn)
 		}
 	}
 

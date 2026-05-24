@@ -85,7 +85,7 @@ class ExportHighlightsUseCaseTest {
 
     @Test
     fun `written json omits null optional book fields rather than emitting nulls`() = runTest {
-        fakeBooksRepository.bookByIdOverride = Book(
+        fakeBooksRepository.fakeBookToReturn = Book(
             id = "test-id",
             info = BookInfo(
                 title = "Test Title",
