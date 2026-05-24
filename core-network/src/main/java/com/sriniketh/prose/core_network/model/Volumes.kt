@@ -1,19 +1,19 @@
 package com.sriniketh.prose.core_network.model
 
-import com.squareup.moshi.JsonClass
+import kotlinx.serialization.Serializable
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Volumes(
     val items: List<Volume>
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class Volume(
     val id: String,
     val volumeInfo: VolumeInfo
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class VolumeInfo(
     val title: String,
     val subtitle: String? = null,
@@ -27,7 +27,7 @@ data class VolumeInfo(
     val ratingsCount: Int? = null
 )
 
-@JsonClass(generateAdapter = true)
+@Serializable
 data class ImageLinks(
     val thumbnail: String,
     val smallThumbnail: String? = null,

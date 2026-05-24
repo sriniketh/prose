@@ -8,10 +8,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -39,7 +40,7 @@ object NetworkModule {
                 )
                 .build()
         )
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(booksApiJson.asConverterFactory("application/json; charset=utf-8".toMediaType()))
         .build()
         .create(BooksApi::class.java)
 }

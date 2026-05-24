@@ -3,8 +3,14 @@ package com.sriniketh.core_data.usecases
 import com.sriniketh.core_data.fakes.FakeBooksRepository
 import com.sriniketh.core_data.fakes.FakeFileSource
 import com.sriniketh.core_data.fakes.FakeHighlightsRepository
+import com.sriniketh.core_data.models.HighlightsExport
+import com.sriniketh.core_models.book.Book
+import com.sriniketh.core_models.book.BookInfo
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -65,5 +71,39 @@ class ExportHighlightsUseCaseTest {
         fakeFileSource.shouldWriteToFileFail = true
         val result = useCase("test-book-id")
         assertTrue(result.isFailure)
+    }
+
+    @Test
+    fun `written json round-trips back into HighlightsExport`() = runTest {
+        useCase("test-book-id")
+        val writtenContent = fakeFileSource.lastWrittenContent!!
+        val decoded = Json.decodeFromString<HighlightsExport>(writtenContent)
+        assertEquals("Test Title", decoded.info.title)
+        assertEquals("Test Author", decoded.info.authors[0])
+        assertEquals("Test highlight text", decoded.highlights[0].text)
+    }
+
+    @Test
+    fun `written json omits null optional book fields rather than emitting nulls`() = runTest {
+        fakeBooksRepository.fakeBookToReturn = Book(
+            id = "test-id",
+            info = BookInfo(
+                title = "Test Title",
+                subtitle = null,
+                authors = listOf("Test Author"),
+                thumbnailLink = null,
+                publisher = null,
+                publishedDate = null,
+                description = null,
+                pageCount = null,
+                averageRating = null,
+                ratingsCount = null
+            )
+        )
+        useCase("test-book-id")
+        val writtenContent = fakeFileSource.lastWrittenContent!!
+        assertFalse(writtenContent.contains("null"))
+        assertFalse(writtenContent.contains("\"publisher\""))
+        assertFalse(writtenContent.contains("\"subtitle\""))
     }
 }

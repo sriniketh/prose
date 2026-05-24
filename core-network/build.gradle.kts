@@ -3,6 +3,7 @@ import java.io.FileInputStream
 
 plugins {
 	alias(libs.plugins.android.library)
+	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.hilt)
 	alias(libs.plugins.ksp)
 }
@@ -49,9 +50,8 @@ dependencies {
 
 	implementation(libs.okhttp.logging.interceptor)
 	implementation(libs.retrofit)
-	implementation(libs.retrofit.moshi.converter)
-	implementation(libs.moshi)
-	ksp(libs.moshi.codegen)
+	implementation(libs.retrofit.kotlinx.serialization.converter)
+	implementation(libs.kotlinx.serialization.json)
 
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
