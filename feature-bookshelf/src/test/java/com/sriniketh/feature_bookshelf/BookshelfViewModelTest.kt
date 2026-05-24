@@ -1,11 +1,13 @@
 package com.sriniketh.feature_bookshelf
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase
 import com.sriniketh.feature_bookshelf.fakes.FakeBooksRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -36,7 +38,7 @@ class BookshelfViewModelTest {
 
     @Test
     fun `when initialized then state has correct defaults`() = runTest {
-        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase)
+        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase, SavedStateHandle())
 
         viewModel.bookshelfUIState.test {
             val initialState = awaitItem()
@@ -49,7 +51,7 @@ class BookshelfViewModelTest {
     @Test
     fun `when initialized books are loaded and ui state transitions from loading to loaded`() =
         runTest {
-            val viewModel = BookshelfViewModel(getAllSavedBooksUseCase)
+            val viewModel = BookshelfViewModel(getAllSavedBooksUseCase, SavedStateHandle())
 
             viewModel.bookshelfUIState.test {
                 val initialState = awaitItem()
@@ -67,7 +69,7 @@ class BookshelfViewModelTest {
 
     @Test
     fun `when initialized ui state contains book details`() = runTest {
-        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase)
+        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase, SavedStateHandle())
 
         viewModel.bookshelfUIState.test {
             skipItems(2)
@@ -87,7 +89,7 @@ class BookshelfViewModelTest {
     @Test
     fun `when initialized and loading fails then show error`() = runTest {
         fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
-        val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository))
+        val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository), SavedStateHandle())
 
         failingViewModel.effects.test {
             assertEquals(
@@ -105,7 +107,7 @@ class BookshelfViewModelTest {
     fun `when error occurs then effect is delivered once and not re-delivered to a new collector`() =
         runTest {
             fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
-            val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository))
+            val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository), SavedStateHandle())
 
             failingViewModel.effects.test {
                 assertEquals(
@@ -122,7 +124,7 @@ class BookshelfViewModelTest {
 
     @Test
     fun `when view highlights for book is set then book view action uses it`() = runTest {
-        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase)
+        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase, SavedStateHandle())
         var calledBookId: String? = null
         viewModel.viewHighlightsForBook = { bookId -> calledBookId = bookId }
 
@@ -136,5 +138,23 @@ class BookshelfViewModelTest {
 
             assertEquals("test-id", calledBookId)
         }
+    }
+
+    @Test
+    fun `when book added flag is set then added message is emitted and cleared`() = runTest {
+        val savedStateHandle = SavedStateHandle(
+            mapOf(BOOKSHELF_SHOW_ADDED_MESSAGE to true)
+        )
+        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase, savedStateHandle)
+
+        viewModel.effects.test {
+            assertEquals(
+                BookshelfEffect.ShowMessage(R.string.book_added_to_shelf_message),
+                awaitItem()
+            )
+        }
+        advanceUntilIdle()
+
+        assertEquals(false, savedStateHandle.get<Boolean>(BOOKSHELF_SHOW_ADDED_MESSAGE))
     }
 }

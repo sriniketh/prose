@@ -163,7 +163,7 @@ class BookInfoViewModelTest {
     }
 
     @Test
-    fun `when add book to shelf succeeds then success message is emitted`() = runTest {
+    fun `when add book to shelf succeeds then navigate to bookshelf effect is emitted`() = runTest {
         fakeBooksRepository.doesBookExistResult = false
 
         viewModel.getBookDetail("test-volume-id")
@@ -175,7 +175,7 @@ class BookInfoViewModelTest {
             addToShelf()
 
             assertEquals(
-                BookInfoEffect.ShowMessage(R.string.add_to_bookshelf_success_message),
+                BookInfoEffect.NavigateToBookshelf,
                 awaitItem()
             )
         }
