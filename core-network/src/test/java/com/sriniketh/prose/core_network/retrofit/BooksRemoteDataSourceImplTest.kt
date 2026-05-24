@@ -56,4 +56,23 @@ class BooksRemoteDataSourceImplTest {
         assertEquals("title 1", volume.volumeInfo.title)
         assertEquals("work description", volume.volumeInfo.description)
     }
+
+    @Test
+    fun `getVolume returns metadata with null description when the work fetch fails`() = runTest {
+        booksApi.shouldWorkThrow = true
+
+        val volume = dataSource.getVolume("OL1W")
+
+        assertEquals("OL1W", volume.id)
+        assertEquals("title 1", volume.volumeInfo.title)
+        assertEquals("OL1W", booksApi.workIdPassed)
+        assertNull(volume.volumeInfo.description)
+    }
+
+    @Test(expected = NoSuchElementException::class)
+    fun `getVolume throws when no work matches the id`() = runTest {
+        booksApi.shouldReturnNoDocs = true
+
+        dataSource.getVolume("OL404W")
+    }
 }

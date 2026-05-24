@@ -5,6 +5,7 @@ import com.sriniketh.prose.core_network.mapper.asVolume
 import com.sriniketh.prose.core_network.mapper.asVolumes
 import com.sriniketh.prose.core_network.model.Volume
 import com.sriniketh.prose.core_network.model.Volumes
+import kotlin.coroutines.cancellation.CancellationException
 import javax.inject.Inject
 
 private const val SEARCH_FIELDS =
@@ -23,7 +24,15 @@ class BooksRemoteDataSourceImpl @Inject constructor(
         val doc = booksApi.search("key:/works/$volumeId", SEARCH_FIELDS, limit = 1)
             .docs.firstOrNull()
             ?: throw NoSuchElementException("No work found for id: $volumeId")
-        val description = booksApi.work(volumeId).description?.value
-        return doc.asVolume(description)
+        return doc.asVolume(fetchDescription(volumeId))
     }
+
+    private suspend fun fetchDescription(volumeId: String): String? =
+        try {
+            booksApi.work(volumeId).description?.value
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (exception: Exception) {
+            null
+        }
 }

@@ -4,12 +4,14 @@ import com.sriniketh.prose.core_network.model.OpenLibraryDoc
 import com.sriniketh.prose.core_network.model.OpenLibrarySearchResponse
 import com.sriniketh.prose.core_network.model.OpenLibraryWork
 import com.sriniketh.prose.core_network.model.WorkDescription
+import java.io.IOException
 
 class FakeBooksApi : BooksApi {
 
     var searchQueryPassed: String? = null
     var fieldsPassed: String? = null
     var limitPassed: Int? = null
+    var shouldReturnNoDocs = false
     override suspend fun search(
         query: String,
         fields: String,
@@ -18,12 +20,15 @@ class FakeBooksApi : BooksApi {
         searchQueryPassed = query
         fieldsPassed = fields
         limitPassed = limit
-        return OpenLibrarySearchResponse(docs = listOf(doc1(), doc2()))
+        val docs = if (shouldReturnNoDocs) emptyList() else listOf(doc1(), doc2())
+        return OpenLibrarySearchResponse(docs = docs)
     }
 
     var workIdPassed: String? = null
+    var shouldWorkThrow = false
     override suspend fun work(workId: String): OpenLibraryWork {
         workIdPassed = workId
+        if (shouldWorkThrow) throw IOException("work endpoint failed")
         return OpenLibraryWork(description = WorkDescription("work description"))
     }
 
