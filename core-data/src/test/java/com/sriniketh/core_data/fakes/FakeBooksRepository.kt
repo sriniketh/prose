@@ -23,6 +23,7 @@ class FakeBooksRepository : BooksRepository {
 	var insertedBook: Book? = null
 	var deletedBook: Book? = null
 	var doesBookExistResult = false
+	var bookByIdOverride: Book? = null
 
 	private val fakeBook = Book(
 		id = "test-id",
@@ -88,7 +89,7 @@ class FakeBooksRepository : BooksRepository {
 		return if (shouldGetBookByIdFromDbThrowException) {
 			Result.failure(NoSuchElementException("Book not found"))
 		} else {
-			Result.success(fakeBook)
+			Result.success(bookByIdOverride ?: fakeBook)
 		}
 	}
 

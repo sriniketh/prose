@@ -17,6 +17,7 @@ import javax.inject.Inject
 private val exportJson = Json {
     prettyPrint = true
     prettyPrintIndent = "  "
+    explicitNulls = false
 }
 
 class ExportHighlightsUseCase @Inject constructor(
