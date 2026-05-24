@@ -32,9 +32,6 @@ jobs:
           path: .gradle/configuration-cache
           key: configuration-cache-${{ hashFiles('**/*.gradle.kts', '**/gradle.properties', '**/libs.versions.toml') }}
 
-      - name: Create API key properties file
-        run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
-
       - name: Run unit tests
         run: ./gradlew test
 
@@ -68,9 +65,6 @@ jobs:
         with:
           path: .gradle/configuration-cache
           key: configuration-cache-${{ hashFiles('**/*.gradle.kts', '**/gradle.properties', '**/libs.versions.toml') }}
-
-      - name: Create API key properties file
-        run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
 
       - name: Enable KVM group perms
         run: |
