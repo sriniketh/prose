@@ -1,23 +1,22 @@
 package com.sriniketh.prose.core_network.retrofit
 
-import com.sriniketh.prose.core_network.model.Volume
-import com.sriniketh.prose.core_network.model.Volumes
+import com.sriniketh.prose.core_network.model.OpenLibrarySearchResponse
+import com.sriniketh.prose.core_network.model.OpenLibraryWork
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface BooksApi {
 
-    @GET("books/v1/volumes")
-    suspend fun volumes(
-        @Query("q") searchQuery: String,
-        @Query("key") apiKey: String,
-        @Query("projection") projection: String
-    ): Volumes
+    @GET("search.json")
+    suspend fun search(
+        @Query("q") query: String,
+        @Query("fields") fields: String,
+        @Query("limit") limit: Int
+    ): OpenLibrarySearchResponse
 
-    @GET("books/v1/volumes/{id}")
-    suspend fun volume(
-        @Path("id") volumeId: String,
-        @Query("key") apiKey: String
-    ): Volume
+    @GET("works/{id}.json")
+    suspend fun work(
+        @Path("id") workId: String
+    ): OpenLibraryWork
 }

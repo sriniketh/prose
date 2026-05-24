@@ -1,72 +1,55 @@
 package com.sriniketh.prose.core_network.retrofit
 
-import com.sriniketh.prose.core_network.model.ImageLinks
-import com.sriniketh.prose.core_network.model.Volume
-import com.sriniketh.prose.core_network.model.VolumeInfo
-import com.sriniketh.prose.core_network.model.Volumes
+import com.sriniketh.prose.core_network.model.OpenLibraryDoc
+import com.sriniketh.prose.core_network.model.OpenLibrarySearchResponse
+import com.sriniketh.prose.core_network.model.OpenLibraryWork
+import com.sriniketh.prose.core_network.model.WorkDescription
 
 class FakeBooksApi : BooksApi {
 
     var searchQueryPassed: String? = null
-    var apiKeyPassed: String? = null
-    var projectionPassed: String? = null
-    override suspend fun volumes(searchQuery: String, apiKey: String, projection: String): Volumes {
-        searchQueryPassed = searchQuery
-        apiKeyPassed = apiKey
-        projectionPassed = projection
-        return Volumes(items = listOf(volume1(), volume2()))
+    var fieldsPassed: String? = null
+    var limitPassed: Int? = null
+    override suspend fun search(
+        query: String,
+        fields: String,
+        limit: Int
+    ): OpenLibrarySearchResponse {
+        searchQueryPassed = query
+        fieldsPassed = fields
+        limitPassed = limit
+        return OpenLibrarySearchResponse(docs = listOf(doc1(), doc2()))
     }
 
-    var volumeIdPassed: String? = null
-    override suspend fun volume(volumeId: String, apiKey: String): Volume {
-        volumeIdPassed = volumeId
-        apiKeyPassed = apiKey
-        return volume1()
+    var workIdPassed: String? = null
+    override suspend fun work(workId: String): OpenLibraryWork {
+        workIdPassed = workId
+        return OpenLibraryWork(description = WorkDescription("work description"))
     }
 
-    private fun volume1() = Volume(
-        id = "someId1", volumeInfo = VolumeInfo(
-            title = "title 1",
-            subtitle = "subtitle 1",
-            description = "description 1",
-            authors = listOf(
-                "author 1", "author 2"
-            ),
-            imageLinks = ImageLinks(
-                thumbnail = "thumbnail 1",
-                smallThumbnail = null,
-                small = null,
-                medium = null,
-                large = null
-            ),
-            publisher = "publisher 1",
-            publishedDate = "published date 1",
-            pageCount = 100,
-            averageRating = 4.5,
-            ratingsCount = 4500
-        )
+    private fun doc1() = OpenLibraryDoc(
+        key = "/works/OL1W",
+        title = "title 1",
+        subtitle = "subtitle 1",
+        authorName = listOf("author 1", "author 2"),
+        coverId = 111,
+        firstPublishYear = 2001,
+        numberOfPagesMedian = 100,
+        publisher = listOf("publisher 1"),
+        ratingsAverage = 4.5,
+        ratingsCount = 4500
     )
 
-    private fun volume2() = Volume(
-        id = "someId2", volumeInfo = VolumeInfo(
-            title = "title 2",
-            subtitle = "subtitle 2",
-            description = "description 2",
-            authors = listOf(
-                "author 1", "author 2"
-            ),
-            imageLinks = ImageLinks(
-                thumbnail = "thumbnail 2",
-                smallThumbnail = null,
-                small = null,
-                medium = null,
-                large = null
-            ),
-            publisher = "publisher 2",
-            publishedDate = "published date 2",
-            pageCount = 250,
-            averageRating = 4.3,
-            ratingsCount = 500
-        )
+    private fun doc2() = OpenLibraryDoc(
+        key = "/works/OL2W",
+        title = "title 2",
+        subtitle = "subtitle 2",
+        authorName = listOf("author 1", "author 2"),
+        coverId = 222,
+        firstPublishYear = 2002,
+        numberOfPagesMedian = 250,
+        publisher = listOf("publisher 2"),
+        ratingsAverage = 4.3,
+        ratingsCount = 500
     )
 }
