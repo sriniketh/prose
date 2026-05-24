@@ -10,7 +10,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,7 +40,7 @@ class SearchBookViewModel @Inject constructor(
     internal val effects: Flow<SearchBookEffect> = _effects.receiveAsFlow()
 
     private val queryFlow: MutableStateFlow<String> = MutableStateFlow("")
-    private val resetFlow: MutableSharedFlow<Unit> = MutableSharedFlow(extraBufferCapacity = 1)
+    private val resetChannel: Channel<Unit> = Channel(Channel.CONFLATED)
 
     init {
         val searches: Flow<SearchAction> = queryFlow
@@ -49,7 +48,7 @@ class SearchBookViewModel @Inject constructor(
             .debounce(DEBOUNCE_MILLIS)
             .distinctUntilChanged()
             .map { query -> SearchAction.Search(query) }
-        val resets: Flow<SearchAction> = resetFlow.map { SearchAction.Clear }
+        val resets: Flow<SearchAction> = resetChannel.receiveAsFlow().map { SearchAction.Clear }
         merge(searches, resets)
             .flatMapLatest { action ->
                 when (action) {
@@ -66,7 +65,7 @@ class SearchBookViewModel @Inject constructor(
     }
 
     fun resetSearch() {
-        resetFlow.tryEmit(Unit)
+        resetChannel.trySend(Unit)
     }
 
     private fun searchResultsFlow(query: String): Flow<BookSearchUiState> = flow {

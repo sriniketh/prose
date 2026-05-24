@@ -209,6 +209,7 @@ class SearchBookViewModelTest {
 
         viewModel.searchForBook("the hobbit")
         advanceTimeBy(DEBOUNCE_MILLIS + 1)
+        assertTrue(viewModel.searchUiState.value.isLoading)
 
         viewModel.resetSearch()
         advanceUntilIdle()
