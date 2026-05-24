@@ -1,16 +1,9 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
 	alias(libs.plugins.android.library)
 	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.hilt)
 	alias(libs.plugins.ksp)
 }
-
-val apikeyPropertiesFile = file("apikey.properties")
-val apikeyProperties = Properties()
-apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
 kotlin {
 	jvmToolchain(libs.versions.jvmToolchainVersion.get().toInt())
@@ -25,7 +18,6 @@ android {
 	defaultConfig {
 		minSdk = libs.versions.minSdkVersion.get().toInt()
 
-		buildConfigField("String", "BOOKS_API_KEY", apikeyProperties["BOOKS_API_KEY"] as String)
 		consumerProguardFiles("consumer-rules.pro")
 	}
 

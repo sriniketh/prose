@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents like Claude Code (claude.ai/code
 ## Build Commands
 
 ```bash
-# Build the project (requires API key setup first)
+# Build the project
 ./gradlew assembleDebug
 
 # Run all unit tests
@@ -23,13 +23,6 @@ This file provides guidance to AI coding agents like Claude Code (claude.ai/code
 ./gradlew :feature-bookshelf:connectedDebugAndroidTest
 ```
 
-## API Key Setup
-
-Before building, create `core-network/apikey.properties` with:
-```
-BOOKS_API_KEY="your-google-books-api-key"
-```
-
 ## Architecture Overview
 
 Prose is a multi-module Android app for capturing book highlights from physical books using OCR (ML Kit). It follows unidirectional data flow (UDF) with Jetpack Compose UI. Uses JVM toolchain 17.
@@ -37,7 +30,7 @@ Prose is a multi-module Android app for capturing book highlights from physical 
 ### Module Structure
 
 **Core Modules:**
-- `core-network` - Retrofit API client for Google Books API (Moshi for JSON)
+- `core-network` - Retrofit API client for the Open Library API (kotlinx.serialization for JSON)
 - `core-db` - Room database with `BookEntity` and `HighlightEntity`
 - `core-data` - Repositories and UseCases that combine network/db operations
 - `core-models` - Domain models (`Book`, `Highlight`, `BookSearch`) — pure Kotlin, no Android deps
@@ -75,7 +68,7 @@ Navigation Compose with routes defined in `app/src/main/java/com/sriniketh/prose
 ### Key Libraries
 
 - **Compose BOM** for UI with Material 3 + DynamicColors
-- **Retrofit 3 + Moshi** for networking
+- **Retrofit 3 + kotlinx.serialization** for networking
 - **Room** for local persistence
 - **Coil** for image loading
 - **Cropify** for image cropping
