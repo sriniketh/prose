@@ -169,10 +169,24 @@ class SearchBookViewModelTest {
     }
 
     @Test
-    fun `when the same query is submitted twice then only one search runs`() = runTest {
+    fun `when the identical query is re-submitted with no change then only one search runs`() = runTest {
         viewModel.searchForBook("the hobbit")
         advanceTimeBy(DEBOUNCE_MILLIS + 1)
         viewModel.searchForBook("the hobbit")
+        advanceUntilIdle()
+
+        assertEquals(listOf("the hobbit"), fakeBooksRepository.queriesSearched)
+    }
+
+    @Test
+    fun `when a settled query is re-entered after a brief change within the window then it does not search again`() = runTest {
+        viewModel.searchForBook("the hobbit")
+        advanceTimeBy(DEBOUNCE_MILLIS + 1)
+
+        viewModel.searchForBook("the hobbi")
+        advanceTimeBy(DEBOUNCE_MILLIS / 2)
+        viewModel.searchForBook("the hobbit")
+        advanceTimeBy(DEBOUNCE_MILLIS + 1)
         advanceUntilIdle()
 
         assertEquals(listOf("the hobbit"), fakeBooksRepository.queriesSearched)
