@@ -199,4 +199,22 @@ class SearchBookViewModelTest {
 
         assertTrue(fakeBooksRepository.queriesSearched.isEmpty())
     }
+
+    @Test
+    fun `when reset is called during an in-flight search then results are not repopulated`() = runTest {
+        fakeBooksRepository.searchResultBuilder = { query ->
+            BookSearch(items = listOf(fakeBooksRepository.fakeBook.copy(id = query)))
+        }
+        fakeBooksRepository.searchDelayMillis = 1_000L
+
+        viewModel.searchForBook("the hobbit")
+        advanceTimeBy(DEBOUNCE_MILLIS + 1)
+
+        viewModel.resetSearch()
+        advanceUntilIdle()
+
+        val finalState = viewModel.searchUiState.value
+        assertTrue(finalState.bookUiStates.isEmpty())
+        assertFalse(finalState.isLoading)
+    }
 }
