@@ -250,6 +250,7 @@ class ViewHighlightsViewModelTest {
     fun `when OnExportHighlights action succeeds then emits share effect and clears loading`() = runTest {
         viewModel.effects.test {
             viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
+            testScheduler.advanceUntilIdle()
 
             val effect = awaitItem()
             assertTrue(effect is ViewHighlightsEffect.ShareHighlights)
@@ -265,6 +266,7 @@ class ViewHighlightsViewModelTest {
 
         viewModel.effects.test {
             viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
+            testScheduler.advanceUntilIdle()
 
             assertEquals(
                 ViewHighlightsEffect.ShowMessage(R.string.export_error_message),
