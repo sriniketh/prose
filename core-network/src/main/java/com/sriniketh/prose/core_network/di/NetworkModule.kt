@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -26,14 +27,16 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesRemoteJson(): BooksApi = Retrofit.Builder()
+    fun providesRemoteJson(
+        @Named("userAgent") userAgent: String
+    ): BooksApi = Retrofit.Builder()
         .baseUrl("https://openlibrary.org/")
         .client(
             OkHttpClient.Builder()
                 .addInterceptor { chain ->
                     chain.proceed(
                         chain.request().newBuilder()
-                            .header("User-Agent", "Prose Android App")
+                            .header("User-Agent", userAgent)
                             .build()
                     )
                 }
