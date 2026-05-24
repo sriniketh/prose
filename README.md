@@ -34,8 +34,6 @@ align UI colors with the color theme of the wallpaper in both dark and light mod
 
 ## Building the project
 
-The Open Library API requires no API key, so the project builds with no additional setup.
-
 The app is setup as a multi-module project containing core and feature modules. It follows the
 unidirectional data flow model where data flows from the network/database layers to the presentation
 layer where it's reduced to UI state. This state is then consumed and rendered as UI using Compose.
