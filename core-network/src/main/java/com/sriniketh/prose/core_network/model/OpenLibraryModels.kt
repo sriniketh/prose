@@ -28,9 +28,6 @@ data class OpenLibraryWork(
     val description: WorkDescription? = null
 )
 
-// No @Serializable: Open Library returns `description` as either a bare string or a
-// {type, value} object, so (de)serialization is handled entirely by WorkDescriptionSerializer,
-// applied at the use site on OpenLibraryWork.description.
 data class WorkDescription(
     val value: String?
 )
