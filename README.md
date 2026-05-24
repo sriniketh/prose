@@ -4,7 +4,7 @@
 
 Prose is an Android app to capture and save highlights from physical books.
 
-The app uses the [Google Play Books API](https://developers.google.com/books) to search for a book
+The app uses the [Open Library API](https://openlibrary.org/developers/api) to search for a book
 and obtain rich content for the same. Books can be saved into a bookshelf and highlights can be
 added for each saved book. Text recognition is performed
 on-device using [ML Kit](https://developers.google.com/ml-kit/vision/text-recognition/android).
@@ -34,8 +34,7 @@ align UI colors with the color theme of the wallpaper in both dark and light mod
 
 ## Building the project
 
-The project requires a Google Books API key that needs to be added to a `apikey.properties` file in
-the `core-network` module.
+The Open Library API requires no API key, so the project builds with no additional setup.
 
 The app is setup as a multi-module project containing core and feature modules. It follows the
 unidirectional data flow model where data flows from the network/database layers to the presentation
