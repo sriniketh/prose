@@ -1,6 +1,6 @@
 package com.sriniketh.prose.core_network.di
 
-import com.sriniketh.prose.core_network.model.Volumes
+import com.sriniketh.prose.core_network.model.OpenLibrarySearchResponse
 import kotlinx.serialization.decodeFromString
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -8,56 +8,44 @@ import org.junit.Test
 class BooksApiJsonTest {
 
     @Test
-    fun `decodes google books payload while ignoring unknown keys`() {
+    fun `decodes open library search payload while ignoring unknown keys`() {
         val payload = """
             {
-              "kind": "books#volumes",
-              "totalItems": 1,
-              "items": [
+              "numFound": 1,
+              "start": 0,
+              "docs": [
                 {
-                  "kind": "books#volume",
-                  "id": "someId",
-                  "etag": "abc123",
-                  "selfLink": "https://www.googleapis.com/books/v1/volumes/someId",
-                  "volumeInfo": {
-                    "title": "Some Title",
-                    "subtitle": "Some Subtitle",
-                    "authors": ["Author One"],
-                    "publisher": "Some Publisher",
-                    "publishedDate": "2020",
-                    "description": "A description",
-                    "industryIdentifiers": [
-                      {"type": "ISBN_13", "identifier": "9781234567897"}
-                    ],
-                    "pageCount": 321,
-                    "categories": ["Fiction"],
-                    "averageRating": 4.5,
-                    "ratingsCount": 12,
-                    "imageLinks": {
-                      "smallThumbnail": "http://books.google.com/small",
-                      "thumbnail": "http://books.google.com/thumb"
-                    },
-                    "language": "en",
-                    "previewLink": "http://books.google.com/preview"
-                  },
-                  "saleInfo": {"country": "US", "saleability": "NOT_FOR_SALE"},
-                  "accessInfo": {"country": "US", "viewability": "PARTIAL"}
+                  "key": "/works/OL27482W",
+                  "type": "work",
+                  "title": "The Hobbit",
+                  "subtitle": "or There and Back Again",
+                  "author_name": ["J.R.R. Tolkien"],
+                  "cover_i": 14627509,
+                  "first_publish_year": 1937,
+                  "number_of_pages_median": 310,
+                  "publisher": ["George Allen & Unwin", "Houghton Mifflin"],
+                  "ratings_average": 4.3,
+                  "ratings_count": 285,
+                  "ia": ["hobbitorthereand0000tolk"],
+                  "language": ["eng"]
                 }
               ]
             }
         """.trimIndent()
 
-        val volumes = booksApiJson.decodeFromString<Volumes>(payload)
+        val response = booksApiJson.decodeFromString<OpenLibrarySearchResponse>(payload)
 
-        assertEquals(1, volumes.items.size)
-        val volumeInfo = volumes.items[0].volumeInfo
-        assertEquals("someId", volumes.items[0].id)
-        assertEquals("Some Title", volumeInfo.title)
-        assertEquals("Some Subtitle", volumeInfo.subtitle)
-        assertEquals("Author One", volumeInfo.authors[0])
-        assertEquals(321, volumeInfo.pageCount)
-        assertEquals(4.5, volumeInfo.averageRating)
-        assertEquals(12, volumeInfo.ratingsCount)
-        assertEquals("http://books.google.com/thumb", volumeInfo.imageLinks?.thumbnail)
+        assertEquals(1, response.docs.size)
+        val doc = response.docs[0]
+        assertEquals("/works/OL27482W", doc.key)
+        assertEquals("The Hobbit", doc.title)
+        assertEquals("or There and Back Again", doc.subtitle)
+        assertEquals(listOf("J.R.R. Tolkien"), doc.authorName)
+        assertEquals(14627509, doc.coverId)
+        assertEquals(1937, doc.firstPublishYear)
+        assertEquals(310, doc.numberOfPagesMedian)
+        assertEquals(listOf("George Allen & Unwin", "Houghton Mifflin"), doc.publisher)
+        assertEquals(4.3, doc.ratingsAverage)
+        assertEquals(285, doc.ratingsCount)
     }
 }

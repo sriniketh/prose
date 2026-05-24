@@ -27,9 +27,16 @@ object NetworkModule {
     @Provides
     @Singleton
     fun providesRemoteJson(): BooksApi = Retrofit.Builder()
-        .baseUrl("https://www.googleapis.com")
+        .baseUrl("https://openlibrary.org/")
         .client(
             OkHttpClient.Builder()
+                .addInterceptor { chain ->
+                    chain.proceed(
+                        chain.request().newBuilder()
+                            .header("User-Agent", "Prose Android App")
+                            .build()
+                    )
+                }
                 .addInterceptor(
                     HttpLoggingInterceptor().apply {
                         setLevel(
