@@ -1,5 +1,6 @@
 package com.sriniketh.prose.core_network.model
 
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PrimitiveKind
@@ -27,7 +28,9 @@ object WorkDescriptionSerializer : KSerializer<WorkDescription> {
         }
     }
 
+    @OptIn(ExperimentalSerializationApi::class)
     override fun serialize(encoder: Encoder, value: WorkDescription) {
-        encoder.encodeString(value.value.orEmpty())
+        val text = value.value
+        if (text == null) encoder.encodeNull() else encoder.encodeString(text)
     }
 }
