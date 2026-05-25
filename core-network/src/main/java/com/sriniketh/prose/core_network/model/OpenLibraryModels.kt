@@ -11,7 +11,7 @@ data class OpenLibrarySearchResponse(
 @Serializable
 data class OpenLibraryDoc(
     val key: String,
-    val title: String,
+    val title: String = "",
     val subtitle: String? = null,
     @SerialName("author_name") val authorName: List<String>? = null,
     @SerialName("cover_i") val coverId: Int? = null,

@@ -3,6 +3,7 @@ package com.sriniketh.prose.core_network.di
 import com.sriniketh.prose.core_network.model.OpenLibrarySearchResponse
 import kotlinx.serialization.decodeFromString
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Test
 
 class BooksApiJsonTest {
@@ -50,70 +51,34 @@ class BooksApiJsonTest {
     }
 
     @Test
-    fun `decodes volumes when items omit title and authors`() {
+    fun `decodes docs that omit title, authors, and cover`() {
         val payload = """
             {
-              "kind": "books#volumes",
-              "totalItems": 3,
-              "items": [
+              "numFound": 2,
+              "docs": [
                 {
-                  "id": "complete",
-                  "volumeInfo": {
-                    "title": "Complete Volume",
-                    "authors": ["Author One"]
-                  }
+                  "key": "/works/OL1W",
+                  "title": "Complete",
+                  "author_name": ["Author One"],
+                  "cover_i": 42
                 },
                 {
-                  "id": "missingAuthors",
-                  "volumeInfo": {
-                    "title": "Has Title Only"
-                  }
-                },
-                {
-                  "id": "missingTitleAndAuthors",
-                  "volumeInfo": {
-                    "publisher": "Some Publisher"
-                  }
+                  "key": "/works/OL2W"
                 }
               ]
             }
         """.trimIndent()
 
-        val volumes = booksApiJson.decodeFromString<Volumes>(payload)
+        val response = booksApiJson.decodeFromString<OpenLibrarySearchResponse>(payload)
 
-        assertEquals(3, volumes.items.size)
-        assertEquals(listOf("Author One"), volumes.items[0].volumeInfo.authors)
+        assertEquals(2, response.docs.size)
+        assertEquals("Complete", response.docs[0].title)
+        assertEquals(listOf("Author One"), response.docs[0].authorName)
+        assertEquals(42, response.docs[0].coverId)
 
-        assertEquals("Has Title Only", volumes.items[1].volumeInfo.title)
-        assertEquals(emptyList<String>(), volumes.items[1].volumeInfo.authors)
-
-        assertEquals("", volumes.items[2].volumeInfo.title)
-        assertEquals(emptyList<String>(), volumes.items[2].volumeInfo.authors)
-    }
-
-    @Test
-    fun `decodes imageLinks when thumbnail is omitted`() {
-        val payload = """
-            {
-              "kind": "books#volumes",
-              "totalItems": 1,
-              "items": [
-                {
-                  "id": "noThumbnail",
-                  "volumeInfo": {
-                    "title": "Some Title",
-                    "authors": ["Author One"],
-                    "imageLinks": {
-                      "smallThumbnail": "http://books.google.com/small"
-                    }
-                  }
-                }
-              ]
-            }
-        """.trimIndent()
-
-        val volumes = booksApiJson.decodeFromString<Volumes>(payload)
-
-        assertEquals(null, volumes.items[0].volumeInfo.imageLinks?.thumbnail)
+        assertEquals("/works/OL2W", response.docs[1].key)
+        assertEquals("", response.docs[1].title)
+        assertNull(response.docs[1].authorName)
+        assertNull(response.docs[1].coverId)
     }
 }
