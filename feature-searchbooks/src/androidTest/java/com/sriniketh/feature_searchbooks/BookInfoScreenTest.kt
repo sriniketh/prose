@@ -240,7 +240,7 @@ class BookInfoScreenTest {
     }
 
     @Test
-    fun whenNoBookIsLoadedThenDefaultTitleIsDisplayed() {
+    fun whenNoBookIsLoadedThenDefaultTitleIsNotDisplayed() {
         val uiState = BookInfoUiState(book = null)
 
         composeTestRule.setContent {
@@ -252,7 +252,7 @@ class BookInfoScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Book info").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Book info").assertDoesNotExist()
     }
 
     @Test
