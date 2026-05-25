@@ -15,10 +15,10 @@ data class Volume(
 
 @Serializable
 data class VolumeInfo(
-    val title: String,
+    val title: String = "",
     val subtitle: String? = null,
     val description: String? = null,
-    val authors: List<String>,
+    val authors: List<String> = emptyList(),
     val imageLinks: ImageLinks? = null,
     val publisher: String? = null,
     val publishedDate: String? = null,
@@ -29,7 +29,7 @@ data class VolumeInfo(
 
 @Serializable
 data class ImageLinks(
-    val thumbnail: String,
+    val thumbnail: String? = null,
     val smallThumbnail: String? = null,
     val small: String? = null,
     val medium: String? = null,
