@@ -1,5 +1,6 @@
 package com.sriniketh.feature_searchbooks
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -7,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
@@ -240,6 +242,37 @@ class SearchBookScreenTest {
         }
 
         composeTestRule.onNodeWithText("Test Book Title").assertIsNotDisplayed()
+    }
+
+    @Test
+    fun whenNewResultsArriveThenTheListIsShownFromTheTop() {
+        val sharedBooks = (0 until 20).map { index ->
+            createTestBookUiState(id = "shared-$index", title = "Shared Book $index")
+        }
+        val newTopBooks = (0 until 5).map { index ->
+            createTestBookUiState(id = "new-$index", title = "New Top Book $index")
+        }
+        val uiState = mutableStateOf(BookSearchUiState(bookUiStates = sharedBooks))
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState.value,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchResultsList").performScrollToIndex(19)
+        composeTestRule.waitForIdle()
+
+        uiState.value = BookSearchUiState(bookUiStates = newTopBooks + sharedBooks)
+        composeTestRule.waitForIdle()
+
+        composeTestRule.onNodeWithText("New Top Book 0").assertIsDisplayed()
     }
 
     private fun createTestBookUiState(
