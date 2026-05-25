@@ -129,6 +129,7 @@ internal fun BookInfo(
             LinearProgressIndicator(
                 modifier = modifier
                     .fillMaxWidth()
+                    .padding(contentPadding)
                     .testTag("BookInfoLoadingIndicator")
             )
         }
@@ -290,16 +291,14 @@ private fun BookInfoScreenFloatingActionButton(buttonOnClick: () -> Unit) {
 
 @Composable
 private fun BookInfoScreenTitle(uiState: BookInfoUiState) {
-    Text(
-        text = if (uiState.book != null) {
-            uiState.book.info.title
-        } else {
-            stringResource(id = R.string.nav_label_book_info)
-        },
-        style = MaterialTheme.typography.headlineMedium,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis
-    )
+    uiState.book?.let { book ->
+        Text(
+            text = book.info.title,
+            style = MaterialTheme.typography.headlineMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 @PreviewLightDark
