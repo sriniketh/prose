@@ -4,6 +4,7 @@ import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_models.search.BookSearch
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -23,7 +24,11 @@ class FakeBooksRepository : BooksRepository {
 	var deletedBook: Book? = null
 	var doesBookExistResult = false
 
-	private val fakeBook = Book(
+	val queriesSearched: MutableList<String> = mutableListOf()
+	var searchDelayMillis: Long = 0L
+	var searchResultBuilder: (String) -> BookSearch = { BookSearch(items = listOf(fakeBook)) }
+
+	val fakeBook = Book(
 		id = "test-id",
 		info = BookInfo(
 			title = "Test Title",
@@ -41,10 +46,14 @@ class FakeBooksRepository : BooksRepository {
 
 	override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> {
 		searchQueryPassed = searchQuery
+		queriesSearched.add(searchQuery)
+		if (searchDelayMillis > 0) {
+			delay(searchDelayMillis)
+		}
 		return if (shouldSearchForBooksThrowException) {
 			Result.failure(RuntimeException("Search failed"))
 		} else {
-			Result.success(BookSearch(items = listOf(fakeBook)))
+			Result.success(searchResultBuilder(searchQuery))
 		}
 	}
 
