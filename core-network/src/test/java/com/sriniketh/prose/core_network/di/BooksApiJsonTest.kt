@@ -48,4 +48,72 @@ class BooksApiJsonTest {
         assertEquals(4.3, doc.ratingsAverage)
         assertEquals(285, doc.ratingsCount)
     }
+
+    @Test
+    fun `decodes volumes when items omit title and authors`() {
+        val payload = """
+            {
+              "kind": "books#volumes",
+              "totalItems": 3,
+              "items": [
+                {
+                  "id": "complete",
+                  "volumeInfo": {
+                    "title": "Complete Volume",
+                    "authors": ["Author One"]
+                  }
+                },
+                {
+                  "id": "missingAuthors",
+                  "volumeInfo": {
+                    "title": "Has Title Only"
+                  }
+                },
+                {
+                  "id": "missingTitleAndAuthors",
+                  "volumeInfo": {
+                    "publisher": "Some Publisher"
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val volumes = booksApiJson.decodeFromString<Volumes>(payload)
+
+        assertEquals(3, volumes.items.size)
+        assertEquals(listOf("Author One"), volumes.items[0].volumeInfo.authors)
+
+        assertEquals("Has Title Only", volumes.items[1].volumeInfo.title)
+        assertEquals(emptyList<String>(), volumes.items[1].volumeInfo.authors)
+
+        assertEquals("", volumes.items[2].volumeInfo.title)
+        assertEquals(emptyList<String>(), volumes.items[2].volumeInfo.authors)
+    }
+
+    @Test
+    fun `decodes imageLinks when thumbnail is omitted`() {
+        val payload = """
+            {
+              "kind": "books#volumes",
+              "totalItems": 1,
+              "items": [
+                {
+                  "id": "noThumbnail",
+                  "volumeInfo": {
+                    "title": "Some Title",
+                    "authors": ["Author One"],
+                    "imageLinks": {
+                      "smallThumbnail": "http://books.google.com/small"
+                    }
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        val volumes = booksApiJson.decodeFromString<Volumes>(payload)
+
+        assertEquals(null, volumes.items[0].volumeInfo.imageLinks?.thumbnail)
+    }
 }
