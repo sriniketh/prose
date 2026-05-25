@@ -2,11 +2,13 @@ package com.sriniketh.feature_searchbooks
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
+import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_models.book.Book
@@ -36,6 +38,27 @@ class BookInfoScreenTest {
         }
 
         composeTestRule.onNodeWithTag("BookInfoLoadingIndicator").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenLoadingThenProgressIndicatorIsNotBehindTopAppBar() {
+        val uiState = BookInfoUiState(isLoading = true)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfo(
+                    uiState = uiState,
+                    goBack = {}
+                )
+            }
+        }
+
+        val collapsedTopAppBarHeight = 64.dp
+        val indicatorTop = composeTestRule
+            .onNodeWithTag("BookInfoLoadingIndicator")
+            .getUnclippedBoundsInRoot()
+            .top
+        assertTrue(indicatorTop >= collapsedTopAppBarHeight)
     }
 
     @Test
@@ -217,7 +240,7 @@ class BookInfoScreenTest {
     }
 
     @Test
-    fun whenNoBookIsLoadedThenDefaultTitleIsDisplayed() {
+    fun whenNoBookIsLoadedThenDefaultTitleIsNotDisplayed() {
         val uiState = BookInfoUiState(book = null)
 
         composeTestRule.setContent {
@@ -229,7 +252,7 @@ class BookInfoScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Book info").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Book info").assertDoesNotExist()
     }
 
     @Test

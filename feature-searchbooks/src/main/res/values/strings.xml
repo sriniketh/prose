@@ -6,7 +6,6 @@
     <string name="close_icon_cont_desc">Close icon</string>
     <string name="search_error_message">Error searching for book. Please try again.</string>
 
-    <string name="nav_label_book_info">Book info</string>
     <string name="add_to_shelf_button_text">Add to shelf</string>
     <string name="book_info_load_error_message">Error loading book details.</string>
     <string name="add_to_bookshelf_error_message">Error adding book to bookshelf.</string>
