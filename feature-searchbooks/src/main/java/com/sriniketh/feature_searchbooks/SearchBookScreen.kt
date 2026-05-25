@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -109,6 +110,11 @@ internal fun SearchBook(
     val focusRequester = remember { FocusRequester() }
     var text by rememberSaveable { mutableStateOf("") }
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(uiState.bookUiStates) {
+        listState.scrollToItem(0)
+    }
 
     Scaffold(
         modifier = modifier
@@ -178,9 +184,11 @@ internal fun SearchBook(
                 )
             }
             LazyColumn(
+                state = listState,
                 modifier = modifier
                     .padding(contentPadding)
                     .fillMaxSize()
+                    .testTag("SearchResultsList")
             ) {
                 itemsIndexed(uiState.bookUiStates, key = { _, item -> item.id }) { _, item ->
                     Row(
