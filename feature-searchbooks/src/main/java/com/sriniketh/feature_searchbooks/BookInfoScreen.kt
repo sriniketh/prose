@@ -129,6 +129,7 @@ internal fun BookInfo(
             LinearProgressIndicator(
                 modifier = modifier
                     .fillMaxWidth()
+                    .padding(contentPadding)
                     .testTag("BookInfoLoadingIndicator")
             )
         }
