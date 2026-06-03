@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -153,7 +153,7 @@ internal fun Bookshelf(
                     .fillMaxSize()
                     .padding(contentPadding)
             ) {
-                itemsIndexed(uiState.books, key = { _, book -> book.id }) { _, bookUIState ->
+                items(uiState.books, key = { it.id }) { bookUIState ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -166,7 +166,9 @@ internal fun Bookshelf(
                                 .padding(12.dp)
                                 .align(Alignment.Start)
                         ) {
-                            val uri = bookUIState.thumbnailLink?.buildHttpsUri()
+                            val uri = remember(bookUIState.thumbnailLink) {
+                                bookUIState.thumbnailLink?.buildHttpsUri()
+                            }
                             AsyncImage(
                                 modifier = Modifier
                                     .padding(6.dp)
@@ -189,9 +191,12 @@ internal fun Bookshelf(
                                     text = bookUIState.title,
                                     style = MaterialTheme.typography.titleLarge
                                 )
+                                val authorsLine = remember(bookUIState.authors) {
+                                    bookUIState.authors.joinToString(", ")
+                                }
                                 Text(
-                                    modifier = Modifier.padding(6.dp),
-                                    text = bookUIState.authors.joinToString(", "),
+                                    modifier = modifier.padding(6.dp),
+                                    text = authorsLine,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }

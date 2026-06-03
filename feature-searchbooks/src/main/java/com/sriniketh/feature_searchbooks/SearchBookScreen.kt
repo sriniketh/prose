@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -191,7 +191,7 @@ internal fun SearchBook(
                     .fillMaxSize()
                     .testTag("SearchResultsList")
             ) {
-                itemsIndexed(uiState.bookUiStates, key = { _, item -> item.id }) { _, item ->
+                items(uiState.bookUiStates, key = { it.id }) { item ->
                     Row(
                         modifier = Modifier
                             .padding(12.dp)
@@ -199,7 +199,9 @@ internal fun SearchBook(
                             .fillMaxWidth()
                             .clickable { navigateToBookInfo(item.id) }
                     ) {
-                        val uri = item.thumbnailLink?.buildHttpsUri()
+                        val uri = remember(item.thumbnailLink) {
+                            item.thumbnailLink?.buildHttpsUri()
+                        }
                         AsyncImage(
                             modifier = Modifier
                                 .padding(6.dp)
@@ -222,9 +224,12 @@ internal fun SearchBook(
                                 text = item.title,
                                 style = MaterialTheme.typography.bodyLarge
                             )
+                            val authorsLine = remember(item.authors) {
+                                item.authors.joinToString(", ")
+                            }
                             Text(
-                                modifier = Modifier.padding(6.dp),
-                                text = item.authors.joinToString(", "),
+                                modifier = modifier.padding(6.dp),
+                                text = authorsLine,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
