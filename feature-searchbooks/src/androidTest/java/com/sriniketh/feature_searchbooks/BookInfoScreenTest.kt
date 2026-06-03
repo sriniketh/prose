@@ -11,8 +11,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
-import com.sriniketh.core_models.book.Book
-import com.sriniketh.core_models.book.BookInfo
+import kotlinx.collections.immutable.toImmutableList
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -273,7 +272,6 @@ class BookInfoScreenTest {
     }
 
     private fun createTestBook(
-        id: String = "test-id",
         title: String = "Test Title",
         authors: List<String> = listOf("Test Author"),
         publisher: String? = "Test Publisher",
@@ -282,19 +280,15 @@ class BookInfoScreenTest {
         averageRating: Double? = 4.0,
         ratingsCount: Int? = 100,
         publishedDate: String? = "2023"
-    ) = Book(
-        id = id,
-        info = BookInfo(
-            title = title,
-            subtitle = "Test Subtitle",
-            authors = authors,
-            thumbnailLink = null,
-            publisher = publisher,
-            publishedDate = publishedDate,
-            description = description,
-            pageCount = pageCount,
-            averageRating = averageRating,
-            ratingsCount = ratingsCount
-        )
+    ) = BookInfoUiData(
+        title = title,
+        authors = authors.toImmutableList(),
+        thumbnailLink = null,
+        publisher = publisher,
+        publishedDate = publishedDate,
+        description = description,
+        pageCount = pageCount,
+        averageRating = averageRating,
+        ratingsCount = ratingsCount
     )
 }

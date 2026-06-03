@@ -164,7 +164,7 @@ internal fun ViewHighlights(
             lazyListState.firstVisibleItemIndex < 2
         }
     }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
         modifier = modifier
             .fillMaxSize()

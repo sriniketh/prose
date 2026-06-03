@@ -105,7 +105,7 @@ internal fun BookInfo(
     modifier: Modifier = Modifier,
     goBack: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -142,8 +142,7 @@ private fun BookInfoLayout(
     uiState: BookInfoUiState,
     contentPadding: PaddingValues
 ) {
-    uiState.book?.let { book ->
-        val bookInfo = book
+    uiState.book?.let { bookInfo ->
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
