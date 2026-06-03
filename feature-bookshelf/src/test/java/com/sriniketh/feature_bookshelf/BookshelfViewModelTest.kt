@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -81,7 +82,7 @@ class BookshelfViewModelTest {
             val bookUiState = loadedState.books[0]
             assertEquals("test-id", bookUiState.id)
             assertEquals("Test Title", bookUiState.title)
-            assertEquals(listOf("Test Author"), bookUiState.authors)
+            assertEquals(persistentListOf("Test Author"), bookUiState.authors)
             assertEquals("test-thumbnail", bookUiState.thumbnailLink)
         }
     }
@@ -121,24 +122,6 @@ class BookshelfViewModelTest {
                 expectNoEvents()
             }
         }
-
-    @Test
-    fun `when view highlights for book is set then book view action uses it`() = runTest {
-        val viewModel = BookshelfViewModel(getAllSavedBooksUseCase, SavedStateHandle())
-        var calledBookId: String? = null
-        viewModel.viewHighlightsForBook = { bookId -> calledBookId = bookId }
-
-        viewModel.bookshelfUIState.test {
-            skipItems(2)
-
-            val loadedState = awaitItem()
-            val bookUiState = loadedState.books[0]
-
-            bookUiState.viewBook(bookUiState.id)
-
-            assertEquals("test-id", calledBookId)
-        }
-    }
 
     @Test
     fun `when book added flag is set then added message is emitted and cleared`() = runTest {

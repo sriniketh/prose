@@ -52,6 +52,7 @@ import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.sharedBoundsTransition
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -209,49 +210,42 @@ internal fun BookshelfScreenSuccessPreview() {
     AppTheme {
         Bookshelf(
             uiState = BookshelfUIState(
-                books = listOf(
+                books = persistentListOf(
                     BookUIState(
                         id = "someId",
                         title = "Some title 1",
-                        authors = listOf("Author 1", "Author 2", "Author 3"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2", "Author 3"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId2",
                         title = "Some title 2",
-                        authors = listOf("Author 1"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId3",
                         title = "Some title 3",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId4",
                         title = "Some title 4",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId5",
                         title = "Some title 5",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId6",
                         title = "Some title 6",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId7",
                         title = "Some title 7",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ))),
             goToSearch = {}, goToHighlight = {})
     }
@@ -272,7 +266,7 @@ internal fun BookshelfScreenLoadingPreview() {
 internal fun BookshelfScreenSuccessNoBooksPreview() {
     AppTheme {
         Bookshelf(
-            uiState = BookshelfUIState(books = emptyList()),
+            uiState = BookshelfUIState(books = persistentListOf()),
             goToSearch = {}, goToHighlight = {})
     }
 }

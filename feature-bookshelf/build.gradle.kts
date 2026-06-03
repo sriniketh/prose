@@ -46,6 +46,7 @@ dependencies {
 	implementation(project(":core-platform"))
 
 	implementation(libs.android.core.ktx)
+	implementation(libs.kotlinx.collections.immutable)
 	implementation(libs.coil)
 
 	val composeBom = platform(libs.compose.bom)
