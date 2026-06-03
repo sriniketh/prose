@@ -114,7 +114,7 @@ internal fun BookInfo(
         topBar = {
             ProseTopAppBar(
                 title = { BookInfoScreenTitle(uiState) },
-                navigationIcon = { NavigationBack(goBack) },
+                navigationIcon = { NavigationBack(action = goBack) },
                 scrollBehavior = scrollBehavior
             )
         },
@@ -157,7 +157,9 @@ private fun BookInfoLayout(
                     .padding(12.dp)
                     .align(Alignment.Start)
             ) {
-                val uri = bookInfo.thumbnailLink?.buildHttpsUri()
+                val uri = remember(bookInfo.thumbnailLink) {
+                    bookInfo.thumbnailLink?.buildHttpsUri()
+                }
                 AsyncImage(
                     modifier = modifier
                         .padding(6.dp)
@@ -177,9 +179,12 @@ private fun BookInfoLayout(
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
+                        val authorsLine = remember(bookInfo.authors) {
+                            bookInfo.authors.joinToString(", ")
+                        }
                         Text(
                             modifier = modifier.padding(6.dp),
-                            text = bookInfo.authors.joinToString(", "),
+                            text = authorsLine,
                             style = MaterialTheme.typography.titleLarge
                         )
                         bookInfo.publisher?.let { publisher ->
