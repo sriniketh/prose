@@ -237,7 +237,7 @@ internal fun ViewHighlights(
                     }
 
                     var expandDropDownMenu by remember { mutableStateOf(false) }
-                    val shortenHighlightText by remember { derivedStateOf { highlightUiState.text.length > 250 } }
+                    val shortenHighlightText = remember(highlightUiState.text) { highlightUiState.text.length > 250 }
                     val clipboardData = ClipData.newPlainText(
                         stringResource(id = R.string.clipboard_highlight_label),
                         highlightUiState.text
