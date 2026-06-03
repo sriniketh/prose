@@ -126,7 +126,7 @@ internal fun BookInfo(
     ) { contentPadding ->
         if (uiState.isLoading) {
             LinearProgressIndicator(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(contentPadding)
                     .testTag("BookInfoLoadingIndicator")
@@ -146,19 +146,19 @@ private fun BookInfoLayout(
     uiState.book?.let { book ->
         val bookInfo = book
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(contentPadding)
         ) {
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .padding(12.dp)
                     .align(Alignment.Start)
             ) {
                 val uri = bookInfo.thumbnailLink?.buildHttpsUri()
                 AsyncImage(
-                    modifier = modifier
+                    modifier = Modifier
                         .padding(6.dp)
                         .height(160.dp)
                         .width(120.dp)
@@ -170,20 +170,20 @@ private fun BookInfoLayout(
                     error = gradientPlaceholder()
                 )
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 6.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = bookInfo.authors.joinToString(", "),
                             style = MaterialTheme.typography.titleLarge
                         )
                         bookInfo.publisher?.let { publisher ->
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = publisher,
                                 style = MaterialTheme.typography.bodyLarge
                             )
@@ -209,17 +209,17 @@ private fun BookInfoLayout(
                 }
             }
             Card(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
             ) {
-                Column(modifier = modifier.padding(12.dp)) {
+                Column(modifier = Modifier.padding(12.dp)) {
                     val averageRating = bookInfo.averageRating
                     val ratingsCount = bookInfo.ratingsCount
                     if (averageRating != null && ratingsCount != null) {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_ratings_template,
                                 averageRating,
@@ -230,7 +230,7 @@ private fun BookInfoLayout(
                     }
                     bookInfo.pageCount?.let {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_pagecount_template,
                                 it
@@ -240,7 +240,7 @@ private fun BookInfoLayout(
                     }
                     bookInfo.publisher?.let {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_publisher_template,
                                 it
@@ -250,7 +250,7 @@ private fun BookInfoLayout(
                     }
                     bookInfo.publishedDate?.let {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_publish_date_template,
                                 it

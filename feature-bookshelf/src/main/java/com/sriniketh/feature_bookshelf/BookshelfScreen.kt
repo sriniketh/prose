@@ -119,7 +119,7 @@ internal fun Bookshelf(
                 onClick = goToSearch,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = modifier.sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)
+                modifier = Modifier.sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)
             ) {
                 Icon(
                     painter = painterResource(com.sriniketh.core_design.R.drawable.ic_search),
@@ -131,7 +131,7 @@ internal fun Bookshelf(
     ) { contentPadding ->
         if (uiState.isLoading) {
             LinearProgressIndicator(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .testTag("BookshelfLoadingIndicator")
             )
@@ -139,7 +139,7 @@ internal fun Bookshelf(
 
         if (uiState.books.isEmpty() && !uiState.isLoading) {
             Box(
-                modifier = modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -149,26 +149,26 @@ internal fun Bookshelf(
             }
         } else if (uiState.books.isNotEmpty()) {
             LazyColumn(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(contentPadding)
             ) {
                 itemsIndexed(uiState.books, key = { _, book -> book.id }) { _, bookUIState ->
                     Card(
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
                             .clickable { goToHighlight(bookUIState.id) },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         Row(
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(12.dp)
                                 .align(Alignment.Start)
                         ) {
                             val uri = bookUIState.thumbnailLink?.buildHttpsUri()
                             AsyncImage(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(6.dp)
                                     .height(100.dp)
                                     .width(80.dp)
@@ -180,17 +180,17 @@ internal fun Bookshelf(
                                 error = gradientPlaceholder()
                             )
                             Column(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(horizontal = 6.dp)
                                     .align(Alignment.Top)
                             ) {
                                 Text(
-                                    modifier = modifier.padding(6.dp),
+                                    modifier = Modifier.padding(6.dp),
                                     text = bookUIState.title,
                                     style = MaterialTheme.typography.titleLarge
                                 )
                                 Text(
-                                    modifier = modifier.padding(6.dp),
+                                    modifier = Modifier.padding(6.dp),
                                     text = bookUIState.authors.joinToString(", "),
                                     style = MaterialTheme.typography.bodyLarge
                                 )

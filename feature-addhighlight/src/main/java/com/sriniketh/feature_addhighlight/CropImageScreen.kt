@@ -72,7 +72,7 @@ internal fun CropImageScreen(
         val rotatedBitmap = rotatedBitmapState.value
         if (rotatedBitmap != null) {
             Cropify(
-                modifier = modifier
+                modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize(),
                 bitmap = rotatedBitmap.asImageBitmap(),
@@ -87,7 +87,7 @@ internal fun CropImageScreen(
             )
         } else {
             Cropify(
-                modifier = modifier
+                modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize(),
                 uri = imageUri,
