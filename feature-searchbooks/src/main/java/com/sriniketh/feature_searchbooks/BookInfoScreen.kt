@@ -114,7 +114,7 @@ internal fun BookInfo(
         topBar = {
             ProseTopAppBar(
                 title = { BookInfoScreenTitle(uiState) },
-                navigationIcon = { NavigationBack(goBack) },
+                navigationIcon = { NavigationBack(action = goBack) },
                 scrollBehavior = scrollBehavior
             )
         },
