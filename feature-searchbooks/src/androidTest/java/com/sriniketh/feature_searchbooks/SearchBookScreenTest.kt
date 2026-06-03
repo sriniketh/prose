@@ -12,6 +12,9 @@ import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -81,7 +84,7 @@ class SearchBookScreenTest {
 
     @Test
     fun whenBooksArePresentThenBookTitleIsDisplayed() {
-        val books = listOf(createTestBookUiState(title = "Test Book Title"))
+        val books = persistentListOf(createTestBookUiState(title = "Test Book Title"))
         val uiState = BookSearchUiState(bookUiStates = books)
 
         composeTestRule.setContent {
@@ -101,7 +104,7 @@ class SearchBookScreenTest {
 
     @Test
     fun whenBooksArePresentThenBookAuthorsAreDisplayed() {
-        val books = listOf(createTestBookUiState(authors = listOf("Author One", "Author Two")))
+        val books = persistentListOf(createTestBookUiState(authors = persistentListOf("Author One", "Author Two")))
         val uiState = BookSearchUiState(bookUiStates = books)
 
         composeTestRule.setContent {
@@ -121,7 +124,7 @@ class SearchBookScreenTest {
 
     @Test
     fun whenBooksArePresentThenBookSubtitleIsDisplayed() {
-        val books = listOf(createTestBookUiState(subtitle = "Test Subtitle"))
+        val books = persistentListOf(createTestBookUiState(subtitle = "Test Subtitle"))
         val uiState = BookSearchUiState(bookUiStates = books)
 
         composeTestRule.setContent {
@@ -142,7 +145,7 @@ class SearchBookScreenTest {
     @Test
     fun whenBookItemIsClickedThenNavigateToBookInfoIsCalled() {
         val bookId = "test-book-id"
-        val books = listOf(createTestBookUiState(id = bookId, title = "Test Book"))
+        val books = persistentListOf(createTestBookUiState(id = bookId, title = "Test Book"))
         val uiState = BookSearchUiState(bookUiStates = books)
         var navigatedBookId: String? = null
 
@@ -228,7 +231,7 @@ class SearchBookScreenTest {
 
     @Test
     fun whenNoBooksArePresentThenNoBookItemsAreDisplayed() {
-        val uiState = BookSearchUiState(bookUiStates = emptyList())
+        val uiState = BookSearchUiState(bookUiStates = persistentListOf())
 
         composeTestRule.setContent {
             AppTheme {
@@ -248,10 +251,10 @@ class SearchBookScreenTest {
     fun whenNewResultsArriveThenTheListIsShownFromTheTop() {
         val sharedBooks = (0 until 20).map { index ->
             createTestBookUiState(id = "shared-$index", title = "Shared Book $index")
-        }
+        }.toPersistentList()
         val newTopBooks = (0 until 5).map { index ->
             createTestBookUiState(id = "new-$index", title = "New Top Book $index")
-        }
+        }.toPersistentList()
         val uiState = mutableStateOf(BookSearchUiState(bookUiStates = sharedBooks))
 
         composeTestRule.setContent {
@@ -269,7 +272,7 @@ class SearchBookScreenTest {
         composeTestRule.onNodeWithTag("SearchResultsList").performScrollToIndex(19)
         composeTestRule.waitForIdle()
 
-        uiState.value = BookSearchUiState(bookUiStates = newTopBooks + sharedBooks)
+        uiState.value = BookSearchUiState(bookUiStates = (newTopBooks + sharedBooks).toPersistentList())
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("New Top Book 0").assertIsDisplayed()
@@ -279,7 +282,7 @@ class SearchBookScreenTest {
         id: String = "test-id",
         title: String = "Test Title",
         subtitle: String? = "Test Subtitle",
-        authors: List<String> = listOf("Test Author"),
+        authors: ImmutableList<String> = persistentListOf("Test Author"),
         thumbnailLink: String? = null
     ) = BookUiState(
         id = id,
