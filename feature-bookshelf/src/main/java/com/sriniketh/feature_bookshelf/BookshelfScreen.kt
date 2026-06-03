@@ -98,7 +98,7 @@ internal fun Bookshelf(
     goToSearch: () -> Unit,
     goToHighlight: (String) -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
