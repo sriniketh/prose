@@ -198,7 +198,9 @@ internal fun SearchBook(
                             .fillMaxWidth()
                             .clickable { navigateToBookInfo(item.id) }
                     ) {
-                        val uri = item.thumbnailLink?.buildHttpsUri()
+                        val uri = remember(item.thumbnailLink) {
+                            item.thumbnailLink?.buildHttpsUri()
+                        }
                         AsyncImage(
                             modifier = modifier
                                 .padding(6.dp)
@@ -221,9 +223,12 @@ internal fun SearchBook(
                                 text = item.title,
                                 style = MaterialTheme.typography.bodyLarge
                             )
+                            val authorsLine = remember(item.authors) {
+                                item.authors.joinToString(", ")
+                            }
                             Text(
                                 modifier = modifier.padding(6.dp),
-                                text = item.authors.joinToString(", "),
+                                text = authorsLine,
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
