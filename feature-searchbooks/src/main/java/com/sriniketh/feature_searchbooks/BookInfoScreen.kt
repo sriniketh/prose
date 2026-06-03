@@ -133,14 +133,13 @@ internal fun BookInfo(
             )
         }
 
-        BookInfoLayout(uiState, modifier, contentPadding)
+        BookInfoLayout(uiState, contentPadding)
     }
 }
 
 @Composable
 private fun BookInfoLayout(
     uiState: BookInfoUiState,
-    modifier: Modifier,
     contentPadding: PaddingValues
 ) {
     uiState.book?.let { book ->
