@@ -7,5 +7,5 @@ interface HighlightsRepository {
     suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit>
     suspend fun loadHighlightFromDb(highlightId: String): Result<Highlight>
     fun getAllHighlightsForBookFromDb(bookId: String): Flow<Result<List<Highlight>>>
-    suspend fun deleteHighlightFromDb(highlight: Highlight): Result<Unit>
+    suspend fun deleteHighlightFromDb(highlightId: String): Result<Unit>
 }

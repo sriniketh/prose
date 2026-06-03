@@ -131,29 +131,18 @@ class HighlightsRepositoryImplTest {
     @Test
     fun `deleteHighlightFromDb returns success result when highlight is deleted from db`() =
         runTest {
-            val highlight = Highlight(
-                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
-            )
-            val highlightEntity = HighlightEntity(
-                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
-            )
-
             highlightDao.shouldDeleteHighlightThrowException = false
-            val result = highlightsRepositoryImpl.deleteHighlightFromDb(highlight)
+            val result = highlightsRepositoryImpl.deleteHighlightFromDb("possim")
             assertTrue(result.isSuccess)
             assertEquals(Unit, result.getOrNull())
-            assertEquals(highlightEntity, highlightDao.deletedHighlightEntity)
+            assertEquals("possim", highlightDao.deletedHighlightId)
         }
 
     @Test
     fun `deleteHighlightFromDb returns failure result when exception occurs during deletion`() =
         runTest {
-            val highlight = Highlight(
-                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
-            )
-
             highlightDao.shouldDeleteHighlightThrowException = true
-            val result = highlightsRepositoryImpl.deleteHighlightFromDb(highlight)
+            val result = highlightsRepositoryImpl.deleteHighlightFromDb("possim")
             assertTrue(result.isFailure)
             val exception = result.exceptionOrNull()
             assertTrue(exception is RuntimeException)

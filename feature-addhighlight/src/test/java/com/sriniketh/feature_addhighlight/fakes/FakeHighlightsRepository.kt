@@ -30,7 +30,7 @@ class FakeHighlightsRepository : HighlightsRepository {
         }
     }
 
-    override suspend fun deleteHighlightFromDb(highlight: Highlight): Result<Unit> {
+    override suspend fun deleteHighlightFromDb(highlightId: String): Result<Unit> {
         return if (shouldDeleteHighlightFromDbThrowException) {
             Result.failure(RuntimeException("Delete highlight failed"))
         } else {

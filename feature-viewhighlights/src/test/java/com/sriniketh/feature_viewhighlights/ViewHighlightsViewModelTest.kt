@@ -192,7 +192,7 @@ class ViewHighlightsViewModelTest {
         }
 
         this.testScheduler.advanceUntilIdle()
-        assertEquals("test-highlight-id", fakeHighlightsRepository.deletedHighlight?.id)
+        assertEquals("test-highlight-id", fakeHighlightsRepository.deletedHighlightId)
     }
 
     @Test

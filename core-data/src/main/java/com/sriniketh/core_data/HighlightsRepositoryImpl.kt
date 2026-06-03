@@ -46,9 +46,9 @@ class HighlightsRepositoryImpl @Inject constructor(
                 emit(Result.failure(exception))
             }
 
-    override suspend fun deleteHighlightFromDb(highlight: Highlight): Result<Unit> =
+    override suspend fun deleteHighlightFromDb(highlightId: String): Result<Unit> =
         try {
-            localHighlightsDataSource.deleteHighlight(highlight.asHighlightEntity())
+            localHighlightsDataSource.deleteHighlightById(highlightId)
             Result.success(Unit)
         } catch (exception: Exception) {
             Timber.e(exception)

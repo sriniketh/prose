@@ -37,8 +37,6 @@ class ViewHighlightsViewModel @Inject constructor(
     private val _effects = Channel<ViewHighlightsEffect>(Channel.BUFFERED)
     internal val effects: Flow<ViewHighlightsEffect> = _effects.receiveAsFlow()
 
-    private var loadedHighlights: List<Highlight> = emptyList()
-
     internal fun getHighlights(bookId: String) {
         viewModelScope.launch {
             _highlightsUIStateFlow.update { state ->
@@ -47,7 +45,6 @@ class ViewHighlightsViewModel @Inject constructor(
             getAllSavedHighlightsUseCase(bookId).collect { result ->
                 if (result.isSuccess) {
                     val highlights = result.getOrThrow().sortedBy { it.savedOnTimestamp }
-                    loadedHighlights = highlights
                     _highlightsUIStateFlow.update { state ->
                         state.copy(
                             isLoading = false,
@@ -86,12 +83,11 @@ class ViewHighlightsViewModel @Inject constructor(
     }
 
     private fun deleteHighlight(highlightId: String) {
-        val target = loadedHighlights.firstOrNull { it.id == highlightId } ?: return
         viewModelScope.launch {
             _highlightsUIStateFlow.update { state ->
                 state.copy(isLoading = true)
             }
-            val result = deleteHighlightUseCase.invoke(target)
+            val result = deleteHighlightUseCase.invoke(highlightId)
             if (result.isFailure) {
                 _highlightsUIStateFlow.update { state ->
                     state.copy(isLoading = false)

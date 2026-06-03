@@ -39,12 +39,12 @@ class FakeHighlightDao : HighlightDao {
         return flowOf(highlightsInDb)
     }
 
-    var deletedHighlightEntity: HighlightEntity? = null
+    var deletedHighlightId: String? = null
     var shouldDeleteHighlightThrowException = false
-    override suspend fun deleteHighlight(highlight: HighlightEntity) {
+    override suspend fun deleteHighlightById(id: String) {
         if (shouldDeleteHighlightThrowException) {
             throw RuntimeException("some error deleting highlight")
         }
-        deletedHighlightEntity = highlight
+        deletedHighlightId = id
     }
 }
