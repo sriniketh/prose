@@ -203,19 +203,19 @@ internal fun EditAndSaveHighlight(
     ) { contentPadding ->
         if (uiState.isLoading) {
             LinearProgressIndicator(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .testTag("AddHighlightLoadingIndicator")
             )
         }
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .padding(contentPadding)
                 .fillMaxSize()
         ) {
             BasicTextField(
-                modifier = modifier
+                modifier = Modifier
                     .weight(0.8f)
                     .fillMaxWidth()
                     .padding(18.dp)

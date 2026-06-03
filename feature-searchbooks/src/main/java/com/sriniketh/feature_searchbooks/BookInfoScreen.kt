@@ -55,9 +55,8 @@ import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
-import com.sriniketh.core_models.book.Book
-import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_platform.buildHttpsUri
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -106,7 +105,7 @@ internal fun BookInfo(
     modifier: Modifier = Modifier,
     goBack: () -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -127,39 +126,37 @@ internal fun BookInfo(
     ) { contentPadding ->
         if (uiState.isLoading) {
             LinearProgressIndicator(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(contentPadding)
                     .testTag("BookInfoLoadingIndicator")
             )
         }
 
-        BookInfoLayout(uiState, modifier, contentPadding)
+        BookInfoLayout(uiState, contentPadding)
     }
 }
 
 @Composable
 private fun BookInfoLayout(
     uiState: BookInfoUiState,
-    modifier: Modifier,
     contentPadding: PaddingValues
 ) {
-    uiState.book?.let { book ->
-        val bookInfo = book.info
+    uiState.book?.let { bookInfo ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .verticalScroll(rememberScrollState())
                 .fillMaxSize()
                 .padding(contentPadding)
         ) {
             Row(
-                modifier = modifier
+                modifier = Modifier
                     .padding(12.dp)
                     .align(Alignment.Start)
             ) {
                 val uri = bookInfo.thumbnailLink?.buildHttpsUri()
                 AsyncImage(
-                    modifier = modifier
+                    modifier = Modifier
                         .padding(6.dp)
                         .height(160.dp)
                         .width(120.dp)
@@ -171,20 +168,20 @@ private fun BookInfoLayout(
                     error = gradientPlaceholder()
                 )
                 Column(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 6.dp),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = bookInfo.authors.joinToString(", "),
                             style = MaterialTheme.typography.titleLarge
                         )
                         bookInfo.publisher?.let { publisher ->
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = publisher,
                                 style = MaterialTheme.typography.bodyLarge
                             )
@@ -193,32 +190,34 @@ private fun BookInfoLayout(
                 }
             }
             bookInfo.description?.let { description ->
+                val descriptionText = remember(description) {
+                    Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY).toString()
+                }
                 Card(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                 ) {
                     Text(
-                        modifier = modifier.padding(12.dp),
-                        text = Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY)
-                            .toString(),
+                        modifier = Modifier.padding(12.dp),
+                        text = descriptionText,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
             Card(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
             ) {
-                Column(modifier = modifier.padding(12.dp)) {
+                Column(modifier = Modifier.padding(12.dp)) {
                     val averageRating = bookInfo.averageRating
                     val ratingsCount = bookInfo.ratingsCount
                     if (averageRating != null && ratingsCount != null) {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_ratings_template,
                                 averageRating,
@@ -229,7 +228,7 @@ private fun BookInfoLayout(
                     }
                     bookInfo.pageCount?.let {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_pagecount_template,
                                 it
@@ -239,7 +238,7 @@ private fun BookInfoLayout(
                     }
                     bookInfo.publisher?.let {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_publisher_template,
                                 it
@@ -249,7 +248,7 @@ private fun BookInfoLayout(
                     }
                     bookInfo.publishedDate?.let {
                         Text(
-                            modifier = modifier.padding(6.dp),
+                            modifier = Modifier.padding(6.dp),
                             text = stringResource(
                                 id = R.string.book_info_publish_date_template,
                                 it
@@ -293,7 +292,7 @@ private fun BookInfoScreenFloatingActionButton(buttonOnClick: () -> Unit) {
 private fun BookInfoScreenTitle(uiState: BookInfoUiState) {
     uiState.book?.let { book ->
         Text(
-            text = book.info.title,
+            text = book.title,
             style = MaterialTheme.typography.headlineMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -307,20 +306,16 @@ internal fun BookInfoScreenPreview() {
     AppTheme {
         BookInfo(
             uiState = BookInfoUiState(
-                book = Book(
-                    id = "someId",
-                    info = BookInfo(
-                        title = "some really really really long title",
-                        subtitle = "some subtitle",
-                        authors = listOf("author 1, author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        publisher = "some publisher",
-                        publishedDate = "23rd January 2021",
-                        description = "some description that's repeated again and again so that we have this long piece of text. some description that's repeated again and again so that we have this long piece of text.",
-                        pageCount = 215,
-                        averageRating = 4.3,
-                        ratingsCount = 1227
-                    )
+                book = BookInfoUiData(
+                    title = "some really really really long title",
+                    authors = persistentListOf("author 1, author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    publisher = "some publisher",
+                    publishedDate = "23rd January 2021",
+                    description = "some description that's repeated again and again so that we have this long piece of text. some description that's repeated again and again so that we have this long piece of text.",
+                    pageCount = 215,
+                    averageRating = 4.3,
+                    ratingsCount = 1227
                 ),
                 canAddToShelf = true,
                 addBookToShelf = {}

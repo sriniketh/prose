@@ -124,7 +124,7 @@ internal fun SearchBook(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         SearchBar(
-            modifier = modifier
+            modifier = Modifier
                 .padding(contentPadding)
                 .focusRequester(focusRequester)
                 .fillMaxWidth(),
@@ -157,7 +157,7 @@ internal fun SearchBook(
                     trailingIcon = {
                         if (expanded) {
                             Icon(
-                                modifier = modifier.clickable {
+                                modifier = Modifier.clickable {
                                     if (text.isNotEmpty()) {
                                         text = ""
                                         resetSearch()
@@ -179,21 +179,21 @@ internal fun SearchBook(
         ) {
             if (uiState.isLoading) {
                 LinearProgressIndicator(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .testTag("SearchBookLoadingIndicator")
                 )
             }
             LazyColumn(
                 state = listState,
-                modifier = modifier
+                modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize()
                     .testTag("SearchResultsList")
             ) {
                 itemsIndexed(uiState.bookUiStates, key = { _, item -> item.id }) { _, item ->
                     Row(
-                        modifier = modifier
+                        modifier = Modifier
                             .padding(12.dp)
                             .align(Alignment.Start)
                             .fillMaxWidth()
@@ -201,7 +201,7 @@ internal fun SearchBook(
                     ) {
                         val uri = item.thumbnailLink?.buildHttpsUri()
                         AsyncImage(
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(6.dp)
                                 .height(80.dp)
                                 .width(60.dp)
@@ -213,28 +213,28 @@ internal fun SearchBook(
                             error = gradientPlaceholder()
                         )
                         Column(
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(horizontal = 6.dp)
                                 .align(Alignment.Top)
                         ) {
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = item.title,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = item.authors.joinToString(", "),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = item.subtitle.orEmpty(),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
-                    HorizontalDivider(modifier = modifier.fillMaxWidth())
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 }
             }
         }

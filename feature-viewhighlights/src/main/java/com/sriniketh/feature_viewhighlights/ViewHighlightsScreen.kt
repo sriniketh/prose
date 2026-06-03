@@ -164,7 +164,7 @@ internal fun ViewHighlights(
             lazyListState.firstVisibleItemIndex < 2
         }
     }
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
         modifier = modifier
             .fillMaxSize()
@@ -208,12 +208,12 @@ internal fun ViewHighlights(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         if (uiState.isLoading) {
-            LinearProgressIndicator(modifier = modifier.fillMaxWidth())
+            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
         if (uiState.highlights.isEmpty()) {
             Box(
-                modifier = modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -223,7 +223,7 @@ internal fun ViewHighlights(
             }
         } else {
             LazyColumn(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(contentPadding),
                 state = lazyListState
@@ -254,7 +254,7 @@ internal fun ViewHighlights(
                     }
 
                     Row(
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
                             .animateContentSize()
@@ -265,16 +265,16 @@ internal fun ViewHighlights(
                             },
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column(modifier = modifier.weight(1f)) {
+                        Column(modifier = Modifier.weight(1f)) {
                             SelectionContainer {
                                 Text(
-                                    modifier = modifier.padding(6.dp),
+                                    modifier = Modifier.padding(6.dp),
                                     text = highlightText,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = stringResource(
                                     id = R.string.highlight_item_saved_on_template,
                                     highlightUiState.savedOn
@@ -294,7 +294,7 @@ internal fun ViewHighlights(
                                 )
                             }
                             DropdownMenu(
-                                modifier = modifier.clickable { expandDropDownMenu = true },
+                                modifier = Modifier.clickable { expandDropDownMenu = true },
                                 expanded = expandDropDownMenu,
                                 onDismissRequest = { expandDropDownMenu = false }) {
                                 DropdownMenuItem(
@@ -338,7 +338,7 @@ internal fun ViewHighlights(
                             }
                         }
                     }
-                    HorizontalDivider(modifier = modifier.fillMaxWidth())
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 }
             }
         }
