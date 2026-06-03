@@ -193,16 +193,18 @@ private fun BookInfoLayout(
                 }
             }
             bookInfo.description?.let { description ->
+                val descriptionText = remember(description) {
+                    Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY).toString()
+                }
                 Card(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                 ) {
                     Text(
-                        modifier = modifier.padding(12.dp),
-                        text = Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY)
-                            .toString(),
+                        modifier = Modifier.padding(12.dp),
+                        text = descriptionText,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
