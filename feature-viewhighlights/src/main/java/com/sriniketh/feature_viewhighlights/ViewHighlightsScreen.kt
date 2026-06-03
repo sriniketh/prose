@@ -231,9 +231,12 @@ internal fun ViewHighlights(
                 items(uiState.highlights, key = { it.id }) { highlightUiState ->
                     var showDeleteDialog by remember { mutableStateOf(false) }
                     if (showDeleteDialog) {
-                        DeleteHighlightAlertDialog(highlightUiState) {
-                            showDeleteDialog = false
-                        }
+                        DeleteHighlightAlertDialog(
+                            onConfirm = {
+                                onAction(ViewHighlightsAction.OnDeleteHighlight(highlightUiState.id))
+                            },
+                            hideDeleteDialog = { showDeleteDialog = false }
+                        )
                     }
 
                     var expandDropDownMenu by remember { mutableStateOf(false) }
@@ -344,7 +347,7 @@ internal fun ViewHighlights(
 
 @Composable
 private fun DeleteHighlightAlertDialog(
-    highlightUiState: HighlightUIState,
+    onConfirm: () -> Unit,
     hideDeleteDialog: () -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
@@ -364,7 +367,7 @@ private fun DeleteHighlightAlertDialog(
         confirmButton = {
             ElevatedButton(
                 onClick = {
-                    highlightUiState.onDelete()
+                    onConfirm()
                     hideDeleteDialog()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },

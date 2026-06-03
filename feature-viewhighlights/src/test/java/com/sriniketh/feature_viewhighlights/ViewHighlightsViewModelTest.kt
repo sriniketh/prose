@@ -155,7 +155,7 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when highlight onDelete is called then sets loading state`() = runTest {
+    fun `when delete action is processed then sets loading state`() = runTest {
         val bookId = "test-book-id"
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
 
@@ -166,14 +166,16 @@ class ViewHighlightsViewModelTest {
             awaitItem()
             val stateWithHighlights = awaitItem()
 
-            stateWithHighlights.highlights.first().onDelete()
+            viewModel.processAction(
+                ViewHighlightsAction.OnDeleteHighlight(stateWithHighlights.highlights.first().id)
+            )
             val loadingState = awaitItem()
             assertTrue(loadingState.isLoading)
         }
     }
 
     @Test
-    fun `when highlight delete succeeds then passes highlight to repository`() = runTest {
+    fun `when delete action succeeds then passes highlight to repository`() = runTest {
         val bookId = "test-book-id"
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
 
@@ -182,7 +184,9 @@ class ViewHighlightsViewModelTest {
 
         viewModel.highlightsUIStateFlow.test {
             val state = awaitItem()
-            state.highlights.first().onDelete()
+            viewModel.processAction(
+                ViewHighlightsAction.OnDeleteHighlight(state.highlights.first().id)
+            )
 
             awaitItem()
         }
@@ -192,7 +196,7 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when highlight delete fails then shows error message`() = runTest {
+    fun `when delete action fails then shows error message`() = runTest {
         val bookId = "test-book-id"
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
         fakeHighlightsRepository.shouldDeleteHighlightFromDbThrowException = true
@@ -201,7 +205,11 @@ class ViewHighlightsViewModelTest {
         this.testScheduler.advanceUntilIdle()
 
         viewModel.effects.test {
-            viewModel.highlightsUIStateFlow.value.highlights.first().onDelete()
+            viewModel.processAction(
+                ViewHighlightsAction.OnDeleteHighlight(
+                    viewModel.highlightsUIStateFlow.value.highlights.first().id
+                )
+            )
 
             assertEquals(
                 ViewHighlightsEffect.ShowMessage(R.string.delete_error_message),

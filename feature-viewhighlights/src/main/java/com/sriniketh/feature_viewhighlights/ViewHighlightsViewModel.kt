@@ -9,6 +9,9 @@ import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +37,8 @@ class ViewHighlightsViewModel @Inject constructor(
     private val _effects = Channel<ViewHighlightsEffect>(Channel.BUFFERED)
     internal val effects: Flow<ViewHighlightsEffect> = _effects.receiveAsFlow()
 
+    private var loadedHighlights: List<Highlight> = emptyList()
+
     internal fun getHighlights(bookId: String) {
         viewModelScope.launch {
             _highlightsUIStateFlow.update { state ->
@@ -41,12 +46,12 @@ class ViewHighlightsViewModel @Inject constructor(
             }
             getAllSavedHighlightsUseCase(bookId).collect { result ->
                 if (result.isSuccess) {
-                    val highlights = result.getOrThrow()
+                    val highlights = result.getOrThrow().sortedBy { it.savedOnTimestamp }
+                    loadedHighlights = highlights
                     _highlightsUIStateFlow.update { state ->
                         state.copy(
                             isLoading = false,
-                            highlights = highlights.sortedBy { it.savedOnTimestamp }
-                                .map { it.asHighlightUIState() }
+                            highlights = highlights.map { it.asHighlightUIState() }.toImmutableList()
                         )
                     }
                 } else if (result.isFailure) {
@@ -72,7 +77,27 @@ class ViewHighlightsViewModel @Inject constructor(
                 exportHighlights(action.bookId)
             }
 
+            is ViewHighlightsAction.OnDeleteHighlight -> {
+                deleteHighlight(action.highlightId)
+            }
+
             else -> Unit
+        }
+    }
+
+    private fun deleteHighlight(highlightId: String) {
+        val target = loadedHighlights.firstOrNull { it.id == highlightId } ?: return
+        viewModelScope.launch {
+            _highlightsUIStateFlow.update { state ->
+                state.copy(isLoading = true)
+            }
+            val result = deleteHighlightUseCase.invoke(target)
+            if (result.isFailure) {
+                _highlightsUIStateFlow.update { state ->
+                    state.copy(isLoading = false)
+                }
+                _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.delete_error_message))
+            }
         }
     }
 
@@ -99,34 +124,19 @@ class ViewHighlightsViewModel @Inject constructor(
     private fun Highlight.asHighlightUIState(): HighlightUIState = HighlightUIState(
         id = id,
         text = text,
-        savedOn = savedOnTimestamp,
-        onDelete = {
-            viewModelScope.launch {
-                _highlightsUIStateFlow.update { state ->
-                    state.copy(isLoading = true)
-                }
-                val result = deleteHighlightUseCase.invoke(this@asHighlightUIState)
-                if (result.isFailure) {
-                    _highlightsUIStateFlow.update { state ->
-                        state.copy(isLoading = false)
-                    }
-                    _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.delete_error_message))
-                }
-            }
-        }
+        savedOn = savedOnTimestamp
     )
 }
 
 internal data class ViewHighlightsUIState(
     val isLoading: Boolean = false,
-    val highlights: List<HighlightUIState> = emptyList()
+    val highlights: ImmutableList<HighlightUIState> = persistentListOf()
 )
 
 internal data class HighlightUIState(
     val id: String,
     val text: String,
-    val savedOn: String,
-    val onDelete: () -> Unit
+    val savedOn: String
 )
 
 internal sealed interface ViewHighlightsAction {
@@ -135,6 +145,7 @@ internal sealed interface ViewHighlightsAction {
     data object OnCameraPermissionGranted : ViewHighlightsAction
     data class OnEditHighlight(val highlightId: String) : ViewHighlightsAction
     data class OnExportHighlights(val bookId: String) : ViewHighlightsAction
+    data class OnDeleteHighlight(val highlightId: String) : ViewHighlightsAction
 }
 
 internal sealed interface ViewHighlightsEffect {
