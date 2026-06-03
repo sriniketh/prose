@@ -55,9 +55,8 @@ import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.theme.AppTheme
-import com.sriniketh.core_models.book.Book
-import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_platform.buildHttpsUri
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -145,7 +144,7 @@ private fun BookInfoLayout(
     contentPadding: PaddingValues
 ) {
     uiState.book?.let { book ->
-        val bookInfo = book.info
+        val bookInfo = book
         Column(
             modifier = modifier
                 .verticalScroll(rememberScrollState())
@@ -295,7 +294,7 @@ private fun BookInfoScreenFloatingActionButton(buttonOnClick: () -> Unit) {
 private fun BookInfoScreenTitle(uiState: BookInfoUiState) {
     uiState.book?.let { book ->
         Text(
-            text = book.info.title,
+            text = book.title,
             style = MaterialTheme.typography.headlineMedium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -309,20 +308,16 @@ internal fun BookInfoScreenPreview() {
     AppTheme {
         BookInfo(
             uiState = BookInfoUiState(
-                book = Book(
-                    id = "someId",
-                    info = BookInfo(
-                        title = "some really really really long title",
-                        subtitle = "some subtitle",
-                        authors = listOf("author 1, author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        publisher = "some publisher",
-                        publishedDate = "23rd January 2021",
-                        description = "some description that's repeated again and again so that we have this long piece of text. some description that's repeated again and again so that we have this long piece of text.",
-                        pageCount = 215,
-                        averageRating = 4.3,
-                        ratingsCount = 1227
-                    )
+                book = BookInfoUiData(
+                    title = "some really really really long title",
+                    authors = persistentListOf("author 1, author 2"),
+                    thumbnailLink = "https://picsum.photos/200/300",
+                    publisher = "some publisher",
+                    publishedDate = "23rd January 2021",
+                    description = "some description that's repeated again and again so that we have this long piece of text. some description that's repeated again and again so that we have this long piece of text.",
+                    pageCount = 215,
+                    averageRating = 4.3,
+                    ratingsCount = 1227
                 ),
                 canAddToShelf = true,
                 addBookToShelf = {}
