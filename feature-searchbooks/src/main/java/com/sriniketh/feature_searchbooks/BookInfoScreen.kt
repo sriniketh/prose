@@ -30,7 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -73,7 +73,7 @@ fun BookInfoScreen(
     }
     val uiState: BookInfoUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -82,7 +82,7 @@ fun BookInfoScreen(
             viewModel.effects.collect { effect ->
                 when (effect) {
                     is BookInfoEffect.ShowMessage -> scope.launch {
-                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                        snackbarHostState.showSnackbar(resources.getString(effect.messageRes))
                     }
                     BookInfoEffect.NavigateToBookshelf -> onBookAddedToShelf()
                 }

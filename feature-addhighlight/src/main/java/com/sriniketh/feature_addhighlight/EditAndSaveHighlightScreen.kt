@@ -26,7 +26,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -58,7 +58,7 @@ fun EditAndSaveHighlightScreen(
     }
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -67,7 +67,7 @@ fun EditAndSaveHighlightScreen(
             viewModel.effects.collect { effect ->
                 when (effect) {
                     is EditAndSaveHighlightEffect.ShowMessage -> scope.launch {
-                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                        snackbarHostState.showSnackbar(resources.getString(effect.messageRes))
                     }
 
                     EditAndSaveHighlightEffect.HighlightSaved -> goBack()
@@ -106,7 +106,7 @@ fun EditAndSaveHighlightScreen(
 
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -115,7 +115,7 @@ fun EditAndSaveHighlightScreen(
             viewModel.effects.collect { effect ->
                 when (effect) {
                     is EditAndSaveHighlightEffect.ShowMessage -> scope.launch {
-                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                        snackbarHostState.showSnackbar(resources.getString(effect.messageRes))
                     }
 
                     EditAndSaveHighlightEffect.HighlightSaved -> goBack()
