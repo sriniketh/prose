@@ -34,7 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,7 +63,7 @@ fun BookshelfScreen(
 ) {
     val uiState: BookshelfUIState by viewModel.bookshelfUIState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
+    val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -72,7 +72,7 @@ fun BookshelfScreen(
             viewModel.effects.collect { effect ->
                 when (effect) {
                     is BookshelfEffect.ShowMessage -> scope.launch {
-                        snackbarHostState.showSnackbar(context.getString(effect.messageRes))
+                        snackbarHostState.showSnackbar(resources.getString(effect.messageRes))
                     }
                 }
             }
