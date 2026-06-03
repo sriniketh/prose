@@ -49,6 +49,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.AnimationConstants
@@ -251,12 +252,12 @@ internal fun SearchBookScreenPreview() {
         Surface {
             SearchBook(
                 uiState = BookSearchUiState(
-                    bookUiStates = listOf(
+                    bookUiStates = persistentListOf(
                         BookUiState(
                             id = "some book id",
                             title = "some book",
                             subtitle = "some subtitle",
-                            authors = listOf(""),
+                            authors = persistentListOf(""),
                             thumbnailLink = null
                         )
                     )

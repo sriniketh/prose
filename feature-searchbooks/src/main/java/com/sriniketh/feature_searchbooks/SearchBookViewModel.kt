@@ -23,6 +23,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
@@ -75,7 +78,7 @@ class SearchBookViewModel @Inject constructor(
             emit(
                 BookSearchUiState(
                     isLoading = false,
-                    bookUiStates = result.getOrThrow().items.map { it.asBookUiState() }
+                    bookUiStates = result.getOrThrow().items.map { it.asBookUiState() }.toImmutableList()
                 )
             )
         } else {
@@ -88,7 +91,7 @@ class SearchBookViewModel @Inject constructor(
         id = id,
         title = info.title,
         subtitle = info.subtitle,
-        authors = info.authors,
+        authors = info.authors.toImmutableList(),
         thumbnailLink = info.thumbnailLink
     )
 
@@ -105,14 +108,14 @@ class SearchBookViewModel @Inject constructor(
 
 internal data class BookSearchUiState(
     val isLoading: Boolean = false,
-    val bookUiStates: List<BookUiState> = emptyList()
+    val bookUiStates: ImmutableList<BookUiState> = persistentListOf()
 )
 
 internal data class BookUiState(
     val id: String,
     val title: String,
     val subtitle: String?,
-    val authors: List<String>,
+    val authors: ImmutableList<String>,
     val thumbnailLink: String?
 )
 
