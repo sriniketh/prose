@@ -165,7 +165,9 @@ internal fun Bookshelf(
                                 .padding(12.dp)
                                 .align(Alignment.Start)
                         ) {
-                            val uri = bookUIState.thumbnailLink?.buildHttpsUri()
+                            val uri = remember(bookUIState.thumbnailLink) {
+                                bookUIState.thumbnailLink?.buildHttpsUri()
+                            }
                             AsyncImage(
                                 modifier = modifier
                                     .padding(6.dp)
@@ -188,9 +190,12 @@ internal fun Bookshelf(
                                     text = bookUIState.title,
                                     style = MaterialTheme.typography.titleLarge
                                 )
+                                val authorsLine = remember(bookUIState.authors) {
+                                    bookUIState.authors.joinToString(", ")
+                                }
                                 Text(
                                     modifier = modifier.padding(6.dp),
-                                    text = bookUIState.authors.joinToString(", "),
+                                    text = authorsLine,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                             }
