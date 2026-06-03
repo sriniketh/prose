@@ -1,7 +1,6 @@
 package com.sriniketh.core_db.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -20,6 +19,6 @@ interface HighlightDao {
     @Query("SELECT * FROM highlightEntity WHERE bookId = :bookId")
     fun getAllHighlightsForBook(bookId: String): Flow<List<HighlightEntity>>
 
-    @Delete
-    suspend fun deleteHighlight(highlight: HighlightEntity)
+    @Query("DELETE FROM highlightEntity WHERE id = :id")
+    suspend fun deleteHighlightById(id: String)
 }

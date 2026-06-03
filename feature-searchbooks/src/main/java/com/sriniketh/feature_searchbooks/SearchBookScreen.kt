@@ -49,6 +49,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.AnimationConstants
@@ -123,7 +124,7 @@ internal fun SearchBook(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
         SearchBar(
-            modifier = modifier
+            modifier = Modifier
                 .padding(contentPadding)
                 .focusRequester(focusRequester)
                 .fillMaxWidth(),
@@ -156,7 +157,7 @@ internal fun SearchBook(
                     trailingIcon = {
                         if (expanded) {
                             Icon(
-                                modifier = modifier.clickable {
+                                modifier = Modifier.clickable {
                                     if (text.isNotEmpty()) {
                                         text = ""
                                         resetSearch()
@@ -178,21 +179,21 @@ internal fun SearchBook(
         ) {
             if (uiState.isLoading) {
                 LinearProgressIndicator(
-                    modifier = modifier
+                    modifier = Modifier
                         .fillMaxWidth()
                         .testTag("SearchBookLoadingIndicator")
                 )
             }
             LazyColumn(
                 state = listState,
-                modifier = modifier
+                modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize()
                     .testTag("SearchResultsList")
             ) {
                 items(uiState.bookUiStates, key = { it.id }) { item ->
                     Row(
-                        modifier = modifier
+                        modifier = Modifier
                             .padding(12.dp)
                             .align(Alignment.Start)
                             .fillMaxWidth()
@@ -202,7 +203,7 @@ internal fun SearchBook(
                             item.thumbnailLink?.buildHttpsUri()
                         }
                         AsyncImage(
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(6.dp)
                                 .height(80.dp)
                                 .width(60.dp)
@@ -214,12 +215,12 @@ internal fun SearchBook(
                             error = gradientPlaceholder()
                         )
                         Column(
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(horizontal = 6.dp)
                                 .align(Alignment.Top)
                         ) {
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = item.title,
                                 style = MaterialTheme.typography.bodyLarge
                             )
@@ -232,13 +233,13 @@ internal fun SearchBook(
                                 style = MaterialTheme.typography.bodyMedium
                             )
                             Text(
-                                modifier = modifier.padding(6.dp),
+                                modifier = Modifier.padding(6.dp),
                                 text = item.subtitle.orEmpty(),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
-                    HorizontalDivider(modifier = modifier.fillMaxWidth())
+                    HorizontalDivider(modifier = Modifier.fillMaxWidth())
                 }
             }
         }
@@ -256,12 +257,12 @@ internal fun SearchBookScreenPreview() {
         Surface {
             SearchBook(
                 uiState = BookSearchUiState(
-                    bookUiStates = listOf(
+                    bookUiStates = persistentListOf(
                         BookUiState(
                             id = "some book id",
                             title = "some book",
                             subtitle = "some subtitle",
-                            authors = listOf(""),
+                            authors = persistentListOf(""),
                             thumbnailLink = null
                         )
                     )

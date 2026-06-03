@@ -7,6 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,8 +35,6 @@ class BookshelfViewModel @Inject constructor(
     private val _effects = Channel<BookshelfEffect>(Channel.BUFFERED)
     internal val effects: Flow<BookshelfEffect> = _effects.receiveAsFlow()
 
-    var viewHighlightsForBook: (String) -> Unit = {}
-
     init {
         viewModelScope.launch {
             savedStateHandle.getStateFlow(BOOKSHELF_SHOW_ADDED_MESSAGE, false)
@@ -54,7 +55,7 @@ class BookshelfViewModel @Inject constructor(
                     _bookshelfUIState.update { state ->
                         state.copy(
                             isLoading = false,
-                            books = books.map { it.asBookshelfUIState() }
+                            books = books.map { it.asBookshelfUIState() }.toImmutableList()
                         )
                     }
                 } else if (result.isFailure) {
@@ -70,25 +71,21 @@ class BookshelfViewModel @Inject constructor(
     private fun Book.asBookshelfUIState(): BookUIState = BookUIState(
         id = id,
         title = info.title,
-        authors = info.authors,
-        thumbnailLink = info.thumbnailLink,
-        viewBook = {
-            viewHighlightsForBook(id)
-        }
+        authors = info.authors.toImmutableList(),
+        thumbnailLink = info.thumbnailLink
     )
 }
 
 internal data class BookshelfUIState(
     val isLoading: Boolean = false,
-    val books: List<BookUIState> = emptyList()
+    val books: ImmutableList<BookUIState> = persistentListOf()
 )
 
 internal data class BookUIState(
     val id: String,
     val title: String,
-    val authors: List<String>,
-    val thumbnailLink: String?,
-    var viewBook: (String) -> Unit
+    val authors: ImmutableList<String>,
+    val thumbnailLink: String?
 )
 
 internal sealed interface BookshelfEffect {

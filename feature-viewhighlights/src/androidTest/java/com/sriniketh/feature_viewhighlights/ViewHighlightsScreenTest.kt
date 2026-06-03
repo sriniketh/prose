@@ -8,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -22,7 +23,7 @@ class ViewHighlightsScreenTest {
 
     @Test
     fun whenHighlightsListIsEmptyThenEmptyMessageIsDisplayed() {
-        val uiState = ViewHighlightsUIState(highlights = emptyList())
+        val uiState = ViewHighlightsUIState(highlights = persistentListOf())
 
         composeTestRule.setContent {
             AppTheme {
@@ -39,7 +40,7 @@ class ViewHighlightsScreenTest {
 
     @Test
     fun whenHighlightsListIsNotEmptyThenEmptyMessageIsNotDisplayed() {
-        val highlights = listOf(createTestHighlightUIState())
+        val highlights = persistentListOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -58,7 +59,7 @@ class ViewHighlightsScreenTest {
     @Test
     fun whenHighlightsArePresentThenHighlightTextIsDisplayed() {
         val highlightText = "This is a test highlight"
-        val highlights = listOf(createTestHighlightUIState(text = highlightText))
+        val highlights = persistentListOf(createTestHighlightUIState(text = highlightText))
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -77,7 +78,7 @@ class ViewHighlightsScreenTest {
     @Test
     fun whenHighlightsArePresentThenSavedTimestampIsDisplayed() {
         val savedOn = "2023-12-25"
-        val highlights = listOf(createTestHighlightUIState(savedOn = savedOn))
+        val highlights = persistentListOf(createTestHighlightUIState(savedOn = savedOn))
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -95,7 +96,7 @@ class ViewHighlightsScreenTest {
 
     @Test
     fun whenHighlightsArePresentThenMoreOptionsButtonIsDisplayed() {
-        val highlights = listOf(createTestHighlightUIState())
+        val highlights = persistentListOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -166,7 +167,7 @@ class ViewHighlightsScreenTest {
 
     @Test
     fun whenMoreOptionsIsClickedThenDropdownMenuIsDisplayed() {
-        val highlights = listOf(createTestHighlightUIState())
+        val highlights = persistentListOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -188,7 +189,7 @@ class ViewHighlightsScreenTest {
     @Test
     fun whenEditMenuItemIsClickedThenOnEditHighlightEventIsTriggered() {
         val highlightId = "test-highlight-id"
-        val highlights = listOf(createTestHighlightUIState(id = highlightId))
+        val highlights = persistentListOf(createTestHighlightUIState(id = highlightId))
         val uiState = ViewHighlightsUIState(highlights = highlights)
         var actionTriggered: ViewHighlightsAction? = null
 
@@ -210,7 +211,7 @@ class ViewHighlightsScreenTest {
 
     @Test
     fun whenDeleteMenuItemIsClickedThenDeleteDialogIsDisplayed() {
-        val highlights = listOf(createTestHighlightUIState())
+        val highlights = persistentListOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -231,22 +232,16 @@ class ViewHighlightsScreenTest {
 
     @Test
     fun whenDeleteDialogConfirmIsClickedThenOnDeleteIsCalled() {
-        val highlights = listOf(createTestHighlightUIState())
-        val uiState = ViewHighlightsUIState(highlights = highlights)
-        var onDeleteCalled = false
+        val highlightId = "test-id"
+        val uiState = ViewHighlightsUIState(highlights = persistentListOf(createTestHighlightUIState(id = highlightId)))
+        var actionTriggered: ViewHighlightsAction? = null
 
         composeTestRule.setContent {
             AppTheme {
                 ViewHighlights(
-                    uiState = uiState.copy(
-                        highlights = listOf(
-                            createTestHighlightUIState(
-                                onDelete = { onDeleteCalled = true }
-                            )
-                        )
-                    ),
+                    uiState = uiState,
                     bookId = "test-book-id",
-                    onAction = {}
+                    onAction = { actionTriggered = it }
                 )
             }
         }
@@ -254,12 +249,13 @@ class ViewHighlightsScreenTest {
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithText("Delete").performClick()
         composeTestRule.onNodeWithText("Delete").performClick()
-        assertTrue(onDeleteCalled)
+        assertTrue(actionTriggered is ViewHighlightsAction.OnDeleteHighlight)
+        assertEquals(highlightId, (actionTriggered as ViewHighlightsAction.OnDeleteHighlight).highlightId)
     }
 
     @Test
     fun whenDeleteDialogCancelIsClickedThenDialogIsDismissed() {
-        val highlights = listOf(createTestHighlightUIState())
+        val highlights = persistentListOf(createTestHighlightUIState())
         val uiState = ViewHighlightsUIState(highlights = highlights)
 
         composeTestRule.setContent {
@@ -281,12 +277,10 @@ class ViewHighlightsScreenTest {
     private fun createTestHighlightUIState(
         id: String = "test-id",
         text: String = "test text",
-        savedOn: String = "2023-01-01",
-        onDelete: () -> Unit = {}
+        savedOn: String = "2023-01-01"
     ) = HighlightUIState(
         id = id,
         text = text,
-        savedOn = savedOn,
-        onDelete = onDelete
+        savedOn = savedOn
     )
 }

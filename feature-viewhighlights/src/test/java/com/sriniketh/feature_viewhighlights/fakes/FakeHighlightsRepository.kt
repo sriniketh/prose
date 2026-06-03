@@ -10,7 +10,7 @@ class FakeHighlightsRepository : HighlightsRepository {
     var shouldGetAllHighlightsForBookFromDbThrowException = false
     var shouldDeleteHighlightFromDbThrowException = false
     var bookIdPassed: String? = null
-    var deletedHighlight: Highlight? = null
+    var deletedHighlightId: String? = null
 
     private val fakeHighlight = Highlight(
         id = "test-highlight-id",
@@ -36,8 +36,8 @@ class FakeHighlightsRepository : HighlightsRepository {
         }
     }
 
-    override suspend fun deleteHighlightFromDb(highlight: Highlight): Result<Unit> {
-        deletedHighlight = highlight
+    override suspend fun deleteHighlightFromDb(highlightId: String): Result<Unit> {
+        deletedHighlightId = highlightId
         return if (shouldDeleteHighlightFromDbThrowException) {
             Result.failure(RuntimeException("Delete highlight failed"))
         } else {

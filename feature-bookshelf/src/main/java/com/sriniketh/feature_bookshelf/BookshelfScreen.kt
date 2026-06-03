@@ -52,6 +52,7 @@ import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.sharedBoundsTransition
 import com.sriniketh.core_design.ui.theme.AppTheme
 import com.sriniketh.core_platform.buildHttpsUri
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 
 @Composable
@@ -97,7 +98,7 @@ internal fun Bookshelf(
     goToSearch: () -> Unit,
     goToHighlight: (String) -> Unit
 ) {
-    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
         modifier = modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -118,7 +119,7 @@ internal fun Bookshelf(
                 onClick = goToSearch,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = modifier.sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)
+                modifier = Modifier.sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)
             ) {
                 Icon(
                     painter = painterResource(com.sriniketh.core_design.R.drawable.ic_search),
@@ -130,7 +131,7 @@ internal fun Bookshelf(
     ) { contentPadding ->
         if (uiState.isLoading) {
             LinearProgressIndicator(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .testTag("BookshelfLoadingIndicator")
             )
@@ -138,7 +139,7 @@ internal fun Bookshelf(
 
         if (uiState.books.isEmpty() && !uiState.isLoading) {
             Box(
-                modifier = modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             ) {
                 Text(
                     modifier = Modifier.align(Alignment.Center),
@@ -148,20 +149,20 @@ internal fun Bookshelf(
             }
         } else if (uiState.books.isNotEmpty()) {
             LazyColumn(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(contentPadding)
             ) {
                 items(uiState.books, key = { it.id }) { bookUIState ->
                     Card(
-                        modifier = modifier
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
                             .clickable { goToHighlight(bookUIState.id) },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                     ) {
                         Row(
-                            modifier = modifier
+                            modifier = Modifier
                                 .padding(12.dp)
                                 .align(Alignment.Start)
                         ) {
@@ -169,7 +170,7 @@ internal fun Bookshelf(
                                 bookUIState.thumbnailLink?.buildHttpsUri()
                             }
                             AsyncImage(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(6.dp)
                                     .height(100.dp)
                                     .width(80.dp)
@@ -181,12 +182,12 @@ internal fun Bookshelf(
                                 error = gradientPlaceholder()
                             )
                             Column(
-                                modifier = modifier
+                                modifier = Modifier
                                     .padding(horizontal = 6.dp)
                                     .align(Alignment.Top)
                             ) {
                                 Text(
-                                    modifier = modifier.padding(6.dp),
+                                    modifier = Modifier.padding(6.dp),
                                     text = bookUIState.title,
                                     style = MaterialTheme.typography.titleLarge
                                 )
@@ -214,49 +215,42 @@ internal fun BookshelfScreenSuccessPreview() {
     AppTheme {
         Bookshelf(
             uiState = BookshelfUIState(
-                books = listOf(
+                books = persistentListOf(
                     BookUIState(
                         id = "someId",
                         title = "Some title 1",
-                        authors = listOf("Author 1", "Author 2", "Author 3"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2", "Author 3"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId2",
                         title = "Some title 2",
-                        authors = listOf("Author 1"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId3",
                         title = "Some title 3",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId4",
                         title = "Some title 4",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId5",
                         title = "Some title 5",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId6",
                         title = "Some title 6",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ), BookUIState(
                         id = "someId7",
                         title = "Some title 7",
-                        authors = listOf("Author 1", "Author 2"),
-                        thumbnailLink = "https://picsum.photos/200/300",
-                        viewBook = {}
+                        authors = persistentListOf("Author 1", "Author 2"),
+                        thumbnailLink = "https://picsum.photos/200/300"
                     ))),
             goToSearch = {}, goToHighlight = {})
     }
@@ -277,7 +271,7 @@ internal fun BookshelfScreenLoadingPreview() {
 internal fun BookshelfScreenSuccessNoBooksPreview() {
     AppTheme {
         Bookshelf(
-            uiState = BookshelfUIState(books = emptyList()),
+            uiState = BookshelfUIState(books = persistentListOf()),
             goToSearch = {}, goToHighlight = {})
     }
 }

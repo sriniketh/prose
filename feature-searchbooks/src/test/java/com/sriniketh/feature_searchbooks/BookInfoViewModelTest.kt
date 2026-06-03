@@ -77,7 +77,7 @@ class BookInfoViewModelTest {
             val successState = awaitItem()
             assertFalse(successState.isLoading)
             assertNotNull(successState.book)
-            assertEquals("test-id", successState.book?.id)
+            assertEquals("Test Title", successState.book?.title)
             assertTrue(successState.canAddToShelf)
         }
     }

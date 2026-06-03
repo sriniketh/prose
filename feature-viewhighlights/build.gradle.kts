@@ -61,6 +61,8 @@ dependencies {
 	androidTestImplementation(libs.compose.junit)
 	debugImplementation(libs.compose.test.manifest)
 
+	implementation(libs.kotlinx.collections.immutable)
+
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
 

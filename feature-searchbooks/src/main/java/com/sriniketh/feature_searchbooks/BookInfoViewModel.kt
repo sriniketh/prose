@@ -3,11 +3,14 @@ package com.sriniketh.feature_searchbooks
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
 import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
+import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
 import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +47,7 @@ class BookInfoViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
-                        book = book,
+                        book = book.asUiData(),
                         canAddToShelf = !isInDb,
                         addBookToShelf = { addBookToShelf(book) }
                     )
@@ -80,13 +83,37 @@ class BookInfoViewModel @Inject constructor(
             }
         }
     }
+
+    private fun Book.asUiData(): BookInfoUiData = BookInfoUiData(
+        title = info.title,
+        authors = info.authors.toImmutableList(),
+        thumbnailLink = info.thumbnailLink,
+        publisher = info.publisher,
+        publishedDate = info.publishedDate,
+        description = info.description,
+        pageCount = info.pageCount,
+        averageRating = info.averageRating,
+        ratingsCount = info.ratingsCount
+    )
 }
 
 data class BookInfoUiState(
     val isLoading: Boolean = false,
-    val book: Book? = null,
+    val book: BookInfoUiData? = null,
     val canAddToShelf: Boolean = false,
     val addBookToShelf: () -> Unit = {}
+)
+
+data class BookInfoUiData(
+    val title: String,
+    val authors: ImmutableList<String> = persistentListOf(),
+    val thumbnailLink: String?,
+    val publisher: String?,
+    val publishedDate: String?,
+    val description: String?,
+    val pageCount: Int?,
+    val averageRating: Double?,
+    val ratingsCount: Int?
 )
 
 internal sealed interface BookInfoEffect {

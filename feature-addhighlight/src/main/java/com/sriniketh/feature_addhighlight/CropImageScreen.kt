@@ -13,6 +13,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
@@ -24,13 +25,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import io.moyuru.cropify.Cropify
 import io.moyuru.cropify.rememberCropifyState
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun CropImageScreen(
     modifier: Modifier = Modifier,
     imageUri: Uri,
-    onImageCropped: () -> Unit
+    onImageCropped: () -> Unit,
+    ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) {
     val context = LocalContext.current
     val cropifyState = rememberCropifyState()
@@ -59,10 +64,15 @@ internal fun CropImageScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
 
-        val rotatedBitmap = ImageRotater.getRotatedBitmap(context, imageUri)
+        val rotatedBitmapState = produceState<Bitmap?>(initialValue = null, key1 = imageUri) {
+            value = withContext(ioDispatcher) {
+                ImageRotater.getRotatedBitmap(context, imageUri)
+            }
+        }
+        val rotatedBitmap = rotatedBitmapState.value
         if (rotatedBitmap != null) {
             Cropify(
-                modifier = modifier
+                modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize(),
                 bitmap = rotatedBitmap.asImageBitmap(),
@@ -77,7 +87,7 @@ internal fun CropImageScreen(
             )
         } else {
             Cropify(
-                modifier = modifier
+                modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize(),
                 uri = imageUri,

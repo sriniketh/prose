@@ -9,6 +9,8 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -92,7 +94,7 @@ class BookshelfScreenTest {
 
     @Test
     fun whenBooksListIsEmptyAndNotLoadingThenEmptyMessageIsDisplayed() {
-        val uiState = BookshelfUIState(isLoading = false, books = emptyList())
+        val uiState = BookshelfUIState(isLoading = false, books = persistentListOf())
 
         composeTestRule.setContent {
             AppTheme {
@@ -109,7 +111,7 @@ class BookshelfScreenTest {
 
     @Test
     fun whenBooksListIsNotEmptyThenEmptyMessageIsNotDisplayed() {
-        val books = listOf(createTestBookUIState())
+        val books = persistentListOf(createTestBookUIState())
         val uiState = BookshelfUIState(books = books)
 
         composeTestRule.setContent {
@@ -127,7 +129,7 @@ class BookshelfScreenTest {
 
     @Test
     fun whenBooksArePresentThenBookTitleIsDisplayed() {
-        val books = listOf(createTestBookUIState(title = "Test Book Title"))
+        val books = persistentListOf(createTestBookUIState(title = "Test Book Title"))
         val uiState = BookshelfUIState(books = books)
 
         composeTestRule.setContent {
@@ -145,7 +147,7 @@ class BookshelfScreenTest {
 
     @Test
     fun whenBooksArePresentThenBookAuthorsAreDisplayed() {
-        val books = listOf(createTestBookUIState(authors = listOf("Author One", "Author Two")))
+        val books = persistentListOf(createTestBookUIState(authors = persistentListOf("Author One", "Author Two")))
         val uiState = BookshelfUIState(books = books)
 
         composeTestRule.setContent {
@@ -164,7 +166,7 @@ class BookshelfScreenTest {
     @Test
     fun whenBookItemIsClickedThenGoToHighlightIsCalled() {
         val bookId = "test-book-id"
-        val books = listOf(createTestBookUIState(id = bookId, title = "Test Book"))
+        val books = persistentListOf(createTestBookUIState(id = bookId, title = "Test Book"))
         val uiState = BookshelfUIState(books = books)
         var calledBookId: String? = null
 
@@ -184,7 +186,7 @@ class BookshelfScreenTest {
 
     @Test
     fun whenNoBooksArePresentThenNoBookItemsAreDisplayed() {
-        val uiState = BookshelfUIState(books = emptyList())
+        val uiState = BookshelfUIState(books = persistentListOf())
 
         composeTestRule.setContent {
             AppTheme {
@@ -202,13 +204,12 @@ class BookshelfScreenTest {
     private fun createTestBookUIState(
         id: String = "test-id",
         title: String = "Test Title",
-        authors: List<String> = listOf("Test Author"),
+        authors: ImmutableList<String> = persistentListOf("Test Author"),
         thumbnailLink: String? = null
     ) = BookUIState(
         id = id,
         title = title,
         authors = authors,
-        thumbnailLink = thumbnailLink,
-        viewBook = {}
+        thumbnailLink = thumbnailLink
     )
 }
