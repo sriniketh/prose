@@ -1,6 +1,9 @@
 
 This file provides guidance to AI coding agents like Claude Code (claude.ai/code), Cursor AI, Codex, Gemini CLI, GitHub Copilot, and other AI coding assistants when working with code in this repository.
 
+> [!TIP]
+> Comprehensive guides on architecture, local database schemas, on-device OCR flow, and the JSON export structure are available in [docs/README.md](docs/README.md). Please read these files first for deep domain context.
+
 ## Build Commands
 
 ```bash
