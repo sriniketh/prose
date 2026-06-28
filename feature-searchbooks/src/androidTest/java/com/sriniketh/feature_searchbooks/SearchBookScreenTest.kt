@@ -272,7 +272,9 @@ class SearchBookScreenTest {
         composeTestRule.onNodeWithTag("SearchResultsList").performScrollToIndex(19)
         composeTestRule.waitForIdle()
 
-        uiState.value = BookSearchUiState(bookUiStates = (newTopBooks + sharedBooks).toPersistentList())
+        composeTestRule.runOnIdle {
+            uiState.value = BookSearchUiState(bookUiStates = (newTopBooks + sharedBooks).toPersistentList())
+        }
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("New Top Book 0").assertIsDisplayed()
