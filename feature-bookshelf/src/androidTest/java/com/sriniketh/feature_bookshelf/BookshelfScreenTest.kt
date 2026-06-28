@@ -1,7 +1,7 @@
 package com.sriniketh.feature_bookshelf
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -179,7 +179,7 @@ class BookshelfScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Test Book").performClick()
+        composeTestRule.onNodeWithTag("BookItem_test-book-id").performClick()
         assertTrue(calledBookId == bookId)
     }
 

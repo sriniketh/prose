@@ -1,8 +1,9 @@
 package com.sriniketh.feature_viewhighlights
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -203,7 +204,7 @@ class ViewHighlightsScreenTest {
         }
 
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
-        composeTestRule.onNodeWithText("Edit").performClick()
+        composeTestRule.onNodeWithTag("HighlightMenuItemEdit").performClick()
         assertTrue(actionTriggered is ViewHighlightsAction.OnEditHighlight)
         assertEquals(highlightId, (actionTriggered as ViewHighlightsAction.OnEditHighlight).highlightId)
     }
@@ -224,7 +225,7 @@ class ViewHighlightsScreenTest {
         }
 
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
-        composeTestRule.onNodeWithText("Delete").performClick()
+        composeTestRule.onNodeWithTag("HighlightMenuItemDelete").performClick()
         composeTestRule.onNodeWithText("Delete highlight").assertIsDisplayed()
         composeTestRule.onNodeWithText("Are you sure you want to remove this highlight from your device?").assertIsDisplayed()
     }
@@ -246,8 +247,8 @@ class ViewHighlightsScreenTest {
         }
 
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
-        composeTestRule.onNodeWithText("Delete").performClick()
-        composeTestRule.onNodeWithText("Delete").performClick()
+        composeTestRule.onNodeWithTag("HighlightMenuItemDelete").performClick()
+        composeTestRule.onNodeWithTag("DeleteHighlightConfirmButton").performClick()
         assertTrue(actionTriggered is ViewHighlightsAction.OnDeleteHighlight)
         assertEquals(highlightId, (actionTriggered as ViewHighlightsAction.OnDeleteHighlight).highlightId)
     }
@@ -268,8 +269,8 @@ class ViewHighlightsScreenTest {
         }
 
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
-        composeTestRule.onNodeWithText("Delete").performClick()
-        composeTestRule.onNodeWithText("Cancel").performClick()
+        composeTestRule.onNodeWithTag("HighlightMenuItemDelete").performClick()
+        composeTestRule.onNodeWithTag("DeleteHighlightCancelButton").performClick()
         composeTestRule.onNodeWithText("Delete highlight").assertDoesNotExist()
     }
 

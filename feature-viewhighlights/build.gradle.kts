@@ -72,6 +72,4 @@ dependencies {
 	testImplementation(libs.cashapp.turbine)
 	testImplementation(libs.mockk)
 	androidTestImplementation(libs.android.junit)
-	androidTestImplementation(libs.compose.junit)
-	debugImplementation(libs.compose.test.manifest)
 }
