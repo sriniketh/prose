@@ -112,6 +112,7 @@ internal fun BookInfo(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ProseTopAppBar(
+                modifier = Modifier.testTag("BookInfoTopAppBar"),
                 title = { BookInfoScreenTitle(uiState) },
                 navigationIcon = { NavigationBack(action = goBack) },
                 scrollBehavior = scrollBehavior
