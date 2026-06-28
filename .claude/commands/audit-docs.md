@@ -1,5 +1,5 @@
 ---
-description: Reconcile docs/ and AGENTS.md against the actual code and report or fix drift
+description: Use when docs/ or AGENTS.md may have drifted from the code (after refactors, renames, module or dependency changes) to reconcile them against the source and report or fix drift
 ---
 
 Audit the engineering docs under `docs/` **and the `AGENTS.md` quick reference** against the current state of the repo and report every place they have drifted. Do **not** change code to match the docs — the code is the source of truth; the docs follow it.
@@ -16,6 +16,8 @@ grep -oE '\(\.\./[^)]+\)|`[a-zA-Z0-9_./-]+\.(kt|kts|toml|properties)`' docs/*.md
 
 then resolve each path (links are relative to `docs/`, so `../` is repo root) and flag any that no longer exist or have moved. Dead paths are the highest-priority finding.
 
+The grep over-matches; do not report a hit as missing until you confirm it. Two forms are not literal paths: an elided segment like `app/.../MainActivity.kt` (the `.../` is an abbreviation — resolve it to the real file before judging) and a bare filename like `` `Navigation.kt` `` used inline (illustrative, not a link). Only a fully-spelled path that resolves nowhere is a dead path.
+
 ## 2. Module graph — `docs/modules.md`
 
 - List actual Gradle modules from `settings.gradle.kts`. Compare against the per-module entries and the Mermaid + text dependency graph. Flag added/removed/renamed modules and any module missing an entry.
@@ -24,7 +26,7 @@ then resolve each path (links are relative to `docs/`, so `../` is repo root) an
 
 ## 3. Architecture contract — `docs/architecture.md`
 
-- Hilt DI map: confirm each documented `@Module` still exists with the stated bindings (`di/` packages across modules).
+- Hilt DI map: confirm each documented `@Module` still exists with the stated bindings. Modules keep them in `di/` or `dagger/` packages — search both, not just `di/`.
 - Navigation routes: compare the documented routes against `app/.../Navigation.kt` and `ProseAppScreen.kt`. Flag renamed/added/removed routes and changed arguments.
 - UDF/`Result<T>` contract, effect `Channel`, and cross-cutting conventions: spot-check one ViewModel per feature to confirm the described shape still holds.
 
