@@ -1,8 +1,8 @@
 ---
-description: Reconcile docs/ (architecture, modules, flows) against the actual code and report or fix drift
+description: Reconcile docs/ and AGENTS.md against the actual code and report or fix drift
 ---
 
-Audit the engineering docs under `docs/` against the current state of the repo and report every place they have drifted. Do **not** change code to match the docs — the code is the source of truth; the docs follow it.
+Audit the engineering docs under `docs/` **and the `AGENTS.md` quick reference** against the current state of the repo and report every place they have drifted. Do **not** change code to match the docs — the code is the source of truth; the docs follow it.
 
 Work through these passes in order. For each finding, cite the doc file + line and the contradicting source file.
 
@@ -36,8 +36,21 @@ For each of the documented flows (bootstrap, bookshelf, search, add book, view h
 
 Verify min/target/compile SDK, JVM toolchain, and key-library claims against `gradle/libs.versions.toml` and the module `build.gradle.kts` files.
 
+## 6. Agent quick reference — `AGENTS.md`
+
+`AGENTS.md` carries a condensed "Architecture Overview" that duplicates parts of `docs/`, so it drifts the same way (it has already gone stale on the JSON library once). Cross-check its concrete claims against the code, not against `docs/`:
+
+- **Module Structure** list — every module present and described correctly (responsibilities, named entities/types).
+- **Key Libraries** — the named stack (networking + JSON converter, image loading, cropping, logging, OCR) matches `gradle/libs.versions.toml`. The JSON library is the known drift point: confirm it against the actual `core-network` imports and converter dependency, not the prose.
+- **Dependency Injection** — the named `@Module` classes exist and the stated DI-package convention matches reality.
+- **Navigation** — the `Navigation.kt` path and any example route still hold.
+- **Testing Patterns** — the named test libraries and dispatcher pattern are still what the suites use.
+- **Build Commands / API Key Setup** — the Gradle invocations and `core-network/apikey.properties` key name are current.
+
+Flag any claim that contradicts the code. Keep this section a true *summary* — if a fix would mean adding deep detail, correct the fact tersely and note that the depth belongs in `docs/`.
+
 ## Output
 
 Produce a prioritized list: **(P1)** dead/moved paths, **(P2)** missing or wrong module/route/flow structure, **(P3)** stale fast facts or wording. For each, give the exact doc edit needed.
 
-If invoked with `--fix`, apply the edits to the `docs/` files after presenting the list. Otherwise report only and let the user decide. Never invent paths — every corrected path must point at a file you confirmed exists.
+If invoked with `--fix`, apply the edits to the `docs/` files and `AGENTS.md` after presenting the list. Otherwise report only and let the user decide. Never invent paths — every corrected path must point at a file you confirmed exists.
