@@ -130,6 +130,7 @@ internal fun SearchBook(
                 .fillMaxWidth(),
             inputField = {
                 SearchBarDefaults.InputField(
+                    modifier = Modifier.testTag("SearchBookTextField"),
                     query = text,
                     onQueryChange = {
                         text = it
@@ -197,6 +198,7 @@ internal fun SearchBook(
                             .padding(12.dp)
                             .align(Alignment.Start)
                             .fillMaxWidth()
+                            .testTag("SearchResultItem_${item.id}")
                             .clickable { navigateToBookInfo(item.id) }
                     ) {
                         val uri = remember(item.thumbnailLink) {
