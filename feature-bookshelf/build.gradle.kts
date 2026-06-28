@@ -69,6 +69,4 @@ dependencies {
 	testImplementation(libs.coroutines.test)
 	testImplementation(libs.cashapp.turbine)
 	androidTestImplementation(libs.android.junit)
-	androidTestImplementation(libs.compose.junit)
-	debugImplementation(libs.compose.test.manifest)
 }
