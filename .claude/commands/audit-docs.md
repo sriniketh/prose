@@ -38,7 +38,7 @@ Verify min/target/compile SDK, JVM toolchain, and key-library claims against `gr
 
 ## 6. Agent quick reference — `AGENTS.md`
 
-`AGENTS.md` carries a condensed "Architecture Overview" that duplicates parts of `docs/`, so it drifts the same way (it has already gone stale on the JSON library once). Cross-check its concrete claims against the code, not against `docs/`:
+`AGENTS.md` carries a condensed "Architecture Overview" that duplicates parts of `docs/`, so it drifts the same way. Cross-check its concrete claims against the code, not against `docs/`:
 
 - **Module Structure** list — every module present and described correctly (responsibilities, named entities/types).
 - **Key Libraries** — the named stack (networking + JSON converter, image loading, cropping, logging, OCR) matches `gradle/libs.versions.toml`. The JSON library is the known drift point: confirm it against the actual `core-network` imports and converter dependency, not the prose.
