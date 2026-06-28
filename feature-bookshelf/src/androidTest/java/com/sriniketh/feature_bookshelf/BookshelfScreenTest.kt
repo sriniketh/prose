@@ -180,7 +180,7 @@ class BookshelfScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Test Book").performClick()
+        composeTestRule.onNodeWithTag("BookItem_test-book-id").performClick()
         assertTrue(calledBookId == bookId)
     }
 

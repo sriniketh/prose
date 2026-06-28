@@ -78,7 +78,7 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
         composeTestRule.onNodeWithTag("SearchBookLoadingIndicator").assertIsDisplayed()
     }
 
@@ -98,7 +98,7 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
         composeTestRule.onNodeWithText("Test Book Title").assertIsDisplayed()
     }
 
@@ -118,7 +118,7 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
         composeTestRule.onNodeWithText("Author One, Author Two").assertIsDisplayed()
     }
 
@@ -138,7 +138,7 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
         composeTestRule.onNodeWithText("Test Subtitle").assertIsDisplayed()
     }
 
@@ -160,8 +160,8 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
-        composeTestRule.onNodeWithText("Test Book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchResultItem_test-book-id").performClick()
         assertEquals(bookId, navigatedBookId)
     }
 
@@ -180,7 +180,7 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
         composeTestRule.onNodeWithContentDescription("Close icon").assertIsDisplayed()
     }
 
@@ -200,8 +200,8 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
-        composeTestRule.onNodeWithText("Search for a book").performTextInput("test query")
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test query")
 
         assertEquals("test query", searchQuery)
     }
@@ -222,8 +222,8 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
-        composeTestRule.onNodeWithText("Search for a book").performTextInput("test")
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test")
         composeTestRule.onNodeWithContentDescription("Close icon").performClick()
 
         assertTrue(resetSearchCalled)
@@ -268,7 +268,7 @@ class SearchBookScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Search for a book").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
         composeTestRule.onNodeWithTag("SearchResultsList").performScrollToIndex(19)
         composeTestRule.waitForIdle()
 

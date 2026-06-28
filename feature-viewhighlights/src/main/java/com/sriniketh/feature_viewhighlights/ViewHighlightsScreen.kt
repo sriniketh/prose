@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.platform.toClipEntry
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -298,6 +299,7 @@ internal fun ViewHighlights(
                                 expanded = expandDropDownMenu,
                                 onDismissRequest = { expandDropDownMenu = false }) {
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("HighlightMenuItemCopy"),
                                     text = {
                                         Text(
                                             text = stringResource(id = R.string.highlight_menu_item_copy),
@@ -312,6 +314,7 @@ internal fun ViewHighlights(
                                     }
                                 )
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("HighlightMenuItemEdit"),
                                     text = {
                                         Text(
                                             text = stringResource(id = R.string.highlight_menu_item_edit),
@@ -324,6 +327,7 @@ internal fun ViewHighlights(
                                     }
                                 )
                                 DropdownMenuItem(
+                                    modifier = Modifier.testTag("HighlightMenuItemDelete"),
                                     text = {
                                         Text(
                                             text = stringResource(id = R.string.highlight_menu_item_delete),
@@ -366,6 +370,7 @@ private fun DeleteHighlightAlertDialog(
         },
         confirmButton = {
             ElevatedButton(
+                modifier = Modifier.testTag("DeleteHighlightConfirmButton"),
                 onClick = {
                     onConfirm()
                     hideDeleteDialog()
@@ -381,7 +386,10 @@ private fun DeleteHighlightAlertDialog(
             }
         },
         dismissButton = {
-            TextButton(onClick = { hideDeleteDialog() }) {
+            TextButton(
+                modifier = Modifier.testTag("DeleteHighlightCancelButton"),
+                onClick = { hideDeleteDialog() }
+            ) {
                 Text(
                     text = stringResource(id = R.string.delete_dialog_negative_button_label),
                     style = MaterialTheme.typography.labelLarge,

@@ -158,6 +158,7 @@ internal fun Bookshelf(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
+                            .testTag("BookItem_${bookUIState.id}")
                             .clickable { goToHighlight(bookUIState.id) },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer)
                     ) {
