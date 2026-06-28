@@ -12,6 +12,15 @@ In-depth engineering docs live under [`docs/`](docs/) and are written to be both
 
 Consult these before making non-trivial changes; the summary below is a quick reference.
 
+**Keep them in sync.** These docs name exact file paths, the module graph, and concrete flows, so they drift the moment code moves. When a change does any of the following, update the relevant `docs/` file in the same change set:
+
+- Adds, removes, or renames a Gradle module → `docs/modules.md` (per-module entry + dependency graph) and the fast facts in `docs/README.md`.
+- Alters Hilt wiring, the UDF/`Result<T>` contract, navigation routes, or a cross-cutting convention → `docs/architecture.md`.
+- Changes a user-facing flow or the UI→data→UI path of one → `docs/flows.md`.
+- Moves or renames any file referenced by path in a doc → fix the path everywhere it appears.
+
+If a change touches none of the above (e.g. an internal refactor with no structural or flow impact), the docs need no edit. When unsure, run the audit described in `.claude/commands/audit-docs.md`.
+
 ## Build Commands
 
 ```bash
