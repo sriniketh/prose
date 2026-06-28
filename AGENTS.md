@@ -12,6 +12,15 @@ In-depth engineering docs live under [`docs/`](docs/) and are written to be both
 
 Consult these before making non-trivial changes; the summary below is a quick reference.
 
+**Keep them in sync.** These docs name exact file paths, the module graph, and concrete flows, so they drift the moment code moves. When a change does any of the following, update the relevant `docs/` file in the same change set:
+
+- Adds, removes, or renames a Gradle module → `docs/modules.md` (per-module entry + dependency graph) and the fast facts in `docs/README.md`.
+- Alters Hilt wiring, the UDF/`Result<T>` contract, navigation routes, or a cross-cutting convention → `docs/architecture.md`.
+- Changes a user-facing flow or the UI→data→UI path of one → `docs/flows.md`.
+- Moves or renames any file referenced by path in a doc → fix the path everywhere it appears.
+
+If a change touches none of the above (e.g. an internal refactor with no structural or flow impact), the docs need no edit. When unsure, run the audit described in `.claude/commands/audit-docs.md`.
+
 ## Build Commands
 
 ```bash
@@ -48,7 +57,7 @@ Prose is a multi-module Android app for capturing book highlights from physical 
 ### Module Structure
 
 **Core Modules:**
-- `core-network` - Retrofit API client for Google Books API (Moshi for JSON)
+- `core-network` - Retrofit API client for Google Books API (kotlinx.serialization for JSON)
 - `core-db` - Room database with `BookEntity` and `HighlightEntity`
 - `core-data` - Repositories and UseCases that combine network/db operations
 - `core-models` - Domain models (`Book`, `Highlight`, `BookSearch`) — pure Kotlin, no Android deps
@@ -74,7 +83,7 @@ Network/Database → Repository → UseCase → ViewModel → Compose UI
 
 ### Dependency Injection
 
-Hilt is used throughout. Each module has a `di/` package with `@Module` classes:
+Hilt is used throughout. Each module has a DI package (`di/` or `dagger/`) with `@Module` classes:
 - `NetworkModule` provides Retrofit/OkHttp instances
 - `DatabaseModule` provides Room database and DAOs
 - `DataModule` binds repository implementations
@@ -86,7 +95,7 @@ Navigation Compose with routes defined in `app/src/main/java/com/sriniketh/prose
 ### Key Libraries
 
 - **Compose BOM** for UI with Material 3 + DynamicColors
-- **Retrofit 3 + Moshi** for networking
+- **Retrofit 3 + kotlinx.serialization** for networking
 - **Room** for local persistence
 - **Coil** for image loading
 - **Cropify** for image cropping
