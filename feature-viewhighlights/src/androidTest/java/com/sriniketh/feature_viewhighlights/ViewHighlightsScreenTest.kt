@@ -1,7 +1,6 @@
 package com.sriniketh.feature_viewhighlights
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -54,7 +53,7 @@ class ViewHighlightsScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("No saved highlights").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("No saved highlights").assertDoesNotExist()
     }
 
     @Test
@@ -272,7 +271,7 @@ class ViewHighlightsScreenTest {
         composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
         composeTestRule.onNodeWithTag("HighlightMenuItemDelete").performClick()
         composeTestRule.onNodeWithTag("DeleteHighlightCancelButton").performClick()
-        composeTestRule.onNodeWithText("Delete highlight").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Delete highlight").assertDoesNotExist()
     }
 
     private fun createTestHighlightUIState(

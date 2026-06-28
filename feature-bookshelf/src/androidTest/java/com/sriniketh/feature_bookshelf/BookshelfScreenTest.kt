@@ -1,7 +1,6 @@
 package com.sriniketh.feature_bookshelf
 
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -124,7 +123,7 @@ class BookshelfScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Go ahead, grab a book!").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Go ahead, grab a book!").assertDoesNotExist()
     }
 
     @Test
@@ -198,7 +197,7 @@ class BookshelfScreenTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Test Book Title").assertIsNotDisplayed()
+        composeTestRule.onNodeWithText("Test Book Title").assertDoesNotExist()
     }
 
     private fun createTestBookUIState(
