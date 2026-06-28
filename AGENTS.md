@@ -1,6 +1,17 @@
 
 This file provides guidance to AI coding agents like Claude Code (claude.ai/code), Cursor AI, Codex, Gemini CLI, GitHub Copilot, and other AI coding assistants when working with code in this repository.
 
+## Documentation
+
+In-depth engineering docs live under [`docs/`](docs/) and are written to be both human- and agent-readable:
+
+- [`docs/README.md`](docs/README.md) — index and fast facts.
+- [`docs/architecture.md`](docs/architecture.md) — layering, the UDF contract, Hilt DI map, navigation, and conventions.
+- [`docs/modules.md`](docs/modules.md) — per-module breakdown, dependency graph, and use-case index.
+- [`docs/flows.md`](docs/flows.md) — end-to-end walkthroughs of every user flow with source paths.
+
+Consult these before making non-trivial changes; the summary below is a quick reference.
+
 ## Build Commands
 
 ```bash
