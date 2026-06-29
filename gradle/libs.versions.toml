@@ -15,7 +15,7 @@ android-navigation-safe-args-plugin-version = "2.9.7"
 
 # Library dependencies
 android-ktx-version = "1.17.0"
-coroutines-android-version = "1.10.2"
+coroutines-android-version = "1.11.0"
 android-appcompat-version = "1.7.1"
 compose-bom-version = "2026.02.01"
 compose-nav-version = "2.9.7"
