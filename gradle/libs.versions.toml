@@ -10,7 +10,7 @@ android-library-plugin-version = "9.2.1"
 kotlin-jvm-plugin-version = "2.4.0"
 kotlin-compose-plugin-version = "2.4.0"
 ksp-plugin-version = "2.3.9"
-hilt-plugin-version = "2.59.2"
+hilt-plugin-version = "2.60"
 android-navigation-safe-args-plugin-version = "2.9.7"
 
 # Library dependencies
@@ -40,7 +40,7 @@ junit-version = "4.13.2"
 android-junit-version = "1.3.0"
 espresso-version = "3.7.0"
 turbine-version = "1.2.1"
-mockk-version = "1.14.9"
+mockk-version = "1.14.11"
 
 [libraries]
 android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
