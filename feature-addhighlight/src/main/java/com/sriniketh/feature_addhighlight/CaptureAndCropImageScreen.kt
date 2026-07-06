@@ -45,7 +45,9 @@ fun CaptureAndCropImageScreen(
         }
 
         is CaptureAndCropImageScreenState.ImageCapturedAndCropped -> {
-            onImageCaptured(screenState.imageUri)
+            LaunchedEffect(screenState) {
+                onImageCaptured(screenState.imageUri)
+            }
         }
     }
 }

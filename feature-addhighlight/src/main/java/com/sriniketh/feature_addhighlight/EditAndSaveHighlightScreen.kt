@@ -53,9 +53,6 @@ fun EditAndSaveHighlightScreen(
     bookId: String,
     goBack: () -> Unit
 ) {
-    LaunchedEffect(key1 = bookId) {
-        viewModel.processImageForHighlightText(uri)
-    }
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
@@ -100,10 +97,6 @@ fun EditAndSaveHighlightScreen(
     bookId: String,
     goBack: () -> Unit
 ) {
-    LaunchedEffect(key1 = highlightId) {
-        viewModel.loadHighlightText(highlightId)
-    }
-
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
