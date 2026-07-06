@@ -1,8 +1,7 @@
 plugins {
-	alias(libs.plugins.android.library)
+	id("prose.android.library")
+	id("prose.android.hilt")
 	alias(libs.plugins.kotlin.serialization)
-	alias(libs.plugins.hilt)
-	alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -10,27 +9,6 @@ kotlin {
 }
 
 android {
-	compileSdk = libs.versions.compileSdkVersion.get().toInt()
-
-	defaultConfig {
-		minSdk = libs.versions.minSdkVersion.get().toInt()
-
-		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-		consumerProguardFiles("consumer-rules.pro")
-	}
-
-	buildTypes {
-		release {
-			isMinifyEnabled = false
-			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
-			)
-		}
-	}
-	buildFeatures {
-		buildConfig = true
-	}
 	namespace = "com.sriniketh.core_data"
 }
 
@@ -47,10 +25,6 @@ dependencies {
 
 	implementation(libs.kotlinx.serialization.json)
 
-	implementation(libs.hilt.android)
-	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
 	testImplementation(libs.coroutines.test)
 	testImplementation(libs.cashapp.turbine)
 	testImplementation(libs.mockk)
