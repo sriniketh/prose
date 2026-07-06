@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Volumes(
-    val items: List<Volume>
+    val items: List<Volume> = emptyList()
 )
 
 @Serializable
