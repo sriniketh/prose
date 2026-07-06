@@ -1,15 +1,21 @@
-import java.util.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
-	alias(libs.plugins.android.library)
+	id("prose.android.library")
+	id("prose.android.hilt")
 	alias(libs.plugins.kotlin.serialization)
-	alias(libs.plugins.hilt)
-	alias(libs.plugins.ksp)
 }
 
 val apikeyPropertiesFile = file("apikey.properties")
 val apikeyProperties = Properties()
+if (!apikeyPropertiesFile.exists()) {
+	throw GradleException(
+		"core-network/apikey.properties is missing. Create it with a BOOKS_API_KEY entry, " +
+			"e.g. BOOKS_API_KEY=\"your-google-books-api-key\" " +
+			"(see AGENTS.md's \"API Key Setup\" section)."
+	)
+}
 apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
 kotlin {
@@ -20,27 +26,14 @@ kotlin {
 }
 
 android {
-	compileSdk = libs.versions.compileSdkVersion.get().toInt()
-
 	defaultConfig {
-		minSdk = libs.versions.minSdkVersion.get().toInt()
-
 		buildConfigField("String", "BOOKS_API_KEY", apikeyProperties["BOOKS_API_KEY"] as String)
-		consumerProguardFiles("consumer-rules.pro")
 	}
 
-	buildTypes {
-		release {
-			isMinifyEnabled = false
-			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
-			)
-		}
-	}
 	buildFeatures {
 		buildConfig = true
 	}
+
 	namespace = "com.sriniketh.prose.core_network"
 }
 
@@ -53,9 +46,5 @@ dependencies {
 	implementation(libs.retrofit.kotlinx.serialization.converter)
 	implementation(libs.kotlinx.serialization.json)
 
-	implementation(libs.hilt.android)
-	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
 	testImplementation(libs.coroutines.test)
 }
