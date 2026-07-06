@@ -107,7 +107,8 @@ ViewHighlightsScreen → ViewHighlightsViewModel.getHighlights(bookId)
   → GetAllSavedHighlightsUseCase(bookId)
       → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
         → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
-  ← sortedBy { savedOnTimestamp } → HighlightUIState list
+            (ORDER BY savedOnEpochMillis ASC, in SQL)
+  ← FormatHighlightTimestampUseCase(savedOnEpochMillis) → HighlightUIState list
 ```
 
 Actions are dispatched through `processAction(ViewHighlightsAction)`
@@ -161,7 +162,7 @@ save_highlight_from_uri/{bookId}/{uri}
   → saveHighlight(bookId, text)
       → SaveHighlightUseCase → HighlightsRepository.insertHighlightIntoDb
           → HighlightDao.insertHighlight(highlight.asHighlightEntity())  (onConflict = REPLACE)
-      timestamp = FormatCurrentDateTimeUseCase(DateTimeSource.now())
+      savedOnEpochMillis = DateTimeSource.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
   → Effect.HighlightSaved → goBack to view_highlights/{bookId}
 ```
 
@@ -170,7 +171,8 @@ Details:
   wraps the callback-based ML Kit recognizer in `suspendCancellableCoroutine` and closes the
   recognizer on cancellation. OCR runs fully on-device.
 - OCR failure → `image_processing_failure` snackbar; the temp file is deleted in `finally` either way.
-- A new highlight gets a random `UUID` and the current formatted timestamp.
+- A new highlight gets a random `UUID` and the current time as epoch millis (formatting for display
+  happens later, at the view-highlights UI edge, via `FormatHighlightTimestampUseCase`).
 
 ### 5c. Edit an existing highlight
 
@@ -178,12 +180,12 @@ Details:
 save_highlight_from_highlight_id/{bookId}/{highlightId}
   → EditAndSaveHighlightViewModel.loadHighlightText(highlightId)
       → LoadHighlightUseCase → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
-  ← prefilled text + screen title switches to "edit"; original savedOnTimestamp is preserved
+  ← prefilled text + screen title switches to "edit"; original savedOnEpochMillis is preserved
 [save] → updateHighlight(bookId, text, highlightId)   (same UUID → REPLACE updates the row)
 ```
 
 The same [`EditAndSaveHighlightViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/EditAndSaveHighlightViewModel.kt)
-serves both new and edit cases. For edits, `savedOnTimestamp` is retained so the original capture time
+serves both new and edit cases. For edits, `savedOnEpochMillis` is retained so the original capture time
 is not overwritten, and the existing `highlightId` makes the REPLACE insert an update.
 
 ---
@@ -210,7 +212,10 @@ Details:
 - The serialized shape is the `*Export` DTO set in
   [`HighlightsExport.kt`](../core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)
   (kept separate from domain models so the on-disk format is independent of internal types).
-  `explicitNulls = false` omits null fields from the JSON.
+  `explicitNulls = false` omits null fields from the JSON. `HighlightExport.savedOnTimestamp` is a
+  human-readable string produced by `FormatHighlightTimestampUseCase` from the domain
+  `Highlight.savedOnEpochMillis`; the export DTO intentionally stays display-formatted even though
+  storage moved to epoch millis.
 - The file lands in the app cache dir and is shared through the `${applicationId}.fileProvider`
   declared in [`AndroidManifest.xml`](../app/src/main/AndroidManifest.xml); the share intent grants
   temporary read permission to the receiving app.
@@ -225,7 +230,7 @@ Details:
 | Bookshelf | `feature-bookshelf` | `GetAllSavedBooksUseCase` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `SearchForBookUseCase` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `FetchBookInfoUseCase`, `IsBookInDbUseCase`, `AddBookToShelfUseCase` | API `getVolume` + `BookDao` |
-| View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
+| View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase`, `FormatHighlightTimestampUseCase` | Room `HighlightDao` (Flow, DB-ordered) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
-| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
-| Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |
+| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
+| Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase`, `FormatHighlightTimestampUseCase` | both repos + `FileSource` |

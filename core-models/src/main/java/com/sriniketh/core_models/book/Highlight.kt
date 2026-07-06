@@ -4,5 +4,5 @@ data class Highlight(
     val id: String,
     val bookId: String,
     val text: String,
-    val savedOnTimestamp: String
+    val savedOnEpochMillis: Long
 )

@@ -21,7 +21,7 @@ class FakeHighlightsRepository : HighlightsRepository {
         id = "test-highlight-id",
         bookId = "test-book-id",
         text = "Test highlight text",
-        savedOnTimestamp = "2023-01-01 12:00 PM"
+        savedOnEpochMillis = 1_672_570_800_000L
     )
 
     override suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit> {

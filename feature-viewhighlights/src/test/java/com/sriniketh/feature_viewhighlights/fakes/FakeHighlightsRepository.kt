@@ -4,6 +4,8 @@ import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_models.book.Highlight
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 class FakeHighlightsRepository : HighlightsRepository {
 
@@ -12,11 +14,16 @@ class FakeHighlightsRepository : HighlightsRepository {
     var bookIdPassed: String? = null
     var deletedHighlightId: String? = null
 
+    val fakeHighlightSavedOnDateTime: LocalDateTime = LocalDateTime.of(2023, 1, 1, 12, 0)
+
     private val fakeHighlight = Highlight(
         id = "test-highlight-id",
         bookId = "test-book-id",
         text = "Test highlight text",
-        savedOnTimestamp = "2023-01-01 12:00 PM"
+        savedOnEpochMillis = fakeHighlightSavedOnDateTime
+            .atZone(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
     )
 
     override suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit> {

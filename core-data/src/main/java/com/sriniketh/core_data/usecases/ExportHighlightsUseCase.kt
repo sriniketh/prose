@@ -23,7 +23,8 @@ private val exportJson = Json {
 class ExportHighlightsUseCase @Inject constructor(
     private val booksRepository: BooksRepository,
     private val highlightsRepository: HighlightsRepository,
-    private val fileSource: FileSource
+    private val fileSource: FileSource,
+    private val formatHighlightTimestampUseCase: FormatHighlightTimestampUseCase
 ) {
     suspend operator fun invoke(bookId: String): Result<Uri> = try {
         val book = booksRepository.getBookByIdFromDb(bookId).getOrThrow()
@@ -48,7 +49,7 @@ class ExportHighlightsUseCase @Inject constructor(
                     id = highlight.id,
                     bookId = highlight.bookId,
                     text = highlight.text,
-                    savedOnTimestamp = highlight.savedOnTimestamp
+                    savedOnTimestamp = formatHighlightTimestampUseCase(highlight.savedOnEpochMillis)
                 )
             }
         )

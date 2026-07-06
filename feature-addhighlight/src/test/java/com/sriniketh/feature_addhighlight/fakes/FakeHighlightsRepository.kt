@@ -19,7 +19,7 @@ class FakeHighlightsRepository : HighlightsRepository {
         id = "test-highlight-id",
         bookId = "test-book-id",
         text = "Test highlight text",
-        savedOnTimestamp = "2023-01-01"
+        savedOnEpochMillis = 1_672_531_200_000L
     )
 
     override fun getAllHighlightsForBookFromDb(bookId: String): Flow<Result<List<Highlight>>> = flow {

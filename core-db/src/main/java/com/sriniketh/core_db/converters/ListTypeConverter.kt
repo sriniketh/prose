@@ -1,18 +1,14 @@
 package com.sriniketh.core_db.converters
 
 import androidx.room.TypeConverter
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class ListTypeConverter {
 
-    private val delimiter = "|"
+    @TypeConverter
+    fun fromList(list: List<String>): String = Json.encodeToString(list)
 
     @TypeConverter
-    fun fromList(list: List<String>): String {
-        return list.joinToString(delimiter)
-    }
-
-    @TypeConverter
-    fun toList(string: String): List<String> {
-        return string.split(delimiter)
-    }
+    fun toList(string: String): List<String> = Json.decodeFromString(string)
 }

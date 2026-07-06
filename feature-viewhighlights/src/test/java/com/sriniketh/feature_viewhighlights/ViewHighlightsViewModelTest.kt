@@ -3,6 +3,7 @@ package com.sriniketh.feature_viewhighlights
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
+import com.sriniketh.core_data.usecases.FormatHighlightTimestampUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.feature_viewhighlights.fakes.FakeBooksRepository
 import com.sriniketh.feature_viewhighlights.fakes.FakeFileSource
@@ -20,6 +21,7 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewHighlightsViewModelTest {
@@ -30,27 +32,39 @@ class ViewHighlightsViewModelTest {
     private lateinit var getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
     private lateinit var deleteHighlightUseCase: DeleteHighlightUseCase
     private lateinit var exportHighlightsUseCase: ExportHighlightsUseCase
+    private lateinit var formatHighlightTimestampUseCase: FormatHighlightTimestampUseCase
     private lateinit var viewModel: ViewHighlightsViewModel
+    private lateinit var originalLocale: Locale
 
     @Before
     fun setup() {
+        originalLocale = Locale.getDefault()
+        Locale.setDefault(Locale.US)
         Dispatchers.setMain(StandardTestDispatcher())
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeBooksRepository = FakeBooksRepository()
         fakeFileSource = FakeFileSource()
         getAllSavedHighlightsUseCase = GetAllSavedHighlightsUseCase(fakeHighlightsRepository)
         deleteHighlightUseCase = DeleteHighlightUseCase(fakeHighlightsRepository)
-        exportHighlightsUseCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
+        formatHighlightTimestampUseCase = FormatHighlightTimestampUseCase()
+        exportHighlightsUseCase = ExportHighlightsUseCase(
+            fakeBooksRepository,
+            fakeHighlightsRepository,
+            fakeFileSource,
+            formatHighlightTimestampUseCase
+        )
         viewModel = ViewHighlightsViewModel(
             getAllSavedHighlightsUseCase,
             deleteHighlightUseCase,
-            exportHighlightsUseCase
+            exportHighlightsUseCase,
+            formatHighlightTimestampUseCase
         )
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        Locale.setDefault(originalLocale)
     }
 
     @Test
@@ -235,7 +249,7 @@ class ViewHighlightsViewModelTest {
             val highlightUIState = state.highlights.first()
             assertEquals("test-highlight-id", highlightUIState.id)
             assertEquals("Test highlight text", highlightUIState.text)
-            assertEquals("2023-01-01 12:00 PM", highlightUIState.savedOn)
+            assertEquals("01-01-2023 12:00 PM", highlightUIState.savedOn)
         }
     }
 

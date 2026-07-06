@@ -14,7 +14,7 @@ interface BookDao {
 	@Insert(onConflict = OnConflictStrategy.IGNORE)
 	suspend fun insertBook(book: BookEntity)
 
-	@Query("SELECT * FROM bookEntity")
+	@Query("SELECT * FROM bookEntity ORDER BY title COLLATE NOCASE ASC")
 	fun getAllBooks(): Flow<List<BookEntity>>
 
 	@Query("SELECT COUNT(*) FROM BookEntity WHERE id = :bookId")
