@@ -158,11 +158,9 @@ internal fun ProseAppScreen(
                     arguments = listOf(navArgument(Screen.BOOKINFO.argBookId) {
                         type = NavType.StringType
                     })
-                ) { backStackEntry ->
+                ) {
                     BookInfoScreen(
                         modifier = modifier,
-                        bookId = backStackEntry.arguments?.getString(Screen.BOOKINFO.argBookId)
-                            .orEmpty(),
                         goBack = { navController.navigateUp() },
                         onBookAddedToShelf = {
                             navController.getBackStackEntry(Screen.BOOKSHELF.route)

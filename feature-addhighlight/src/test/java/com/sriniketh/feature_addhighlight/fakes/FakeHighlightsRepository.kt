@@ -14,6 +14,7 @@ class FakeHighlightsRepository : HighlightsRepository {
 
     var insertedHighlight: Highlight? = null
     var loadedHighlightId: String? = null
+    var loadHighlightFromDbInvocationCount = 0
 
     private val fakeHighlight = Highlight(
         id = "test-highlight-id",
@@ -49,6 +50,7 @@ class FakeHighlightsRepository : HighlightsRepository {
 
     override suspend fun loadHighlightFromDb(highlightId: String): Result<Highlight> {
         loadedHighlightId = highlightId
+        loadHighlightFromDbInvocationCount++
         return if (shouldLoadHighlightFromDbThrowException) {
             Result.failure(RuntimeException("Load highlight failed"))
         } else {

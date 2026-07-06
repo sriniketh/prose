@@ -1,6 +1,7 @@
 package com.sriniketh.feature_searchbooks
 
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
@@ -25,17 +26,29 @@ import javax.inject.Inject
 class BookInfoViewModel @Inject constructor(
     private val fetchBookInfoUseCase: FetchBookInfoUseCase,
     private val addBookToShelfUseCase: AddBookToShelfUseCase,
-    private val isBookInDbUseCase: IsBookInDbUseCase
+    private val isBookInDbUseCase: IsBookInDbUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val bookId: String = savedStateHandle.get<String>(BOOK_ID_ARG).orEmpty()
+
     private val _uiState: MutableStateFlow<BookInfoUiState> =
-        MutableStateFlow(BookInfoUiState())
+        MutableStateFlow(BookInfoUiState(isLoading = true))
     internal val uiState: StateFlow<BookInfoUiState> = _uiState.asStateFlow()
 
     private val _effects = Channel<BookInfoEffect>(Channel.BUFFERED)
     internal val effects: Flow<BookInfoEffect> = _effects.receiveAsFlow()
 
+    private var hasStartedLoadingBookDetail = false
+
+    init {
+        getBookDetail(bookId)
+    }
+
     fun getBookDetail(volumeId: String) {
+        if (hasStartedLoadingBookDetail) return
+        hasStartedLoadingBookDetail = true
+
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(isLoading = true)
@@ -95,6 +108,10 @@ class BookInfoViewModel @Inject constructor(
         averageRating = info.averageRating,
         ratingsCount = info.ratingsCount
     )
+
+    private companion object {
+        private const val BOOK_ID_ARG = "bookId"
+    }
 }
 
 data class BookInfoUiState(
