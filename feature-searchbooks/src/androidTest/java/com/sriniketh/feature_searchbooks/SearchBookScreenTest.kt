@@ -279,6 +279,48 @@ class SearchBookScreenTest {
         composeTestRule.onNodeWithText("New Top Book 0").assertIsDisplayed()
     }
 
+    @Test
+    fun whenErrorMessageIsSetThenErrorStateAndRetryButtonAreDisplayed() {
+        val uiState = BookSearchUiState(errorMessage = R.string.search_error_message)
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchErrorState").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("SearchRetryButton").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenRetryButtonIsClickedThenOnRetryIsCalled() {
+        val uiState = BookSearchUiState(errorMessage = R.string.search_error_message)
+        var onRetryCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {},
+                    onRetry = { onRetryCalled = true }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchRetryButton").performClick()
+        assertTrue(onRetryCalled)
+    }
+
     private fun createTestBookUiState(
         id: String = "test-id",
         title: String = "Test Title",

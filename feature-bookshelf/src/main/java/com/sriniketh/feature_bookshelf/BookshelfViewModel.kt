@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,8 @@ class BookshelfViewModel @Inject constructor(
     private val _effects = Channel<BookshelfEffect>(Channel.BUFFERED)
     internal val effects: Flow<BookshelfEffect> = _effects.receiveAsFlow()
 
+    private var loadBooksJob: Job? = null
+
     init {
         viewModelScope.launch {
             savedStateHandle.getStateFlow(BOOKSHELF_SHOW_ADDED_MESSAGE, false)
@@ -45,9 +48,18 @@ class BookshelfViewModel @Inject constructor(
                     }
                 }
         }
-        viewModelScope.launch {
+        loadBooks()
+    }
+
+    fun retryLoadBooks() {
+        loadBooks()
+    }
+
+    private fun loadBooks() {
+        loadBooksJob?.cancel()
+        loadBooksJob = viewModelScope.launch {
             _bookshelfUIState.update { state ->
-                state.copy(isLoading = true)
+                state.copy(isLoading = true, errorMessage = null)
             }
             getAllSavedBooksUseCase().collect { result ->
                 if (result.isSuccess) {
@@ -55,12 +67,16 @@ class BookshelfViewModel @Inject constructor(
                     _bookshelfUIState.update { state ->
                         state.copy(
                             isLoading = false,
+                            errorMessage = null,
                             books = books.map { it.asBookshelfUIState() }.toImmutableList()
                         )
                     }
                 } else if (result.isFailure) {
                     _bookshelfUIState.update { state ->
-                        state.copy(isLoading = false)
+                        state.copy(
+                            isLoading = false,
+                            errorMessage = R.string.getallbooks_error_message
+                        )
                     }
                     _effects.trySend(BookshelfEffect.ShowMessage(R.string.getallbooks_error_message))
                 }
@@ -78,6 +94,7 @@ class BookshelfViewModel @Inject constructor(
 
 internal data class BookshelfUIState(
     val isLoading: Boolean = false,
+    @StringRes val errorMessage: Int? = null,
     val books: ImmutableList<BookUIState> = persistentListOf()
 )
 

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -85,7 +86,8 @@ fun BookshelfScreen(
         snackbarHostState = snackbarHostState,
         modifier = modifier,
         goToSearch = { goToSearch() },
-        goToHighlight = { goToHighlight(it) }
+        goToHighlight = { goToHighlight(it) },
+        onRetry = { viewModel.retryLoadBooks() }
     )
 }
 
@@ -96,7 +98,8 @@ internal fun Bookshelf(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier,
     goToSearch: () -> Unit,
-    goToHighlight: (String) -> Unit
+    goToHighlight: (String) -> Unit,
+    onRetry: () -> Unit = {}
 ) {
     val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
@@ -137,7 +140,31 @@ internal fun Bookshelf(
             )
         }
 
-        if (uiState.books.isEmpty() && !uiState.isLoading) {
+        if (uiState.errorMessage != null && !uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .testTag("BookshelfErrorState")
+            ) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(id = uiState.errorMessage),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Button(
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                            .testTag("BookshelfRetryButton"),
+                        onClick = onRetry
+                    ) {
+                        Text(text = stringResource(id = R.string.bookshelf_retry_button))
+                    }
+                }
+            }
+        } else if (uiState.books.isEmpty() && !uiState.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -273,6 +300,16 @@ internal fun BookshelfScreenSuccessNoBooksPreview() {
     AppTheme {
         Bookshelf(
             uiState = BookshelfUIState(books = persistentListOf()),
+            goToSearch = {}, goToHighlight = {})
+    }
+}
+
+@PreviewLightDark
+@Composable
+internal fun BookshelfScreenErrorPreview() {
+    AppTheme {
+        Bookshelf(
+            uiState = BookshelfUIState(errorMessage = R.string.getallbooks_error_message),
             goToSearch = {}, goToHighlight = {})
     }
 }

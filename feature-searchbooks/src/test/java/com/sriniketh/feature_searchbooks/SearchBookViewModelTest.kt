@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -90,6 +91,39 @@ class SearchBookViewModelTest {
         }
 
         assertFalse(viewModel.searchUiState.value.isLoading)
+    }
+
+    @Test
+    fun `when search for book fails then error message is set in state and results stay empty`() = runTest {
+        fakeBooksRepository.shouldSearchForBooksThrowException = true
+
+        viewModel.searchForBook("test query")
+        advanceUntilIdle()
+
+        val state = viewModel.searchUiState.value
+        assertFalse(state.isLoading)
+        assertTrue(state.bookUiStates.isEmpty())
+        assertEquals(R.string.search_error_message, state.errorMessage)
+    }
+
+    @Test
+    fun `when retry is invoked after a failure then the identical query searches again and succeeds`() = runTest {
+        fakeBooksRepository.shouldSearchForBooksThrowException = true
+
+        viewModel.searchForBook("the hobbit")
+        advanceUntilIdle()
+        assertEquals(listOf("the hobbit"), fakeBooksRepository.queriesSearched)
+        assertEquals(R.string.search_error_message, viewModel.searchUiState.value.errorMessage)
+
+        fakeBooksRepository.shouldSearchForBooksThrowException = false
+        viewModel.retrySearch()
+        advanceUntilIdle()
+
+        assertEquals(listOf("the hobbit", "the hobbit"), fakeBooksRepository.queriesSearched)
+        val state = viewModel.searchUiState.value
+        assertNull(state.errorMessage)
+        assertFalse(state.isLoading)
+        assertEquals(1, state.bookUiStates.size)
     }
 
     @Test

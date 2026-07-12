@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -94,6 +95,9 @@ fun SearchBookScreen(
         },
         resetSearch = {
             viewModel.resetSearch()
+        },
+        onRetry = {
+            viewModel.retrySearch()
         }
     )
 }
@@ -106,7 +110,8 @@ internal fun SearchBook(
     modifier: Modifier = Modifier,
     searchForBooks: (String) -> Unit,
     navigateToBookInfo: (String) -> Unit,
-    resetSearch: () -> Unit
+    resetSearch: () -> Unit,
+    onRetry: () -> Unit = {}
 ) {
     val focusRequester = remember { FocusRequester() }
     var text by rememberSaveable { mutableStateOf("") }
@@ -184,6 +189,28 @@ internal fun SearchBook(
                         .fillMaxWidth()
                         .testTag("SearchBookLoadingIndicator")
                 )
+            }
+            if (uiState.errorMessage != null && !uiState.isLoading) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                        .testTag("SearchErrorState"),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = stringResource(id = uiState.errorMessage),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Button(
+                        modifier = Modifier
+                            .padding(top = 12.dp)
+                            .testTag("SearchRetryButton"),
+                        onClick = onRetry
+                    ) {
+                        Text(text = stringResource(id = R.string.search_retry_button))
+                    }
+                }
             }
             LazyColumn(
                 state = listState,
@@ -269,6 +296,21 @@ internal fun SearchBookScreenPreview() {
                         )
                     )
                 ),
+                searchForBooks = {},
+                navigateToBookInfo = {},
+                resetSearch = {}
+            )
+        }
+    }
+}
+
+@PreviewLightDark
+@Composable
+internal fun SearchBookScreenErrorPreview() {
+    AppTheme {
+        Surface {
+            SearchBook(
+                uiState = BookSearchUiState(errorMessage = R.string.search_error_message),
                 searchForBooks = {},
                 navigateToBookInfo = {},
                 resetSearch = {}
