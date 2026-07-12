@@ -23,10 +23,12 @@ class TextAnalyzerImpl @Inject constructor(@ApplicationContext private val appCo
                 .addOnSuccessListener {
                     Timber.d("${this.logTag()}: Recognized text: ${it.text}")
                     continuation.resumeWith(Result.success(it))
+                    recognizer.close()
                 }
                 .addOnFailureListener {
                     Timber.e(it, this.logTag())
                     continuation.resumeWith(Result.failure(it))
+                    recognizer.close()
                 }
             continuation.invokeOnCancellation { recognizer.close() }
         }
