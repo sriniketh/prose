@@ -8,6 +8,14 @@
     <string name="highlight_item_delete_cont_desc">Delete button</string>
     <string name="gethighlights_error_message">Error retrieving saved highlights.</string>
     <string name="permission_denied_error_message">Please allow access to take picture to scan text for highlights.</string>
+    <string name="camera_permission_rationale_title">Camera access needed</string>
+    <string name="camera_permission_rationale_message">Prose uses the camera to scan text from your books into highlights. Please grant camera access to continue.</string>
+    <string name="camera_permission_rationale_positive_button_label">Continue</string>
+    <string name="camera_permission_rationale_negative_button_label">Not now</string>
+    <string name="camera_permission_settings_title">Camera access denied</string>
+    <string name="camera_permission_settings_message">Camera access was permanently denied. To capture highlights, allow camera access for Prose in Settings.</string>
+    <string name="camera_permission_settings_positive_button_label">Open settings</string>
+    <string name="camera_permission_settings_negative_button_label">Cancel</string>
     <string name="highlight_menu_item_copy">Copy</string>
     <string name="clipboard_highlight_label">Highlighted text</string>
     <string name="highlight_menu_item_edit">Edit</string>
