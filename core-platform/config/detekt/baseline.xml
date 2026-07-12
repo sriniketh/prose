@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>PackageNaming:DateTimeSource.kt$package com.sriniketh.core_platform</ID>
+    <ID>PackageNaming:FileSource.kt$package com.sriniketh.core_platform</ID>
+    <ID>PackageNaming:LogExtensions.kt$package com.sriniketh.core_platform</ID>
+    <ID>PackageNaming:PlatformModule.kt$package com.sriniketh.core_platform.dagger</ID>
+    <ID>PackageNaming:UriExtensions.kt$package com.sriniketh.core_platform</ID>
+  </CurrentIssues>
+</SmellBaseline>

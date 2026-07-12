@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<baseline version="1.0">
+    <file name="build.gradle.kts">
+        <error line="8" column="48" source="standard:chain-method-continuation" />
+        <error line="8" column="54" source="standard:chain-method-continuation" />
+        <error line="16" column="46" source="standard:chain-method-continuation" />
+        <error line="16" column="52" source="standard:chain-method-continuation" />
+        <error line="19" column="39" source="standard:chain-method-continuation" />
+        <error line="19" column="45" source="standard:chain-method-continuation" />
+        <error line="30" column="25" source="standard:trailing-comma-on-call-site" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/BookDatabase.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="15" column="1" source="standard:no-empty-first-line-in-class-body" />
+        <error line="17" column="5" source="standard:blank-line-before-declaration" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/converters/ListTypeConverter.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="6" column="1" source="standard:no-empty-first-line-in-class-body" />
+        <error line="10" column="46" source="standard:function-expression-body" />
+        <error line="15" column="46" source="standard:function-expression-body" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/dagger/DatabaseModule.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="18" column="1" source="standard:no-empty-first-line-in-class-body" />
+        <error line="22" column="45" source="standard:trailing-comma-on-declaration-site" />
+        <error line="23" column="21" source="standard:function-expression-body" />
+        <error line="24" column="20" source="standard:chain-method-continuation" />
+        <error line="31" column="9" source="standard:function-signature" />
+        <error line="31" column="31" source="standard:function-signature" />
+        <error line="31" column="31" source="standard:trailing-comma-on-declaration-site" />
+        <error line="36" column="9" source="standard:function-signature" />
+        <error line="36" column="31" source="standard:function-signature" />
+        <error line="36" column="31" source="standard:trailing-comma-on-declaration-site" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/dao/BookDao.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="13" column="1" source="standard:no-empty-first-line-in-class-body" />
+        <error line="14" column="1" source="standard:indent" />
+        <error line="14" column="1" source="standard:indent" />
+        <error line="15" column="1" source="standard:indent" />
+        <error line="15" column="1" source="standard:indent" />
+        <error line="17" column="1" source="standard:indent" />
+        <error line="17" column="1" source="standard:indent" />
+        <error line="18" column="1" source="standard:indent" />
+        <error line="18" column="1" source="standard:indent" />
+        <error line="20" column="1" source="standard:indent" />
+        <error line="20" column="1" source="standard:indent" />
+        <error line="21" column="1" source="standard:indent" />
+        <error line="21" column="1" source="standard:indent" />
+        <error line="23" column="1" source="standard:indent" />
+        <error line="23" column="1" source="standard:indent" />
+        <error line="24" column="1" source="standard:indent" />
+        <error line="24" column="1" source="standard:indent" />
+        <error line="26" column="1" source="standard:indent" />
+        <error line="26" column="1" source="standard:indent" />
+        <error line="27" column="1" source="standard:indent" />
+        <error line="27" column="1" source="standard:indent" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/dao/HighlightDao.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="12" column="1" source="standard:no-empty-first-line-in-class-body" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/entity/BookEntity.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="18" column="27" source="standard:trailing-comma-on-declaration-site" />
+    </file>
+    <file name="src/main/java/com/sriniketh/core_db/entity/HighlightEntity.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="10" column="20" source="standard:wrapping" />
+        <error line="14" column="27" source="standard:trailing-comma-on-call-site" />
+        <error line="15" column="5" source="standard:wrapping" />
+        <error line="15" column="6" source="standard:trailing-comma-on-call-site" />
+        <error line="16" column="32" source="standard:trailing-comma-on-call-site" />
+        <error line="22" column="33" source="standard:trailing-comma-on-declaration-site" />
+    </file>
+    <file name="src/test/java/com/sriniketh/core_db/converters/ListTypeConverterTest.kt">
+        <error line="1" column="9" source="standard:package-name" />
+        <error line="8" column="1" source="standard:no-empty-first-line-in-class-body" />
+        <error line="38" column="1" source="standard:final-newline" />
+    </file>
+</baseline>

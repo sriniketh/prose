@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:NavigationBack.kt$@Composable fun NavigationBack( modifier: Modifier = Modifier, action: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:ProseTopAppBar.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable fun ProseTopAppBar( title: @Composable () -&gt; Unit, modifier: Modifier = Modifier, navigationIcon: @Composable () -&gt; Unit = {}, actions: @Composable RowScope.() -&gt; Unit = {}, scrollBehavior: TopAppBarScrollBehavior? = null, )</ID>
+    <ID>FunctionNaming:ProseTopAppBar.kt$@OptIn(ExperimentalMaterial3Api::class) @PreviewLightDark @Composable internal fun ProseTopAppBarPreview()</ID>
+    <ID>FunctionNaming:Theme.kt$@Composable fun AppTheme( useDarkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -&gt; Unit )</ID>
+    <ID>FunctionNaming:Typography.kt$@Preview @Composable internal fun Typography()</ID>
+    <ID>MatchingDeclarationName:Animation.kt$AnimationConstants</ID>
+    <ID>PackageNaming:Animation.kt$package com.sriniketh.core_design.ui</ID>
+    <ID>PackageNaming:Color.kt$package com.sriniketh.core_design.ui.theme</ID>
+    <ID>PackageNaming:CompositionLocals.kt$package com.sriniketh.core_design.ui</ID>
+    <ID>PackageNaming:NavigationBack.kt$package com.sriniketh.core_design.ui.components</ID>
+    <ID>PackageNaming:Placeholder.kt$package com.sriniketh.core_design.ui.components</ID>
+    <ID>PackageNaming:ProseTopAppBar.kt$package com.sriniketh.core_design.ui.components</ID>
+    <ID>PackageNaming:Theme.kt$package com.sriniketh.core_design.ui.theme</ID>
+    <ID>PackageNaming:Type.kt$package com.sriniketh.core_design.ui.theme</ID>
+    <ID>PackageNaming:Typography.kt$package com.sriniketh.core_design.ui.components</ID>
+  </CurrentIssues>
+</SmellBaseline>

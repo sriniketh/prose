@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:CaptureAndCropImageScreen.kt$@Composable fun CaptureAndCropImageScreen( modifier: Modifier = Modifier, viewModel: CaptureAndCropImageViewModel = hiltViewModel(), onImageCaptured: (Uri) -&gt; Unit, goBack: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:CropImageScreen.kt$@OptIn(ExperimentalMaterial3ExpressiveApi::class) @Composable internal fun CropImageScreen( modifier: Modifier = Modifier, imageUri: Uri, onImageCropped: () -&gt; Unit, ioDispatcher: CoroutineDispatcher = Dispatchers.IO )</ID>
+    <ID>FunctionNaming:EditAndSaveHighlightScreen.kt$@Composable fun EditAndSaveHighlightScreen( modifier: Modifier = Modifier, viewModel: EditAndSaveHighlightViewModel = hiltViewModel(), highlightId: String, bookId: String, goBack: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:EditAndSaveHighlightScreen.kt$@Composable fun EditAndSaveHighlightScreen( modifier: Modifier = Modifier, viewModel: EditAndSaveHighlightViewModel = hiltViewModel(), uri: Uri, bookId: String, goBack: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:EditAndSaveHighlightScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun EditAndSaveHighlight( uiState: EditAndSaveHighlightUiState, updateHighlightText: (String) -&gt; Unit, saveHighlight: (String) -&gt; Unit, goBack: () -&gt; Unit, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier )</ID>
+    <ID>FunctionNaming:EditAndSaveHighlightScreen.kt$@PreviewLightDark @Composable internal fun EditAndSaveHighlightPreview()</ID>
+    <ID>LongMethod:CropImageScreen.kt$@OptIn(ExperimentalMaterial3ExpressiveApi::class) @Composable internal fun CropImageScreen( modifier: Modifier = Modifier, imageUri: Uri, onImageCropped: () -&gt; Unit, ioDispatcher: CoroutineDispatcher = Dispatchers.IO )</ID>
+    <ID>LongMethod:EditAndSaveHighlightScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun EditAndSaveHighlight( uiState: EditAndSaveHighlightUiState, updateHighlightText: (String) -&gt; Unit, saveHighlight: (String) -&gt; Unit, goBack: () -&gt; Unit, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier )</ID>
+    <ID>LongParameterList:EditAndSaveHighlightScreen.kt$( uiState: EditAndSaveHighlightUiState, updateHighlightText: (String) -&gt; Unit, saveHighlight: (String) -&gt; Unit, goBack: () -&gt; Unit, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier )</ID>
+    <ID>MaxLineLength:CaptureAndCropImageScreen.kt$val captureAndCropImageScreenState: CaptureAndCropImageScreenState by viewModel.screenState.collectAsStateWithLifecycle()</ID>
+    <ID>MaxLineLength:EditAndSaveHighlightViewModel.kt$EditAndSaveHighlightViewModel$_effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))</ID>
+    <ID>NewLineAtEndOfFile:FakeHighlightsRepository.kt$com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository.kt</ID>
+    <ID>PackageNaming:CaptureAndCropImageScreen.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:CaptureAndCropImageViewModel.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:CropImageScreen.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:EditAndSaveHighlightScreen.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:EditAndSaveHighlightViewModel.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:EditAndSaveHighlightViewModelTest.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:FakeDateTimeSource.kt$package com.sriniketh.feature_addhighlight.fakes</ID>
+    <ID>PackageNaming:FakeFileSource.kt$package com.sriniketh.feature_addhighlight.fakes</ID>
+    <ID>PackageNaming:FakeHighlightsRepository.kt$package com.sriniketh.feature_addhighlight.fakes</ID>
+    <ID>PackageNaming:FakeTextAnalyzer.kt$package com.sriniketh.feature_addhighlight.fakes</ID>
+    <ID>PackageNaming:ImageRotater.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:TextAnalysisModule.kt$package com.sriniketh.feature_addhighlight.dagger</ID>
+    <ID>PackageNaming:TextAnalyzer.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>ReturnCount:ImageRotater.kt$ImageRotater$internal fun getRotatedBitmap(context: Context, imageUri: Uri): Bitmap?</ID>
+    <ID>TooGenericExceptionCaught:ImageRotater.kt$ImageRotater$exception: Exception</ID>
+    <ID>TooGenericExceptionThrown:FakeTextAnalyzer.kt$FakeTextAnalyzer$throw RuntimeException("Text analysis failed")</ID>
+  </CurrentIssues>
+</SmellBaseline>

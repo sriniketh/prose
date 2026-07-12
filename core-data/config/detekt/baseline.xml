@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>LongParameterList:BookTransformersTest.kt$BookTransformersTest$( id: String = "test-id", title: String = "Test Title", subtitle: String? = null, authors: List&lt;String&gt; = listOf("Test Author"), thumbnailLink: String? = null, publisher: String? = null, publishedDate: String? = null, description: String? = null, pageCount: Int? = null, averageRating: Double? = null, ratingsCount: Int? = null )</ID>
+    <ID>LongParameterList:VolumesTransformersTest.kt$VolumesTransformersTest$( title: String = "Test Title", subtitle: String? = null, description: String? = null, authors: List&lt;String&gt; = listOf("Test Author"), imageLinks: ImageLinks? = null, publisher: String? = null, publishedDate: String? = null, pageCount: Int? = null, averageRating: Double? = null, ratingsCount: Int? = null )</ID>
+    <ID>MaxLineLength:DeleteHighlightUseCase.kt$DeleteHighlightUseCase$suspend operator fun invoke(highlightId: String): Result&lt;Unit&gt;</ID>
+    <ID>MaxLineLength:GetAllSavedHighlightsUseCase.kt$GetAllSavedHighlightsUseCase$operator fun invoke(bookId: String): Flow&lt;Result&lt;List&lt;Highlight&gt;&gt;&gt;</ID>
+    <ID>MaxLineLength:SaveHighlightUseCase.kt$SaveHighlightUseCase$suspend operator fun invoke(highlight: Highlight): Result&lt;Unit&gt;</ID>
+    <ID>NewLineAtEndOfFile:FakeBooksRemoteDataSource.kt$com.sriniketh.core_data.fakes.FakeBooksRemoteDataSource.kt</ID>
+    <ID>NewLineAtEndOfFile:GetAllSavedBooksUseCase.kt$com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase.kt</ID>
+    <ID>NewLineAtEndOfFile:GetAllSavedHighlightsUseCase.kt$com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase.kt</ID>
+    <ID>NewLineAtEndOfFile:SaveHighlightUseCase.kt$com.sriniketh.core_data.usecases.SaveHighlightUseCase.kt</ID>
+    <ID>PackageNaming:AddBookToShelfUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:AddBookToShelfUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:Book.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:BookEntity.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:BookTransformersTest.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:BooksRepository.kt$package com.sriniketh.core_data</ID>
+    <ID>PackageNaming:BooksRepositoryImpl.kt$package com.sriniketh.core_data</ID>
+    <ID>PackageNaming:BooksRepositoryImplTest.kt$package com.sriniketh.core_data</ID>
+    <ID>PackageNaming:CreateTempImageFileUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:CreateTempImageFileUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:DataModule.kt$package com.sriniketh.core_data.di</ID>
+    <ID>PackageNaming:DeleteBookUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:DeleteBookUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:DeleteFileUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:DeleteFileUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:DeleteHighlightUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:DeleteHighlightUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:ExportHighlightsUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:ExportHighlightsUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:FakeBookDao.kt$package com.sriniketh.core_data.fakes</ID>
+    <ID>PackageNaming:FakeBooksRemoteDataSource.kt$package com.sriniketh.core_data.fakes</ID>
+    <ID>PackageNaming:FakeBooksRepository.kt$package com.sriniketh.core_data.fakes</ID>
+    <ID>PackageNaming:FakeFileSource.kt$package com.sriniketh.core_data.fakes</ID>
+    <ID>PackageNaming:FakeHighlightDao.kt$package com.sriniketh.core_data.fakes</ID>
+    <ID>PackageNaming:FakeHighlightsRepository.kt$package com.sriniketh.core_data.fakes</ID>
+    <ID>PackageNaming:FetchBookInfoUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:FetchBookInfoUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:FormatCurrentDateTimeUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:FormatCurrentDateTimeUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:GetAllSavedBooksUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:GetAllSavedBooksUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:GetAllSavedHighlightsUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:GetAllSavedHighlightsUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:Highlight.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:HighlightEntity.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:HighlightTransformersTest.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:HighlightsExport.kt$package com.sriniketh.core_data.models</ID>
+    <ID>PackageNaming:HighlightsRepository.kt$package com.sriniketh.core_data</ID>
+    <ID>PackageNaming:HighlightsRepositoryImpl.kt$package com.sriniketh.core_data</ID>
+    <ID>PackageNaming:HighlightsRepositoryImplTest.kt$package com.sriniketh.core_data</ID>
+    <ID>PackageNaming:IsBookInDbUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:IsBookInDbUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:LoadHighlightUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:LoadHighlightUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:SaveHighlightUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:SaveHighlightUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:SearchForBookUseCase.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:SearchForBookUseCaseTest.kt$package com.sriniketh.core_data.usecases</ID>
+    <ID>PackageNaming:Volumes.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>PackageNaming:VolumesTransformersTest.kt$package com.sriniketh.core_data.transformers</ID>
+    <ID>TooGenericExceptionCaught:BooksRepositoryImpl.kt$BooksRepositoryImpl$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:ExportHighlightsUseCase.kt$ExportHighlightsUseCase$exception: Exception</ID>
+    <ID>TooGenericExceptionCaught:HighlightsRepositoryImpl.kt$HighlightsRepositoryImpl$exception: Exception</ID>
+    <ID>TooGenericExceptionThrown:FakeBookDao.kt$FakeBookDao$throw RuntimeException("some error checking if book exists")</ID>
+    <ID>TooGenericExceptionThrown:FakeBookDao.kt$FakeBookDao$throw RuntimeException("some error deleting book")</ID>
+    <ID>TooGenericExceptionThrown:FakeBookDao.kt$FakeBookDao$throw RuntimeException("some error fetching all books")</ID>
+    <ID>TooGenericExceptionThrown:FakeBookDao.kt$FakeBookDao$throw RuntimeException("some error fetching book by id")</ID>
+    <ID>TooGenericExceptionThrown:FakeBookDao.kt$FakeBookDao$throw RuntimeException("some error inserting book")</ID>
+    <ID>TooGenericExceptionThrown:FakeBooksRemoteDataSource.kt$FakeBooksRemoteDataSource$throw RuntimeException("some error fetching volume")</ID>
+    <ID>TooGenericExceptionThrown:FakeBooksRemoteDataSource.kt$FakeBooksRemoteDataSource$throw RuntimeException("some error fetching volumes")</ID>
+    <ID>TooGenericExceptionThrown:FakeHighlightDao.kt$FakeHighlightDao$throw RuntimeException("some error deleting highlight")</ID>
+    <ID>TooGenericExceptionThrown:FakeHighlightDao.kt$FakeHighlightDao$throw RuntimeException("some error fetching all highlights")</ID>
+    <ID>TooGenericExceptionThrown:FakeHighlightDao.kt$FakeHighlightDao$throw RuntimeException("some error fetching highlight by id")</ID>
+    <ID>TooGenericExceptionThrown:FakeHighlightDao.kt$FakeHighlightDao$throw RuntimeException("some error inserting highlight")</ID>
+  </CurrentIssues>
+</SmellBaseline>

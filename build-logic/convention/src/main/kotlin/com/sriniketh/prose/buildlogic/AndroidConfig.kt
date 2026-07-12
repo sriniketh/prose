@@ -23,5 +23,10 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
                 "proguard-rules.pro"
             )
         }
+
+        lint {
+            abortOnError = true
+            baseline = file("lint-baseline.xml")
+        }
     }
 }
