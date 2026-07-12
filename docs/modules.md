@@ -79,7 +79,7 @@ Android OS abstractions that keep upper layers testable and `Context`-free.
 - [`DateTimeSource`](../core-platform/src/main/java/com/sriniketh/core_platform/DateTimeSource.kt) —
   injectable `now()` (impl + Hilt binding here).
 - [`UriExtensions`](../core-platform/src/main/java/com/sriniketh/core_platform/UriExtensions.kt) —
-  `encodeUri()`, `decodeUri()`, `buildHttpsUri()`.
+  `buildHttpsUri()`.
 - [`LogExtensions`](../core-platform/src/main/java/com/sriniketh/core_platform/LogExtensions.kt) —
   `logTag()`.
 
