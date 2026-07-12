@@ -140,7 +140,7 @@ Hilt wires everything. Conventions:
 |-------------|------------------|
 | [`NetworkModule`](../core-network/src/main/java/com/sriniketh/prose/core_network/di/NetworkModule.kt) | `Retrofit`/`BooksApi` (singleton), `BooksRemoteDataSource` |
 | [`DatabaseModule`](../core-db/src/main/java/com/sriniketh/core_db/dagger/DatabaseModule.kt) | `BookDatabase` (singleton), `BookDao`, `HighlightDao` |
-| [`DataModule`](../core-data/src/main/java/com/sriniketh/core_data/di/DataModule.kt) | `BooksRepository`, `HighlightsRepository`, IO `CoroutineDispatcher` |
+| [`DataModule`](../core-data/src/main/java/com/sriniketh/core_data/di/DataModule.kt) | `BooksRepository`, `HighlightsRepository`, `@IoDispatcher`-qualified `CoroutineDispatcher` |
 | [`PlatformModule`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/PlatformModule.kt) | `DateTimeSource` |
 | [`AppModule`](../app/src/main/java/com/sriniketh/prose/dagger/AppModule.kt) | `FileSource` → `FileSourceImpl` |
 | [`TextAnalysisModule`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/dagger/TextAnalysisModule.kt) | `TextAnalyzer` → `TextAnalyzerImpl` |
@@ -149,7 +149,13 @@ Hilt wires everything. Conventions:
 > in `app` ([`FileSourceImpl`](../app/src/main/java/com/sriniketh/prose/files/FileSourceImpl.kt)),
 > because the implementation needs `FileProvider` + the app's `packageName`/authority. `core-data`
 > depends only on the interface. `DateTimeSource`, by contrast, is implemented and bound inside
-> `core-platform`.
+> `core-platform`. `FileSource.writeToFile`/`deleteFile` are `suspend` and dispatch onto the
+> `@IoDispatcher` `CoroutineDispatcher` inside `FileSourceImpl`, so callers never do disk I/O on Main.
+
+> **Note — `@IoDispatcher` qualifier.** The qualifier annotation itself lives in `core-platform`
+> ([`IoDispatcher`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/IoDispatcher.kt))
+> so every module that depends on `core-platform` can inject the dispatcher, even ones (like `app`)
+> that don't depend on `core-data`, which is where the binding is provided.
 
 The application class [`ProseApplication`](../app/src/main/java/com/sriniketh/prose/ProseApplication.kt)
 is `@HiltAndroidApp` and plants a Timber `DebugTree` in debug builds.

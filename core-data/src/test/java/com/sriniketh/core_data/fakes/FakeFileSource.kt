@@ -21,7 +21,7 @@ class FakeFileSource : FileSource {
 		return mockUri
 	}
 
-	override fun writeToFile(fileName: String, content: String): Uri {
+	override suspend fun writeToFile(fileName: String, content: String): Uri {
 		if (shouldWriteToFileFail) {
 			throw IOException("Failed to write file")
 		}
@@ -32,7 +32,7 @@ class FakeFileSource : FileSource {
 		return mockUri
 	}
 
-	override fun deleteFile(uri: Uri): Boolean {
+	override suspend fun deleteFile(uri: Uri): Boolean {
 		deletedUris.add(uri)
 		return !shouldDeleteFail
 	}

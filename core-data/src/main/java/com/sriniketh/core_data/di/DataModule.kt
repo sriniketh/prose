@@ -4,6 +4,7 @@ import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_data.BooksRepositoryImpl
 import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_data.HighlightsRepositoryImpl
+import com.sriniketh.core_platform.dagger.IoDispatcher
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,6 @@ object DataModule {
 
     @Provides
     @Singleton
+    @IoDispatcher
     fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
 }

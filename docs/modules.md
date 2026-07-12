@@ -167,7 +167,12 @@ Two screens: search and book detail.
 ### `feature-addhighlight`
 The most involved feature (camera, crop, OCR, save).
 - [`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt)
-  — temp-file lifecycle + capture→crop state machine.
+  — temp-file lifecycle + capture→crop state machine. Loading the rotated bitmap and writing the
+  cropped bitmap back to the temp file both run off Main via
+  [`GetRotatedBitmapUseCase`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/GetRotatedBitmapUseCase.kt)
+  and [`SaveCroppedImageUseCase`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/SaveCroppedImageUseCase.kt)
+  (both dispatch on the `@IoDispatcher`-qualified `CoroutineDispatcher`). A failed crop/load surfaces
+  a `CaptureAndCropImageEffect.ShowMessage` instead of silently advancing to the next screen.
 - [`EditAndSaveHighlightViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/EditAndSaveHighlightViewModel.kt)
   — runs OCR, edits, and persists.
 - [`TextAnalyzer`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/TextAnalyzer.kt)
