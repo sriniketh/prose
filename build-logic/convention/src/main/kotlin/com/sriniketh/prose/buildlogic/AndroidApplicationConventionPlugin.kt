@@ -14,6 +14,16 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             configureAndroidCommon(this)
             defaultConfig.targetSdk = libs.version("targetSdkVersion").toInt()
             buildFeatures.buildConfig = true
+            buildTypes {
+                release {
+                    isMinifyEnabled = true
+                    isShrinkResources = true
+                    proguardFiles(
+                        target.getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro"
+                    )
+                }
+            }
         }
         configureKotlin()
         configureAndroidUnitTestJacoco()
