@@ -1,9 +1,9 @@
 package com.sriniketh.feature_searchbooks
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertWidthIsAtLeast
+import androidx.compose.ui.test.assertTouchHeightIsEqualTo
+import androidx.compose.ui.test.assertTouchWidthIsEqualTo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -298,9 +298,9 @@ class SearchBookScreenTest {
         }
 
         composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
-        composeTestRule.onNodeWithContentDescription("Close icon")
-            .assertWidthIsAtLeast(48.dp)
-            .assertHeightIsAtLeast(48.dp)
+        composeTestRule.onNodeWithTag("SearchBookClearButton")
+            .assertTouchWidthIsEqualTo(48.dp)
+            .assertTouchHeightIsEqualTo(48.dp)
     }
 
     private fun createTestBookUiState(

@@ -159,6 +159,7 @@ internal fun SearchBook(
                     trailingIcon = {
                         if (expanded) {
                             IconButton(
+                                modifier = Modifier.testTag("SearchBookClearButton"),
                                 onClick = {
                                     if (text.isNotEmpty()) {
                                         text = ""
