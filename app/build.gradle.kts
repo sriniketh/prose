@@ -43,7 +43,7 @@ android {
 	lint {
 		abortOnError = true
 		baseline = file("lint-baseline.xml")
-		disable += setOf("GradleDependency", "NewerVersionAvailable", "OldTargetApi")
+		disable += setOf("GradleDependency", "NewerVersionAvailable")
 	}
 }
 
