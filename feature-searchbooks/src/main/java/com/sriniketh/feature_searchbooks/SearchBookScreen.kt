@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -157,18 +158,21 @@ internal fun SearchBook(
                     },
                     trailingIcon = {
                         if (expanded) {
-                            Icon(
-                                modifier = Modifier.clickable {
+                            IconButton(
+                                onClick = {
                                     if (text.isNotEmpty()) {
                                         text = ""
                                         resetSearch()
                                     } else {
                                         expanded = false
                                     }
-                                },
-                                painter = painterResource(com.sriniketh.core_design.R.drawable.ic_close),
-                                contentDescription = stringResource(id = R.string.close_icon_cont_desc)
-                            )
+                                }
+                            ) {
+                                Icon(
+                                    painter = painterResource(com.sriniketh.core_design.R.drawable.ic_close),
+                                    contentDescription = stringResource(id = R.string.close_icon_cont_desc)
+                                )
+                            }
                         }
                     }
                 )
