@@ -16,6 +16,11 @@ class FileSourceImpl @Inject constructor(
 
     override fun createNewFile(fileName: String): Uri {
         val newFile = File(appContext.cacheDir, fileName)
+        val resolvedPath = newFile.canonicalPath
+        val cacheDirPath = appContext.cacheDir.canonicalPath
+        if (!resolvedPath.startsWith(cacheDirPath)) {
+            throw SecurityException("File path $fileName escapes cache directory")
+        }
         val contentUri = getFileProviderUri(newFile)
         Timber.d("${this.logTag()}: Created file $contentUri")
         return contentUri
@@ -23,6 +28,11 @@ class FileSourceImpl @Inject constructor(
 
     override fun writeToFile(fileName: String, content: String): Uri {
         val file = File(appContext.cacheDir, fileName)
+        val resolvedPath = file.canonicalPath
+        val cacheDirPath = appContext.cacheDir.canonicalPath
+        if (!resolvedPath.startsWith(cacheDirPath)) {
+            throw SecurityException("File path $fileName escapes cache directory")
+        }
         file.writeText(content)
         val contentUri = getFileProviderUri(file)
         Timber.d("${this.logTag()}: Wrote file $contentUri")

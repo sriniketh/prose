@@ -55,7 +55,10 @@ class ExportHighlightsUseCase @Inject constructor(
 
         val json = exportJson.encodeToString(export)
 
-        val fileName = "${book.info.title.lowercase().replace(" ", "_")}_export.json"
+        val sanitizedTitle = book.info.title
+            .lowercase()
+            .replace(Regex("[^a-z0-9_-]"), "_")
+        val fileName = "${sanitizedTitle}_export.json"
         val uri = fileSource.writeToFile(fileName, json)
         Result.success(uri)
     } catch (exception: Exception) {
