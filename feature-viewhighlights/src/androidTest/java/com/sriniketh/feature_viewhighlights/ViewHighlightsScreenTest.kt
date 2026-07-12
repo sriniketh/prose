@@ -1,5 +1,6 @@
 package com.sriniketh.feature_viewhighlights
 
+import android.Manifest
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -7,6 +8,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.rule.GrantPermissionRule
 import com.sriniketh.core_design.ui.theme.AppTheme
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Assert.assertEquals
@@ -20,6 +22,9 @@ class ViewHighlightsScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    @get:Rule
+    val grantCameraPermissionRule: GrantPermissionRule = GrantPermissionRule.grant(Manifest.permission.CAMERA)
 
     @Test
     fun whenHighlightsListIsEmptyThenEmptyMessageIsDisplayed() {
@@ -272,6 +277,161 @@ class ViewHighlightsScreenTest {
         composeTestRule.onNodeWithTag("HighlightMenuItemDelete").performClick()
         composeTestRule.onNodeWithTag("DeleteHighlightCancelButton").performClick()
         composeTestRule.onNodeWithText("Delete highlight").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenCameraPermissionNeverRequestedThenFabClickRequestsPermission() {
+        val uiState = ViewHighlightsUIState()
+        var actionTriggered: ViewHighlightsAction? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    onAction = { actionTriggered = it }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithText("Camera access needed").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Camera access denied").assertDoesNotExist()
+        assertEquals(ViewHighlightsAction.OnCameraPermissionGranted, actionTriggered)
+    }
+
+    @Test
+    fun whenCameraPermissionDeniedOnceThenFabClickShowsRationaleDialog() {
+        val uiState = ViewHighlightsUIState()
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    hasCameraPermissionBeenRequested = true,
+                    shouldShowCameraPermissionRationale = { true },
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithText("Camera access needed").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenRationaleDialogConfirmedThenDialogDismissesAndPermissionIsRequestedAgain() {
+        val uiState = ViewHighlightsUIState()
+        var actionTriggered: ViewHighlightsAction? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    hasCameraPermissionBeenRequested = true,
+                    shouldShowCameraPermissionRationale = { true },
+                    onAction = { actionTriggered = it }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithTag("CameraPermissionRationaleConfirmButton").performClick()
+        composeTestRule.onNodeWithText("Camera access needed").assertDoesNotExist()
+        assertEquals(ViewHighlightsAction.OnCameraPermissionGranted, actionTriggered)
+    }
+
+    @Test
+    fun whenRationaleDialogCancelledThenDialogDismissesWithoutRequestingPermission() {
+        val uiState = ViewHighlightsUIState()
+        var actionTriggered: ViewHighlightsAction? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    hasCameraPermissionBeenRequested = true,
+                    shouldShowCameraPermissionRationale = { true },
+                    onAction = { actionTriggered = it }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithTag("CameraPermissionRationaleCancelButton").performClick()
+        composeTestRule.onNodeWithText("Camera access needed").assertDoesNotExist()
+        assertEquals(null, actionTriggered)
+    }
+
+    @Test
+    fun whenCameraPermissionPermanentlyDeniedThenFabClickShowsSettingsDialog() {
+        val uiState = ViewHighlightsUIState()
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    hasCameraPermissionBeenRequested = true,
+                    shouldShowCameraPermissionRationale = { false },
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithText("Camera access denied").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenSettingsDialogConfirmedThenOnOpenAppSettingsIsCalled() {
+        val uiState = ViewHighlightsUIState()
+        var settingsOpened = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    hasCameraPermissionBeenRequested = true,
+                    shouldShowCameraPermissionRationale = { false },
+                    onOpenAppSettings = { settingsOpened = true },
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithTag("CameraPermissionSettingsConfirmButton").performClick()
+        composeTestRule.onNodeWithText("Camera access denied").assertDoesNotExist()
+        assertTrue(settingsOpened)
+    }
+
+    @Test
+    fun whenSettingsDialogCancelledThenDialogDismissesWithoutOpeningSettings() {
+        val uiState = ViewHighlightsUIState()
+        var settingsOpened = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    hasCameraPermissionBeenRequested = true,
+                    shouldShowCameraPermissionRationale = { false },
+                    onOpenAppSettings = { settingsOpened = true },
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").performClick()
+        composeTestRule.onNodeWithTag("CameraPermissionSettingsCancelButton").performClick()
+        composeTestRule.onNodeWithText("Camera access denied").assertDoesNotExist()
+        assertEquals(false, settingsOpened)
     }
 
     private fun createTestHighlightUIState(

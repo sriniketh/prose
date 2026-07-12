@@ -116,7 +116,12 @@ Actions are dispatched through `processAction(ViewHighlightsAction)`
 - **Export** → see flow 6.
 - **Camera permission denied** → `permission_denied` snackbar. The screen's camera-permission
   launcher requests `CAMERA`; on grant it navigates into the capture flow, on deny it dispatches the
-  denied action.
+  denied action. The FAB click itself is gated by local Composable state in `ViewHighlights`
+  (not routed through the ViewModel): first tap always requests the permission; once it has been
+  requested and denied, subsequent taps check `shouldShowCameraPermissionRationale` — if true, a
+  rationale `AlertDialog` is shown before re-requesting; if false (permanently denied / "don't ask
+  again"), a Settings `AlertDialog` is shown instead, whose confirm action deep-links to
+  `Settings.ACTION_APPLICATION_DETAILS_SETTINGS` for the app.
 - Adding a highlight navigates to `capture_and_crop_image/{bookId}`; editing one navigates to
   `save_highlight_from_highlight_id/{bookId}/{highlightId}`.
 
