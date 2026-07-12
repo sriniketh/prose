@@ -1,40 +1,24 @@
 package com.sriniketh.prose
 
-internal sealed interface Screen {
-    val route: String
+import kotlinx.serialization.Serializable
 
-    data object BOOKSHELF : Screen {
-        override val route: String = "bookshelf"
-    }
+@Serializable
+internal data object Bookshelf
 
-    data object VIEWHIGHLIGHTS : Screen {
-        override val route: String = "view_highlights"
-        const val argBookId: String = "bookId"
-    }
+@Serializable
+internal data object Search
 
-    data object CAPTUREANDCROPIMAGE : Screen {
-        override val route: String = "capture_and_crop_image"
-        const val argBookId: String = "bookId"
-    }
+@Serializable
+internal data class BookInfo(val bookId: String)
 
-    data object SAVEHIGHLIGHT_FROMURI : Screen {
-        override val route: String = "save_highlight_from_uri"
-        const val argUri: String = "uri"
-        const val argBookId: String = "bookId"
-    }
+@Serializable
+internal data class ViewHighlights(val bookId: String)
 
-    data object SAVEHIGHLIGHT_FROMHIGHLIGHTID : Screen {
-        override val route: String = "save_highlight_from_highlight_id"
-        const val argHighlightId: String = "highlightId"
-        const val argBookId: String = "bookId"
-    }
+@Serializable
+internal data class CaptureAndCropImage(val bookId: String)
 
-    data object SEARCH : Screen {
-        override val route: String = "search"
-    }
+@Serializable
+internal data class SaveHighlightFromUri(val bookId: String, val uri: String)
 
-    data object BOOKINFO : Screen {
-        override val route: String = "book_info"
-        const val argBookId: String = "bookId"
-    }
-}
+@Serializable
+internal data class SaveHighlightFromHighlightId(val bookId: String, val highlightId: String)
