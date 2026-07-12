@@ -16,11 +16,7 @@ class FileSourceImpl @Inject constructor(
 
     override fun createNewFile(fileName: String): Uri {
         val newFile = File(appContext.cacheDir, fileName)
-        val resolvedPath = newFile.canonicalPath
-        val cacheDirPath = appContext.cacheDir.canonicalPath
-        if (!resolvedPath.startsWith(cacheDirPath)) {
-            throw SecurityException("File path $fileName escapes cache directory")
-        }
+        newFile.assertWithinCacheDir(appContext.cacheDir, fileName)
         val contentUri = getFileProviderUri(newFile)
         Timber.d("${this.logTag()}: Created file $contentUri")
         return contentUri
@@ -28,11 +24,7 @@ class FileSourceImpl @Inject constructor(
 
     override fun writeToFile(fileName: String, content: String): Uri {
         val file = File(appContext.cacheDir, fileName)
-        val resolvedPath = file.canonicalPath
-        val cacheDirPath = appContext.cacheDir.canonicalPath
-        if (!resolvedPath.startsWith(cacheDirPath)) {
-            throw SecurityException("File path $fileName escapes cache directory")
-        }
+        file.assertWithinCacheDir(appContext.cacheDir, fileName)
         file.writeText(content)
         val contentUri = getFileProviderUri(file)
         Timber.d("${this.logTag()}: Wrote file $contentUri")
@@ -48,5 +40,15 @@ class FileSourceImpl @Inject constructor(
     private fun getFileProviderUri(file: File): Uri {
         val authority = "${appContext.packageName}.fileProvider"
         return getUriForFile(appContext, authority, file)
+    }
+
+    private fun File.assertWithinCacheDir(cacheDir: File, fileName: String) {
+        val resolvedPath = canonicalPath
+        val cacheDirPath = cacheDir.canonicalPath
+        val isWithinCacheDir = resolvedPath == cacheDirPath ||
+            resolvedPath.startsWith(cacheDirPath + File.separator)
+        if (!isWithinCacheDir) {
+            throw SecurityException("File path $fileName escapes cache directory")
+        }
     }
 }
