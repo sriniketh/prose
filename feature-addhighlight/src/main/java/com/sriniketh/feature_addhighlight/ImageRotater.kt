@@ -11,6 +11,8 @@ import timber.log.Timber
 
 internal object ImageRotater {
 
+    internal const val TARGET_LONG_EDGE_PX = 2048
+
     internal fun getRotatedBitmap(context: Context, imageUri: Uri): Bitmap? {
         try {
             val openedinputStream = context.contentResolver.openInputStream(imageUri)
@@ -30,8 +32,22 @@ internal object ImageRotater {
 
                 val matrix = Matrix()
                 if (rotationDegrees != 0) matrix.postRotate(rotationDegrees.toFloat())
+
+                val boundsOptions = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+                context.contentResolver.openInputStream(imageUri)?.use {
+                    BitmapFactory.decodeStream(it, null, boundsOptions)
+                }
+
+                val sampleSize = calculateInSampleSize(
+                    sourceWidth = boundsOptions.outWidth,
+                    sourceHeight = boundsOptions.outHeight,
+                    targetSize = TARGET_LONG_EDGE_PX
+                )
+                Timber.d("${this.logTag()}: Downsampling bitmap by factor of $sampleSize")
+
+                val decodeOptions = BitmapFactory.Options().apply { inSampleSize = sampleSize }
                 val bitmap = context.contentResolver.openInputStream(imageUri)
-                    ?.use { BitmapFactory.decodeStream(it) }
+                    ?.use { BitmapFactory.decodeStream(it, null, decodeOptions) }
 
                 if (bitmap == null) {
                     Timber.e("${this.logTag()}: Failed to decode bitmap from URI")
@@ -45,6 +61,15 @@ internal object ImageRotater {
             Timber.e(exception, this.logTag())
             return null
         }
+    }
+
+    internal fun calculateInSampleSize(sourceWidth: Int, sourceHeight: Int, targetSize: Int): Int {
+        var inSampleSize = 1
+        val longEdge = maxOf(sourceWidth, sourceHeight)
+        while (longEdge / inSampleSize > targetSize) {
+            inSampleSize *= 2
+        }
+        return inSampleSize
     }
 
     private fun exifToDegrees(exifOrientation: Int): Int {
