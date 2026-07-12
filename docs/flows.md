@@ -46,7 +46,7 @@ Details:
   reset.
 - DB errors map to `Result.failure` (caught in the repository's `.catch`) → `getallbooks` error
   snackbar.
-- Tapping a book navigates to `view_highlights/{bookId}`; the FAB navigates to `search`.
+- Tapping a book navigates to `ViewHighlights(bookId)`; the FAB navigates to `Search`.
 
 ---
 
@@ -117,8 +117,8 @@ Actions are dispatched through `processAction(ViewHighlightsAction)`
 - **Camera permission denied** → `permission_denied` snackbar. The screen's camera-permission
   launcher requests `CAMERA`; on grant it navigates into the capture flow, on deny it dispatches the
   denied action.
-- Adding a highlight navigates to `capture_and_crop_image/{bookId}`; editing one navigates to
-  `save_highlight_from_highlight_id/{bookId}/{highlightId}`.
+- Adding a highlight navigates to `CaptureAndCropImage(bookId)`; editing one navigates to
+  `SaveHighlightFromHighlightId(bookId, highlightId)`.
 
 ---
 
@@ -129,7 +129,7 @@ This is the most involved flow and spans two ViewModels and three navigation des
 ### 5a. Capture & crop
 
 ```
-capture_and_crop_image/{bookId}
+CaptureAndCropImage(bookId)
   → CaptureAndCropImageScreen + CaptureAndCropImageViewModel
       imageUri = CreateTempImageFileUseCase()  → FileSource.createNewFile("<uuid>.jpg")
                  (cacheDir file, exposed via FileProvider; stored in SavedStateHandle)
@@ -141,8 +141,9 @@ Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/co
 1. **CaptureImage** — a `TakePicture` activity-result launcher writes the photo into the temp
    FileProvider URI. On cancel/failure the screen calls `goBack()`.
 2. **CropImage** — `CropImageScreen` (Cropify) lets the user crop; `onImageCropped()` advances state.
-3. **ImageCapturedAndCropped** — the screen calls `onImageCaptured(uri)`, which URL-encodes the URI
-   and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
+3. **ImageCapturedAndCropped** — the screen calls `onImageCaptured(uri)`, which navigates to
+   `SaveHighlightFromUri(bookId, uri.toString())`; Navigation Compose URL-encodes the URI string
+   for the type-safe route.
 4. **Cleanup** — `onCleared()` deletes the temp file *unless* the flow completed
    (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The completed file is handed
    off to the next screen, which deletes it after OCR.
@@ -150,7 +151,7 @@ Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/co
 ### 5b. OCR & save
 
 ```
-save_highlight_from_uri/{bookId}/{uri}
+SaveHighlightFromUri(bookId, uri)
   → EditAndSaveHighlightScreen(uri) + EditAndSaveHighlightViewModel
       processImageForHighlightText(uri):
         → TextAnalyzer.analyzeImage(uri)        (ML Kit on-device Latin OCR)
@@ -162,7 +163,7 @@ save_highlight_from_uri/{bookId}/{uri}
       → SaveHighlightUseCase → HighlightsRepository.insertHighlightIntoDb
           → HighlightDao.insertHighlight(highlight.asHighlightEntity())  (onConflict = REPLACE)
       timestamp = FormatCurrentDateTimeUseCase(DateTimeSource.now())
-  → Effect.HighlightSaved → goBack to view_highlights/{bookId}
+  → Effect.HighlightSaved → goBack to ViewHighlights(bookId)
 ```
 
 Details:
@@ -175,7 +176,7 @@ Details:
 ### 5c. Edit an existing highlight
 
 ```
-save_highlight_from_highlight_id/{bookId}/{highlightId}
+SaveHighlightFromHighlightId(bookId, highlightId)
   → EditAndSaveHighlightViewModel.loadHighlightText(highlightId)
       → LoadHighlightUseCase → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
   ← prefilled text + screen title switches to "edit"; original savedOnTimestamp is preserved

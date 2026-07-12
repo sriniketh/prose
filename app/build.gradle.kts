@@ -3,6 +3,7 @@ plugins {
 	alias(libs.plugins.kotlin.compose)
 	alias(libs.plugins.ksp)
 	alias(libs.plugins.hilt)
+	alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -60,11 +61,16 @@ dependencies {
 	implementation(libs.bundles.compose)
 	debugImplementation(libs.compose.ui.tooling)
 	implementation(libs.navigation.compose)
+	implementation(libs.kotlinx.serialization.json)
 
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
 
 	testImplementation(libs.junit)
+	androidTestImplementation(composeBom)
 	androidTestImplementation(libs.android.junit)
 	androidTestImplementation(libs.espresso.core)
+	androidTestImplementation(libs.compose.junit)
+	androidTestImplementation(libs.navigation.testing)
+	debugImplementation(libs.compose.test.manifest)
 }
