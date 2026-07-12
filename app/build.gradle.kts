@@ -12,6 +12,10 @@ android {
         versionCode = 3
         versionName = "1.2"
     }
+
+    lint {
+        disable += setOf("GradleDependency", "NewerVersionAvailable", "OldTargetApi")
+    }
 }
 
 dependencies {
