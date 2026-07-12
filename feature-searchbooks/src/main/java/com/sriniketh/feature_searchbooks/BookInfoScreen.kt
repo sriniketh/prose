@@ -93,7 +93,8 @@ fun BookInfoScreen(
         modifier = modifier,
         uiState = uiState,
         snackbarHostState = snackbarHostState,
-        goBack = { goBack() }
+        goBack = { goBack() },
+        onAddToShelf = { viewModel.addBookToShelf() }
     )
 }
 
@@ -103,7 +104,8 @@ internal fun BookInfo(
     uiState: BookInfoUiState,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier,
-    goBack: () -> Unit
+    goBack: () -> Unit,
+    onAddToShelf: () -> Unit = {}
 ) {
     val scrollBehavior = run { TopAppBarDefaults.exitUntilCollapsedScrollBehavior() }.let { remember { it } }
     Scaffold(
@@ -119,7 +121,7 @@ internal fun BookInfo(
         },
         floatingActionButton = {
             if (uiState.canAddToShelf) {
-                BookInfoScreenFloatingActionButton(uiState.addBookToShelf)
+                BookInfoScreenFloatingActionButton(onAddToShelf)
             }
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
@@ -322,8 +324,7 @@ internal fun BookInfoScreenPreview() {
                     averageRating = 4.3,
                     ratingsCount = 1227
                 ),
-                canAddToShelf = true,
-                addBookToShelf = {}
+                canAddToShelf = true
             ),
             goBack = {}
         )
