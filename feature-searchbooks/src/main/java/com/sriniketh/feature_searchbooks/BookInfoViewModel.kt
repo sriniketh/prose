@@ -35,6 +35,8 @@ class BookInfoViewModel @Inject constructor(
     private val _effects = Channel<BookInfoEffect>(Channel.BUFFERED)
     internal val effects: Flow<BookInfoEffect> = _effects.receiveAsFlow()
 
+    private var currentBook: Book? = null
+
     fun getBookDetail(volumeId: String) {
         viewModelScope.launch {
             _uiState.update { state ->
@@ -43,13 +45,13 @@ class BookInfoViewModel @Inject constructor(
             val result = fetchBookInfoUseCase(volumeId)
             if (result.isSuccess) {
                 val book = result.getOrThrow()
+                currentBook = book
                 val isInDb = isBookInDbUseCase(book)
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,
                         book = book.asUiData(),
-                        canAddToShelf = !isInDb,
-                        addBookToShelf = { addBookToShelf(book) }
+                        canAddToShelf = !isInDb
                     )
                 }
             } else if (result.isFailure) {
@@ -61,7 +63,8 @@ class BookInfoViewModel @Inject constructor(
         }
     }
 
-    private fun addBookToShelf(book: Book) {
+    fun addBookToShelf() {
+        val book = currentBook ?: return
         viewModelScope.launch {
             _uiState.update { state ->
                 state.copy(isLoading = true)
@@ -100,8 +103,7 @@ class BookInfoViewModel @Inject constructor(
 data class BookInfoUiState(
     val isLoading: Boolean = false,
     val book: BookInfoUiData? = null,
-    val canAddToShelf: Boolean = false,
-    val addBookToShelf: () -> Unit = {}
+    val canAddToShelf: Boolean = false
 )
 
 data class BookInfoUiData(

@@ -138,7 +138,7 @@ class BookInfoViewModelTest {
         assertNotNull(currentState.book)
         assertTrue(currentState.canAddToShelf)
 
-        currentState.addBookToShelf()
+        viewModel.addBookToShelf()
         advanceUntilIdle()
 
         assertNotNull(fakeBooksRepository.insertedBook)
@@ -155,7 +155,7 @@ class BookInfoViewModelTest {
         val beforeAddState = viewModel.uiState.value
         assertTrue(beforeAddState.canAddToShelf)
 
-        beforeAddState.addBookToShelf()
+        viewModel.addBookToShelf()
         advanceUntilIdle()
 
         val afterAddState = viewModel.uiState.value
@@ -169,10 +169,8 @@ class BookInfoViewModelTest {
         viewModel.getBookDetail("test-volume-id")
         advanceUntilIdle()
 
-        val addToShelf = viewModel.uiState.value.addBookToShelf
-
         viewModel.effects.test {
-            addToShelf()
+            viewModel.addBookToShelf()
 
             assertEquals(
                 BookInfoEffect.NavigateToBookshelf,
