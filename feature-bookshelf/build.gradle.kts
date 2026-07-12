@@ -36,6 +36,11 @@ android {
 	}
 
 	namespace = "com.sriniketh.feature_bookshelf"
+
+	lint {
+		abortOnError = true
+		baseline = file("lint-baseline.xml")
+	}
 }
 
 dependencies {

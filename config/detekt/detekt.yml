@@ -1,0 +1,14 @@
+# Repo-wide detekt overrides. buildUponDefaultConfig = true, so anything not
+# listed here still uses detekt's built-in default ruleset.
+# Pre-existing violations are suppressed per-module via config/detekt/baseline.xml
+# (generated with `./gradlew detektBaseline`); this file only tunes rules that
+# don't fit this codebase's conventions.
+
+style:
+  MagicNumber:
+    active: false
+  ForbiddenComment:
+    active: false
+
+comments:
+  active: false

@@ -37,6 +37,11 @@ android {
 	}
 
 	namespace = "com.sriniketh.feature_viewhighlights"
+
+	lint {
+		abortOnError = true
+		baseline = file("lint-baseline.xml")
+	}
 }
 
 dependencies {

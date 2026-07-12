@@ -35,6 +35,11 @@ android {
 		buildConfig = true
 	}
 	namespace = "com.sriniketh.core_db"
+
+	lint {
+		abortOnError = true
+		baseline = file("lint-baseline.xml")
+	}
 }
 
 dependencies {

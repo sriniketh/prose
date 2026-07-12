@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>NewLineAtEndOfFile:BooksRemoteDataSourceImplTest.kt$com.sriniketh.prose.core_network.retrofit.BooksRemoteDataSourceImplTest.kt</ID>
+    <ID>NewLineAtEndOfFile:FakeBooksApi.kt$com.sriniketh.prose.core_network.retrofit.FakeBooksApi.kt</ID>
+    <ID>PackageNaming:BooksApi.kt$package com.sriniketh.prose.core_network.retrofit</ID>
+    <ID>PackageNaming:BooksApiJson.kt$package com.sriniketh.prose.core_network.di</ID>
+    <ID>PackageNaming:BooksApiJsonTest.kt$package com.sriniketh.prose.core_network.di</ID>
+    <ID>PackageNaming:BooksRemoteDataSource.kt$package com.sriniketh.prose.core_network</ID>
+    <ID>PackageNaming:BooksRemoteDataSourceImpl.kt$package com.sriniketh.prose.core_network.retrofit</ID>
+    <ID>PackageNaming:BooksRemoteDataSourceImplTest.kt$package com.sriniketh.prose.core_network.retrofit</ID>
+    <ID>PackageNaming:FakeBooksApi.kt$package com.sriniketh.prose.core_network.retrofit</ID>
+    <ID>PackageNaming:NetworkModule.kt$package com.sriniketh.prose.core_network.di</ID>
+    <ID>PackageNaming:Volumes.kt$package com.sriniketh.prose.core_network.model</ID>
+  </CurrentIssues>
+</SmellBaseline>

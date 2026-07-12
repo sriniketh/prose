@@ -39,6 +39,11 @@ android {
 	}
 
 	namespace = "com.sriniketh.prose"
+
+	lint {
+		abortOnError = true
+		baseline = file("lint-baseline.xml")
+	}
 }
 
 dependencies {
