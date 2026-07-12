@@ -4,12 +4,17 @@ import app.cash.turbine.test
 import com.sriniketh.core_data.fakes.FakeHighlightDao
 import com.sriniketh.core_db.entity.HighlightEntity
 import com.sriniketh.core_models.book.Highlight
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class HighlightsRepositoryImplTest {
 
     private lateinit var highlightDao: FakeHighlightDao
@@ -51,6 +56,29 @@ class HighlightsRepositoryImplTest {
             val exception = result.exceptionOrNull()
             assertTrue(exception is RuntimeException)
             assertEquals("some error inserting highlight", exception?.message)
+        }
+
+    @Test
+    fun `insertHighlightIntoDb propagates CancellationException instead of converting it to a failure result when the calling coroutine is cancelled`() =
+        runTest {
+            val highlight = Highlight(
+                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+            )
+            highlightDao.shouldInsertHighlightSuspendForever = true
+            var thrown: Throwable? = null
+
+            val job = launch {
+                try {
+                    highlightsRepositoryImpl.insertHighlightIntoDb(highlight)
+                } catch (throwable: Throwable) {
+                    thrown = throwable
+                }
+            }
+            runCurrent()
+            job.cancel()
+            job.join()
+
+            assertTrue(thrown is CancellationException)
         }
 
     @Test

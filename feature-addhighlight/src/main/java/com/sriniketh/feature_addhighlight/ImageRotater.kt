@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.exifinterface.media.ExifInterface
 import com.sriniketh.core_platform.logTag
 import timber.log.Timber
+import kotlin.coroutines.cancellation.CancellationException
 
 internal object ImageRotater {
 
@@ -41,6 +42,8 @@ internal object ImageRotater {
                 Timber.d("${this.logTag()}: Bitmap rotated successfully")
                 return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
             }
+        } catch (cancellationException: CancellationException) {
+            throw cancellationException
         } catch (exception: Exception) {
             Timber.e(exception, this.logTag())
             return null
