@@ -128,4 +128,18 @@ class BooksApiJsonTest {
 
         assertEquals(null, volumes.items[0].volumeInfo.imageLinks?.thumbnail)
     }
+
+    @Test
+    fun `decodes volumes to empty list when items is omitted for zero results`() {
+        val payload = """
+            {
+              "kind": "books#volumes",
+              "totalItems": 0
+            }
+        """.trimIndent()
+
+        val volumes = booksApiJson.decodeFromString<Volumes>(payload)
+
+        assertEquals(emptyList<Volumes>(), volumes.items)
+    }
 }
