@@ -246,12 +246,11 @@ internal fun ViewHighlights(
                     val clipboardData = remember(clipboardLabel, highlightUiState.text) {
                         ClipData.newPlainText(clipboardLabel, highlightUiState.text)
                     }
-                    var highlightText by remember {
-                        if (shortenHighlightText) {
-                            mutableStateOf(highlightUiState.text.take(250) + " ...")
-                        } else {
-                            mutableStateOf(highlightUiState.text)
-                        }
+                    var isHighlightTextExpanded by remember { mutableStateOf(false) }
+                    val highlightText = if (shortenHighlightText && !isHighlightTextExpanded) {
+                        highlightUiState.text.take(250) + " ..."
+                    } else {
+                        highlightUiState.text
                     }
 
                     Row(
@@ -261,7 +260,7 @@ internal fun ViewHighlights(
                             .animateContentSize()
                             .clickable {
                                 if (shortenHighlightText) {
-                                    highlightText = highlightUiState.text
+                                    isHighlightTextExpanded = true
                                 }
                             },
                         horizontalArrangement = Arrangement.SpaceBetween

@@ -1,5 +1,8 @@
 package com.sriniketh.feature_viewhighlights
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
@@ -272,6 +275,39 @@ class ViewHighlightsScreenTest {
         composeTestRule.onNodeWithTag("HighlightMenuItemDelete").performClick()
         composeTestRule.onNodeWithTag("DeleteHighlightCancelButton").performClick()
         composeTestRule.onNodeWithText("Delete highlight").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenHighlightTextIsEditedThenNewTextIsDisplayedImmediately() {
+        val highlightId = "test-id"
+        var uiState by mutableStateOf(
+            ViewHighlightsUIState(
+                highlights = persistentListOf(
+                    createTestHighlightUIState(id = highlightId, text = "Original highlight text")
+                )
+            )
+        )
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Original highlight text").assertIsDisplayed()
+
+        uiState = ViewHighlightsUIState(
+            highlights = persistentListOf(
+                createTestHighlightUIState(id = highlightId, text = "Edited highlight text")
+            )
+        )
+
+        composeTestRule.onNodeWithText("Edited highlight text").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original highlight text").assertDoesNotExist()
     }
 
     private fun createTestHighlightUIState(
