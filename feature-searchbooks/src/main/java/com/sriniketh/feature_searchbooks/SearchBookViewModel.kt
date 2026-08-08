@@ -44,6 +44,8 @@ class SearchBookViewModel @Inject constructor(
 
     private val queryFlow: MutableStateFlow<String> = MutableStateFlow("")
     private val resetChannel: Channel<Unit> = Channel(Channel.CONFLATED)
+    private val retryChannel: Channel<String> = Channel(Channel.CONFLATED)
+    private var lastSearchedQuery: String? = null
 
     init {
         val searches: Flow<SearchAction> = queryFlow
@@ -51,8 +53,9 @@ class SearchBookViewModel @Inject constructor(
             .debounce(DEBOUNCE_MILLIS)
             .distinctUntilChanged()
             .map { query -> SearchAction.Search(query) }
+        val retries: Flow<SearchAction> = retryChannel.receiveAsFlow().map { query -> SearchAction.Search(query) }
         val resets: Flow<SearchAction> = resetChannel.receiveAsFlow().map { SearchAction.Clear }
-        merge(searches, resets)
+        merge(searches, retries, resets)
             .flatMapLatest { action ->
                 when (action) {
                     is SearchAction.Search -> searchResultsFlow(action.query)
@@ -71,8 +74,13 @@ class SearchBookViewModel @Inject constructor(
         resetChannel.trySend(Unit)
     }
 
+    fun retrySearch() {
+        lastSearchedQuery?.let { query -> retryChannel.trySend(query) }
+    }
+
     private fun searchResultsFlow(query: String): Flow<BookSearchUiState> = flow {
-        emit(_searchUiState.value.copy(isLoading = true))
+        lastSearchedQuery = query
+        emit(_searchUiState.value.copy(isLoading = true, errorMessage = null))
         val result = searchForBookUseCase(query)
         if (result.isSuccess) {
             emit(
@@ -82,7 +90,7 @@ class SearchBookViewModel @Inject constructor(
                 )
             )
         } else {
-            emit(_searchUiState.value.copy(isLoading = false))
+            emit(_searchUiState.value.copy(isLoading = false, errorMessage = R.string.search_error_message))
             _effects.trySend(SearchBookEffect.ShowMessage(R.string.search_error_message))
         }
     }
@@ -108,6 +116,7 @@ class SearchBookViewModel @Inject constructor(
 
 internal data class BookSearchUiState(
     val isLoading: Boolean = false,
+    @StringRes val errorMessage: Int? = null,
     val bookUiStates: ImmutableList<BookUiState> = persistentListOf()
 )
 

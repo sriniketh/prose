@@ -4,6 +4,7 @@
     <string name="bookshelf_pagetitle">Bookshelf</string>
     <string name="bookshelf_empty_text">Go ahead, grab a book!</string>
     <string name="getallbooks_error_message">Error retrieving saved books.</string>
+    <string name="bookshelf_retry_button">Retry</string>
     <string name="search_fab_cont_desc">search for a book button</string>
     <string name="book_added_to_shelf_message">Book has been added to shelf!</string>
 </resources>

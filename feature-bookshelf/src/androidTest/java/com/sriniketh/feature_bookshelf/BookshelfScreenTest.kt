@@ -200,6 +200,45 @@ class BookshelfScreenTest {
         composeTestRule.onNodeWithText("Test Book Title").assertDoesNotExist()
     }
 
+    @Test
+    fun whenErrorMessageIsSetThenErrorStateAndRetryButtonAreDisplayed() {
+        val uiState = BookshelfUIState(errorMessage = R.string.getallbooks_error_message)
+
+        composeTestRule.setContent {
+            AppTheme {
+                Bookshelf(
+                    uiState = uiState,
+                    goToSearch = {},
+                    goToHighlight = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("BookshelfErrorState").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("BookshelfRetryButton").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Go ahead, grab a book!").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenRetryButtonIsClickedThenOnRetryIsCalled() {
+        val uiState = BookshelfUIState(errorMessage = R.string.getallbooks_error_message)
+        var onRetryCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                Bookshelf(
+                    uiState = uiState,
+                    goToSearch = {},
+                    goToHighlight = {},
+                    onRetry = { onRetryCalled = true }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("BookshelfRetryButton").performClick()
+        assertTrue(onRetryCalled)
+    }
+
     private fun createTestBookUIState(
         id: String = "test-id",
         title: String = "Test Title",

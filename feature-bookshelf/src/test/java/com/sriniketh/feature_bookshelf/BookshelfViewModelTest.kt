@@ -15,6 +15,7 @@ import kotlinx.collections.immutable.persistentListOf
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -102,6 +103,39 @@ class BookshelfViewModelTest {
         val finalState = failingViewModel.bookshelfUIState.value
         assertFalse(finalState.isLoading)
         assertTrue(finalState.books.isEmpty())
+    }
+
+    @Test
+    fun `when loading fails then error message is set in state`() = runTest {
+        fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
+        val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository), SavedStateHandle())
+
+        advanceUntilIdle()
+
+        val finalState = failingViewModel.bookshelfUIState.value
+        assertFalse(finalState.isLoading)
+        assertTrue(finalState.books.isEmpty())
+        assertEquals(R.string.getallbooks_error_message, finalState.errorMessage)
+    }
+
+    @Test
+    fun `when retry is invoked after a failure then books load and error clears`() = runTest {
+        fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
+        val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository), SavedStateHandle())
+        advanceUntilIdle()
+        assertEquals(
+            R.string.getallbooks_error_message,
+            failingViewModel.bookshelfUIState.value.errorMessage
+        )
+
+        fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = false
+        failingViewModel.retryLoadBooks()
+        advanceUntilIdle()
+
+        val finalState = failingViewModel.bookshelfUIState.value
+        assertFalse(finalState.isLoading)
+        assertNull(finalState.errorMessage)
+        assertEquals(1, finalState.books.size)
     }
 
     @Test
