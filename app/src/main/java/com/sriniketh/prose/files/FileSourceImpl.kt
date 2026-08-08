@@ -4,14 +4,18 @@ import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider.getUriForFile
 import com.sriniketh.core_platform.FileSource
+import com.sriniketh.core_platform.dagger.IoDispatcher
 import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
 class FileSourceImpl @Inject constructor(
-    @ApplicationContext private val appContext: Context
+    @ApplicationContext private val appContext: Context,
+    @IoDispatcher private val ioDispatcher: CoroutineDispatcher
 ) : FileSource {
 
     override fun createNewFile(fileName: String): Uri {
@@ -21,18 +25,18 @@ class FileSourceImpl @Inject constructor(
         return contentUri
     }
 
-    override fun writeToFile(fileName: String, content: String): Uri {
+    override suspend fun writeToFile(fileName: String, content: String): Uri = withContext(ioDispatcher) {
         val file = File(appContext.cacheDir, fileName)
         file.writeText(content)
         val contentUri = getFileProviderUri(file)
         Timber.d("${this.logTag()}: Wrote file $contentUri")
-        return contentUri
+        contentUri
     }
 
-    override fun deleteFile(uri: Uri): Boolean {
+    override suspend fun deleteFile(uri: Uri): Boolean = withContext(ioDispatcher) {
         val result = appContext.contentResolver.delete(uri, null, null)
         Timber.d("${this.logTag()}: Deleted rows $result")
-        return result > 0
+        result > 0
     }
 
     private fun getFileProviderUri(file: File): Uri {

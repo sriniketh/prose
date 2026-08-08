@@ -7,5 +7,5 @@ import javax.inject.Inject
 class DeleteFileUseCase @Inject constructor(
     private val fileSource: FileSource
 ) {
-    operator fun invoke(uri: Uri): Boolean = fileSource.deleteFile(uri)
+    suspend operator fun invoke(uri: Uri): Boolean = fileSource.deleteFile(uri)
 }

@@ -9,4 +9,5 @@
     <string name="done_button_label">Done</string>
     <string name="save_highlight_error_message">Error saving highlight.</string>
     <string name="image_processing_failure_error_message">Error processing image for highlight text.</string>
+    <string name="crop_image_error_message">Error cropping image. Please try again.</string>
 </resources>
