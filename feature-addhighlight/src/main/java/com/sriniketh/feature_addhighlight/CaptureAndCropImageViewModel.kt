@@ -25,15 +25,25 @@ class CaptureAndCropImageViewModel @Inject constructor(
         }
     }
 
+    private var phase: CaptureAndCropImagePhase
+        get() = savedStateHandle.get<String>(PHASE_ARG)
+            ?.let { CaptureAndCropImagePhase.valueOf(it) }
+            ?: CaptureAndCropImagePhase.CAPTURE
+        set(value) {
+            savedStateHandle[PHASE_ARG] = value.name
+        }
+
     private val _screenState: MutableStateFlow<CaptureAndCropImageScreenState> =
-        MutableStateFlow(CaptureAndCropImageScreenState.CaptureImage(imageUri))
+        MutableStateFlow(phase.asScreenState(imageUri))
     internal val screenState: StateFlow<CaptureAndCropImageScreenState> = _screenState.asStateFlow()
 
     internal fun onImageCaptured() {
+        phase = CaptureAndCropImagePhase.CROP
         _screenState.update { CaptureAndCropImageScreenState.CropImage(imageUri) }
     }
 
     internal fun onImageCropped() {
+        phase = CaptureAndCropImagePhase.DONE
         _screenState.update { CaptureAndCropImageScreenState.ImageCapturedAndCropped(imageUri) }
     }
 
@@ -41,10 +51,26 @@ class CaptureAndCropImageViewModel @Inject constructor(
         if (screenState.value !is CaptureAndCropImageScreenState.ImageCapturedAndCropped) {
             deleteFileUseCase(imageUri)
             savedStateHandle.remove<Uri>("imageUri")
+            savedStateHandle.remove<String>(PHASE_ARG)
         }
         super.onCleared()
     }
+
+    private companion object {
+        private const val PHASE_ARG = "captureAndCropImagePhase"
+    }
 }
+
+private enum class CaptureAndCropImagePhase {
+    CAPTURE, CROP, DONE
+}
+
+private fun CaptureAndCropImagePhase.asScreenState(imageUri: Uri): CaptureAndCropImageScreenState =
+    when (this) {
+        CaptureAndCropImagePhase.CAPTURE -> CaptureAndCropImageScreenState.CaptureImage(imageUri)
+        CaptureAndCropImagePhase.CROP -> CaptureAndCropImageScreenState.CropImage(imageUri)
+        CaptureAndCropImagePhase.DONE -> CaptureAndCropImageScreenState.ImageCapturedAndCropped(imageUri)
+    }
 
 internal sealed interface CaptureAndCropImageScreenState {
     data class CaptureImage(val imageUri: Uri) : CaptureAndCropImageScreenState

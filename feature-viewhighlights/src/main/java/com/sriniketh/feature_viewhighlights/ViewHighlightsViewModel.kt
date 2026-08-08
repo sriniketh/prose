@@ -2,6 +2,7 @@ package com.sriniketh.feature_viewhighlights
 
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
@@ -26,22 +27,26 @@ import javax.inject.Inject
 class ViewHighlightsViewModel @Inject constructor(
     private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase,
     private val deleteHighlightUseCase: DeleteHighlightUseCase,
-    private val exportHighlightsUseCase: ExportHighlightsUseCase
+    private val exportHighlightsUseCase: ExportHighlightsUseCase,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val bookId: String = savedStateHandle.get<String>(BOOK_ID_ARG).orEmpty()
+
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
-        MutableStateFlow(ViewHighlightsUIState())
+        MutableStateFlow(ViewHighlightsUIState(isLoading = true))
     internal val highlightsUIStateFlow: StateFlow<ViewHighlightsUIState> =
         _highlightsUIStateFlow.asStateFlow()
 
     private val _effects = Channel<ViewHighlightsEffect>(Channel.BUFFERED)
     internal val effects: Flow<ViewHighlightsEffect> = _effects.receiveAsFlow()
 
-    internal fun getHighlights(bookId: String) {
+    init {
+        loadHighlights()
+    }
+
+    private fun loadHighlights() {
         viewModelScope.launch {
-            _highlightsUIStateFlow.update { state ->
-                state.copy(isLoading = true)
-            }
             getAllSavedHighlightsUseCase(bookId).collect { result ->
                 if (result.isSuccess) {
                     val highlights = result.getOrThrow().sortedBy { it.savedOnTimestamp }
@@ -53,7 +58,7 @@ class ViewHighlightsViewModel @Inject constructor(
                     }
                 } else if (result.isFailure) {
                     _highlightsUIStateFlow.update { state ->
-                        state.copy(isLoading = false)
+                        state.copy(isLoading = false, highlights = persistentListOf())
                     }
                     _effects.trySend(ViewHighlightsEffect.ShowMessage(R.string.gethighlights_error_message))
                 }
@@ -122,6 +127,10 @@ class ViewHighlightsViewModel @Inject constructor(
         text = text,
         savedOn = savedOnTimestamp
     )
+
+    private companion object {
+        private const val BOOK_ID_ARG = "bookId"
+    }
 }
 
 internal data class ViewHighlightsUIState(

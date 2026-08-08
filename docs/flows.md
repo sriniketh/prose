@@ -79,7 +79,8 @@ Details ([`SearchBookViewModel`](../feature-searchbooks/src/main/java/com/srinik
 ## 3. Book info & add to shelf
 
 ```
-BookInfoScreen → BookInfoViewModel.getBookDetail(volumeId)
+BookInfoScreen → hiltViewModel() populates BookInfoViewModel's SavedStateHandle with bookId
+  → init reads bookId, calls getBookDetail(bookId) once
   → FetchBookInfoUseCase → BooksRepository.fetchBookInfo
        → BooksRemoteDataSource.getVolume(volumeId)  → Volume.asBook()
   → IsBookInDbUseCase → BookDao.doesBookExist(bookId)   → canAddToShelf = !isInDb
@@ -103,8 +104,8 @@ Details ([`BookInfoViewModel`](../feature-searchbooks/src/main/java/com/sriniket
 ## 4. View highlights
 
 ```
-ViewHighlightsScreen → ViewHighlightsViewModel.getHighlights(bookId)
-  → GetAllSavedHighlightsUseCase(bookId)
+ViewHighlightsScreen → hiltViewModel() populates ViewHighlightsViewModel's SavedStateHandle with bookId
+  → init collects GetAllSavedHighlightsUseCase(bookId) once, for the ViewModel's lifetime
       → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
         → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
   ← sortedBy { savedOnTimestamp } → HighlightUIState list
@@ -131,8 +132,9 @@ This is the most involved flow and spans two ViewModels and three navigation des
 ```
 capture_and_crop_image/{bookId}
   → CaptureAndCropImageScreen + CaptureAndCropImageViewModel
-      imageUri = CreateTempImageFileUseCase()  → FileSource.createNewFile("<uuid>.jpg")
-                 (cacheDir file, exposed via FileProvider; stored in SavedStateHandle)
+      imageUri = savedStateHandle["imageUri"] ?: CreateTempImageFileUseCase().also { savedStateHandle["imageUri"] = it }
+                 (cacheDir file, exposed via FileProvider)
+      phase persisted in SavedStateHandle: CAPTURE → CROP → DONE
       state: CaptureImage → CropImage → ImageCapturedAndCropped
 ```
 
@@ -141,20 +143,27 @@ Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/co
 1. **CaptureImage** — a `TakePicture` activity-result launcher writes the photo into the temp
    FileProvider URI. On cancel/failure the screen calls `goBack()`.
 2. **CropImage** — `CropImageScreen` (Cropify) lets the user crop; `onImageCropped()` advances state.
-3. **ImageCapturedAndCropped** — the screen calls `onImageCaptured(uri)`, which URL-encodes the URI
-   and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
+3. **ImageCapturedAndCropped** — a `LaunchedEffect(screenState)` calls `onImageCaptured(uri)`, which
+   URL-encodes the URI and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}` (wrapped in
+   `LaunchedEffect` so a recomposition while already in this state can't re-navigate and duplicate the
+   back-stack entry).
 4. **Cleanup** — `onCleared()` deletes the temp file *unless* the flow completed
    (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The completed file is handed
    off to the next screen, which deletes it after OCR.
+5. **Process death** — both `imageUri` and the phase are in `SavedStateHandle`, so a process death
+   mid-crop recreates the ViewModel back into `CropImage` with the same file instead of relaunching
+   the camera.
 
 ### 5b. OCR & save
 
 ```
 save_highlight_from_uri/{bookId}/{uri}
   → EditAndSaveHighlightScreen(uri) + EditAndSaveHighlightViewModel
-      processImageForHighlightText(uri):
+      hiltViewModel() populates SavedStateHandle with the encoded uri; init decodes it and calls
+      processImageForHighlightText(uri) once (guarded so a second call is a no-op):
         → TextAnalyzer.analyzeImage(uri)        (ML Kit on-device Latin OCR)
-        → visionText.text.replace("\n", " ")    → editable highlightText
+        → visionText.text.replace("\n", " ")    → editable highlightText, persisted as a draft in
+                                                    SavedStateHandle on every edit
         finally → DeleteFileUseCase(uri)         (delete the temp image)
 
 [user edits text, taps save]
@@ -171,20 +180,25 @@ Details:
   recognizer on cancellation. OCR runs fully on-device.
 - OCR failure → `image_processing_failure` snackbar; the temp file is deleted in `finally` either way.
 - A new highlight gets a random `UUID` and the current formatted timestamp.
+- The draft `highlightText` (and, for edits, `savedOnTimestamp`) live in `SavedStateHandle`, not just
+  in-memory `StateFlow` state, so an in-progress edit survives process death even though the source
+  image file has already been deleted by the time OCR finishes.
 
 ### 5c. Edit an existing highlight
 
 ```
 save_highlight_from_highlight_id/{bookId}/{highlightId}
-  → EditAndSaveHighlightViewModel.loadHighlightText(highlightId)
+  → hiltViewModel() populates SavedStateHandle with highlightId; init calls
+    loadHighlightText(highlightId) once (guarded so a second call is a no-op)
       → LoadHighlightUseCase → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
   ← prefilled text + screen title switches to "edit"; original savedOnTimestamp is preserved
 [save] → updateHighlight(bookId, text, highlightId)   (same UUID → REPLACE updates the row)
 ```
 
 The same [`EditAndSaveHighlightViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/EditAndSaveHighlightViewModel.kt)
-serves both new and edit cases. For edits, `savedOnTimestamp` is retained so the original capture time
-is not overwritten, and the existing `highlightId` makes the REPLACE insert an update.
+serves both new and edit cases. For edits, `savedOnTimestamp` is retained (in `SavedStateHandle`) so
+the original capture time is not overwritten, and the existing `highlightId` makes the REPLACE insert
+an update.
 
 ---
 

@@ -11,6 +11,7 @@ class FakeHighlightsRepository : HighlightsRepository {
     var shouldDeleteHighlightFromDbThrowException = false
     var bookIdPassed: String? = null
     var deletedHighlightId: String? = null
+    var getAllHighlightsForBookFromDbInvocationCount = 0
 
     private val fakeHighlight = Highlight(
         id = "test-highlight-id",
@@ -29,6 +30,7 @@ class FakeHighlightsRepository : HighlightsRepository {
 
     override fun getAllHighlightsForBookFromDb(bookId: String): Flow<Result<List<Highlight>>> = flow {
         bookIdPassed = bookId
+        getAllHighlightsForBookFromDbInvocationCount++
         if (shouldGetAllHighlightsForBookFromDbThrowException) {
             emit(Result.failure(RuntimeException("Get all highlights failed")))
         } else {

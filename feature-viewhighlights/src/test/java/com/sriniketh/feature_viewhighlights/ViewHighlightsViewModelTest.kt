@@ -1,5 +1,6 @@
 package com.sriniketh.feature_viewhighlights
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
@@ -10,6 +11,7 @@ import com.sriniketh.feature_viewhighlights.fakes.FakeHighlightsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -30,7 +32,8 @@ class ViewHighlightsViewModelTest {
     private lateinit var getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
     private lateinit var deleteHighlightUseCase: DeleteHighlightUseCase
     private lateinit var exportHighlightsUseCase: ExportHighlightsUseCase
-    private lateinit var viewModel: ViewHighlightsViewModel
+
+    private val bookId = "test-book-id"
 
     @Before
     fun setup() {
@@ -41,11 +44,6 @@ class ViewHighlightsViewModelTest {
         getAllSavedHighlightsUseCase = GetAllSavedHighlightsUseCase(fakeHighlightsRepository)
         deleteHighlightUseCase = DeleteHighlightUseCase(fakeHighlightsRepository)
         exportHighlightsUseCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
-        viewModel = ViewHighlightsViewModel(
-            getAllSavedHighlightsUseCase,
-            deleteHighlightUseCase,
-            exportHighlightsUseCase
-        )
     }
 
     @After
@@ -53,182 +51,78 @@ class ViewHighlightsViewModelTest {
         Dispatchers.resetMain()
     }
 
+    private fun buildViewModel(bookId: String = this.bookId): ViewHighlightsViewModel =
+        ViewHighlightsViewModel(
+            getAllSavedHighlightsUseCase,
+            deleteHighlightUseCase,
+            exportHighlightsUseCase,
+            SavedStateHandle(mapOf("bookId" to bookId))
+        )
+
     @Test
-    fun `when getHighlights is called then sets loading state to true`() = runTest {
+    fun `when created then reads bookId from SavedStateHandle and loads highlights automatically`() = runTest {
+        val viewModel = buildViewModel()
+
         viewModel.highlightsUIStateFlow.test {
-            val initialState = awaitItem()
-            assertFalse(initialState.isLoading)
-
-            viewModel.getHighlights("test-book-id")
-
             val loadingState = awaitItem()
             assertTrue(loadingState.isLoading)
 
-            skipItems(1)
+            val loadedState = awaitItem()
+            assertFalse(loadedState.isLoading)
+            assertEquals(1, loadedState.highlights.size)
+            assertEquals("test-highlight-id", loadedState.highlights[0].id)
         }
-    }
-
-    @Test
-    fun `when getHighlights succeeds then returns highlights`() = runTest {
-        val bookId = "test-book-id"
-        fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
-
-        viewModel.highlightsUIStateFlow.test {
-            awaitItem()
-
-            viewModel.getHighlights(bookId)
-
-            awaitItem()
-            val finalState = awaitItem()
-            assertFalse(finalState.isLoading)
-            assertEquals(1, finalState.highlights.size)
-            assertEquals("test-highlight-id", finalState.highlights[0].id)
-        }
-    }
-
-    @Test
-    fun `when getHighlights succeeds then passes book id to repository`() = runTest {
-        val bookId = "test-book-id"
-
-        viewModel.getHighlights(bookId)
-        this.testScheduler.advanceUntilIdle()
 
         assertEquals(bookId, fakeHighlightsRepository.bookIdPassed)
     }
 
     @Test
-    fun `when getHighlights fails then shows error message`() = runTest {
-        val bookId = "test-book-id"
+    fun `when ViewModel is only created once then repository is only collected once regardless of how many observers subscribe`() =
+        runTest {
+            val viewModel = buildViewModel()
+            advanceUntilIdle()
+
+            assertEquals(1, fakeHighlightsRepository.getAllHighlightsForBookFromDbInvocationCount)
+
+            viewModel.highlightsUIStateFlow.test { awaitItem() }
+            viewModel.highlightsUIStateFlow.test { awaitItem() }
+            viewModel.highlightsUIStateFlow.test { awaitItem() }
+
+            assertEquals(1, fakeHighlightsRepository.getAllHighlightsForBookFromDbInvocationCount)
+        }
+
+    @Test
+    fun `when getAllSavedHighlights fails then shows error message exactly once`() = runTest {
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = true
+        val viewModel = buildViewModel()
 
         viewModel.effects.test {
-            viewModel.getHighlights(bookId)
-
             assertEquals(
                 ViewHighlightsEffect.ShowMessage(R.string.gethighlights_error_message),
                 awaitItem()
             )
+            expectNoEvents()
         }
-
-        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
-    fun `when getHighlights fails then clears highlights list`() = runTest {
-        val bookId = "test-book-id"
+    fun `when getAllSavedHighlights fails then clears highlights list`() = runTest {
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = true
+        val viewModel = buildViewModel()
 
         viewModel.highlightsUIStateFlow.test {
-            awaitItem()
-
-            viewModel.getHighlights(bookId)
-
             awaitItem()
             val errorState = awaitItem()
             assertTrue(errorState.highlights.isEmpty())
+            assertFalse(errorState.isLoading)
         }
-    }
-
-    @Test
-    fun `when processing OnCameraPermissionDenied action then shows permission error`() = runTest {
-        viewModel.effects.test {
-            viewModel.processAction(ViewHighlightsAction.OnCameraPermissionDenied)
-
-            assertEquals(
-                ViewHighlightsEffect.ShowMessage(R.string.permission_denied_error_message),
-                awaitItem()
-            )
-        }
-
-        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
-    }
-
-    @Test
-    fun `when processing other actions then does nothing`() = runTest {
-        viewModel.processAction(ViewHighlightsAction.OnBackPressed)
-
-        viewModel.highlightsUIStateFlow.test {
-            val state = awaitItem()
-            assertFalse(state.isLoading)
-            assertTrue(state.highlights.isEmpty())
-        }
-    }
-
-    @Test
-    fun `when delete action is processed then sets loading state`() = runTest {
-        val bookId = "test-book-id"
-        fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
-
-        viewModel.highlightsUIStateFlow.test {
-            awaitItem()
-
-            viewModel.getHighlights(bookId)
-            awaitItem()
-            val stateWithHighlights = awaitItem()
-
-            viewModel.processAction(
-                ViewHighlightsAction.OnDeleteHighlight(stateWithHighlights.highlights.first().id)
-            )
-            val loadingState = awaitItem()
-            assertTrue(loadingState.isLoading)
-        }
-    }
-
-    @Test
-    fun `when delete action succeeds then passes highlight to repository`() = runTest {
-        val bookId = "test-book-id"
-        fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
-
-        viewModel.getHighlights(bookId)
-        this.testScheduler.advanceUntilIdle()
-
-        viewModel.highlightsUIStateFlow.test {
-            val state = awaitItem()
-            viewModel.processAction(
-                ViewHighlightsAction.OnDeleteHighlight(state.highlights.first().id)
-            )
-
-            awaitItem()
-        }
-
-        this.testScheduler.advanceUntilIdle()
-        assertEquals("test-highlight-id", fakeHighlightsRepository.deletedHighlightId)
-    }
-
-    @Test
-    fun `when delete action fails then shows error message`() = runTest {
-        val bookId = "test-book-id"
-        fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
-        fakeHighlightsRepository.shouldDeleteHighlightFromDbThrowException = true
-
-        viewModel.getHighlights(bookId)
-        this.testScheduler.advanceUntilIdle()
-
-        viewModel.effects.test {
-            viewModel.processAction(
-                ViewHighlightsAction.OnDeleteHighlight(
-                    viewModel.highlightsUIStateFlow.value.highlights.first().id
-                )
-            )
-
-            assertEquals(
-                ViewHighlightsEffect.ShowMessage(R.string.delete_error_message),
-                awaitItem()
-            )
-        }
-
-        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
     fun `when highlight is mapped to UI state then all fields are correct`() = runTest {
-        val bookId = "test-book-id"
-        fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
+        val viewModel = buildViewModel()
 
         viewModel.highlightsUIStateFlow.test {
-            awaitItem()
-
-            viewModel.getHighlights(bookId)
             awaitItem()
             val state = awaitItem()
 
@@ -240,12 +134,100 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when OnExportHighlights action is processed then sets loading state to true`() = runTest {
+    fun `when processing OnCameraPermissionDenied action then shows permission error`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.effects.test {
+            viewModel.processAction(ViewHighlightsAction.OnCameraPermissionDenied)
+
+            assertEquals(
+                ViewHighlightsEffect.ShowMessage(R.string.permission_denied_error_message),
+                awaitItem()
+            )
+        }
+    }
+
+    @Test
+    fun `when processing other actions then does nothing`() = runTest {
+        val viewModel = buildViewModel()
+        viewModel.processAction(ViewHighlightsAction.OnBackPressed)
+
         viewModel.highlightsUIStateFlow.test {
             awaitItem()
+            val state = awaitItem()
+            assertFalse(state.isLoading)
+            assertEquals(1, state.highlights.size)
+        }
+    }
 
-            viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
-            testScheduler.advanceUntilIdle()
+    @Test
+    fun `when delete action is processed then sets loading state`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+            val stateWithHighlights = awaitItem()
+
+            viewModel.processAction(
+                ViewHighlightsAction.OnDeleteHighlight(stateWithHighlights.highlights.first().id)
+            )
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isLoading)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `when delete action succeeds then passes highlight to repository`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+            val state = awaitItem()
+            viewModel.processAction(
+                ViewHighlightsAction.OnDeleteHighlight(state.highlights.first().id)
+            )
+
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        advanceUntilIdle()
+        assertEquals("test-highlight-id", fakeHighlightsRepository.deletedHighlightId)
+    }
+
+    @Test
+    fun `when delete action fails then shows error message`() = runTest {
+        fakeHighlightsRepository.shouldDeleteHighlightFromDbThrowException = true
+        val viewModel = buildViewModel()
+
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+            awaitItem()
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        viewModel.effects.test {
+            viewModel.processAction(
+                ViewHighlightsAction.OnDeleteHighlight("test-highlight-id")
+            )
+
+            assertEquals(
+                ViewHighlightsEffect.ShowMessage(R.string.delete_error_message),
+                awaitItem()
+            )
+        }
+    }
+
+    @Test
+    fun `when OnExportHighlights action is processed then sets loading state to true`() = runTest {
+        val viewModel = buildViewModel()
+
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+            awaitItem()
+
+            viewModel.processAction(ViewHighlightsAction.OnExportHighlights(bookId))
 
             val loadingState = awaitItem()
             assertTrue(loadingState.isLoading)
@@ -256,24 +238,25 @@ class ViewHighlightsViewModelTest {
 
     @Test
     fun `when OnExportHighlights action succeeds then emits share effect and clears loading`() = runTest {
+        val viewModel = buildViewModel()
+
         viewModel.effects.test {
-            viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
+            viewModel.processAction(ViewHighlightsAction.OnExportHighlights(bookId))
             testScheduler.advanceUntilIdle()
 
             val effect = awaitItem()
             assertTrue(effect is ViewHighlightsEffect.ShareHighlights)
             assertNotNull((effect as ViewHighlightsEffect.ShareHighlights).uri)
         }
-
-        assertFalse(viewModel.highlightsUIStateFlow.value.isLoading)
     }
 
     @Test
     fun `when OnExportHighlights action fails then shows error and clears loading`() = runTest {
         fakeBooksRepository.shouldGetBookByIdFromDbThrowException = true
+        val viewModel = buildViewModel()
 
         viewModel.effects.test {
-            viewModel.processAction(ViewHighlightsAction.OnExportHighlights("test-book-id"))
+            viewModel.processAction(ViewHighlightsAction.OnExportHighlights(bookId))
             testScheduler.advanceUntilIdle()
 
             assertEquals(
