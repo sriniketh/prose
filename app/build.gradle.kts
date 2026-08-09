@@ -39,6 +39,12 @@ android {
 	}
 
 	namespace = "com.sriniketh.prose"
+
+	lint {
+		abortOnError = true
+		baseline = file("lint-baseline.xml")
+		disable += setOf("GradleDependency", "NewerVersionAvailable")
+	}
 }
 
 dependencies {

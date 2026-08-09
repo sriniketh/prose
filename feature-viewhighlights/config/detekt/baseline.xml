@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:ViewHighlightsScreen.kt$@Composable fun ViewHighlightsScreen( modifier: Modifier = Modifier, viewModel: ViewHighlightsViewModel = hiltViewModel(), bookId: String, goBack: () -&gt; Unit, goToAddHighlightScreen: () -&gt; Unit, goToEditHighlightScreen: (String) -&gt; Unit )</ID>
+    <ID>FunctionNaming:ViewHighlightsScreen.kt$@Composable private fun DeleteHighlightAlertDialog( onConfirm: () -&gt; Unit, hideDeleteDialog: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:ViewHighlightsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun ViewHighlights( uiState: ViewHighlightsUIState, bookId: String, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, onAction: (ViewHighlightsAction) -&gt; Unit )</ID>
+    <ID>LongMethod:ViewHighlightsScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun ViewHighlights( uiState: ViewHighlightsUIState, bookId: String, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, onAction: (ViewHighlightsAction) -&gt; Unit )</ID>
+    <ID>LongParameterList:ViewHighlightsScreen.kt$( modifier: Modifier = Modifier, viewModel: ViewHighlightsViewModel = hiltViewModel(), bookId: String, goBack: () -&gt; Unit, goToAddHighlightScreen: () -&gt; Unit, goToEditHighlightScreen: (String) -&gt; Unit )</ID>
+    <ID>NewLineAtEndOfFile:FakeHighlightsRepository.kt$com.sriniketh.feature_viewhighlights.fakes.FakeHighlightsRepository.kt</ID>
+    <ID>PackageNaming:FakeBooksRepository.kt$package com.sriniketh.feature_viewhighlights.fakes</ID>
+    <ID>PackageNaming:FakeFileSource.kt$package com.sriniketh.feature_viewhighlights.fakes</ID>
+    <ID>PackageNaming:FakeHighlightsRepository.kt$package com.sriniketh.feature_viewhighlights.fakes</ID>
+    <ID>PackageNaming:ViewHighlightsScreen.kt$package com.sriniketh.feature_viewhighlights</ID>
+    <ID>PackageNaming:ViewHighlightsViewModel.kt$package com.sriniketh.feature_viewhighlights</ID>
+    <ID>PackageNaming:ViewHighlightsViewModelTest.kt$package com.sriniketh.feature_viewhighlights</ID>
+  </CurrentIssues>
+</SmellBaseline>

@@ -42,6 +42,11 @@ android {
 		buildConfig = true
 	}
 	namespace = "com.sriniketh.prose.core_network"
+
+	lint {
+		abortOnError = true
+		baseline = file("lint-baseline.xml")
+	}
 }
 
 dependencies {

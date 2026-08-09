@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:ProseAppScreen.kt$@Composable internal fun ProseAppScreen( modifier: Modifier = Modifier )</ID>
+    <ID>LongMethod:ProseAppScreen.kt$@Composable internal fun ProseAppScreen( modifier: Modifier = Modifier )</ID>
+    <ID>MatchingDeclarationName:Navigation.kt$Screen</ID>
+    <ID>MaxLineLength:ProseAppScreen.kt$route = "${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.route}/{${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argBookId}}/{${Screen.SAVEHIGHLIGHT_FROMHIGHLIGHTID.argHighlightId}}"</ID>
+    <ID>MaxLineLength:ProseAppScreen.kt$route = "${Screen.SAVEHIGHLIGHT_FROMURI.route}/{${Screen.SAVEHIGHLIGHT_FROMURI.argBookId}}/{${Screen.SAVEHIGHLIGHT_FROMURI.argUri}}"</ID>
+  </CurrentIssues>
+</SmellBaseline>

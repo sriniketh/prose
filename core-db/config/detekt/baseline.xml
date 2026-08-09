@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>NewLineAtEndOfFile:ListTypeConverterTest.kt$com.sriniketh.core_db.converters.ListTypeConverterTest.kt</ID>
+    <ID>PackageNaming:BookDao.kt$package com.sriniketh.core_db.dao</ID>
+    <ID>PackageNaming:BookDatabase.kt$package com.sriniketh.core_db</ID>
+    <ID>PackageNaming:BookEntity.kt$package com.sriniketh.core_db.entity</ID>
+    <ID>PackageNaming:DatabaseModule.kt$package com.sriniketh.core_db.dagger</ID>
+    <ID>PackageNaming:HighlightDao.kt$package com.sriniketh.core_db.dao</ID>
+    <ID>PackageNaming:HighlightEntity.kt$package com.sriniketh.core_db.entity</ID>
+    <ID>PackageNaming:ListTypeConverter.kt$package com.sriniketh.core_db.converters</ID>
+    <ID>PackageNaming:ListTypeConverterTest.kt$package com.sriniketh.core_db.converters</ID>
+  </CurrentIssues>
+</SmellBaseline>
