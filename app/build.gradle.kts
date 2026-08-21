@@ -50,21 +50,15 @@ dependencies {
 	implementation(project(":feature-viewhighlights"))
 	implementation(project(":feature-addhighlight"))
 
-	implementation(libs.android.core.ktx)
 	implementation(libs.android.appcompat)
 	implementation(libs.coroutines.android)
 	implementation(libs.timber)
 
 	val composeBom = platform(libs.compose.bom)
 	implementation(composeBom)
-	implementation(libs.bundles.compose)
 	debugImplementation(libs.compose.ui.tooling)
 	implementation(libs.navigation.compose)
 
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
-	androidTestImplementation(libs.android.junit)
-	androidTestImplementation(libs.espresso.core)
 }

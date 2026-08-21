@@ -41,7 +41,6 @@ dependencies {
 	implementation(project(":core-db"))
 	implementation(project(":core-models"))
 
-	implementation(libs.android.core.ktx)
 	implementation(libs.coroutines.android)
 	implementation(libs.timber)
 

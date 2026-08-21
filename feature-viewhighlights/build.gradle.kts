@@ -45,16 +45,14 @@ dependencies {
 	implementation(project(":core-data"))
 	implementation(project(":core-models"))
 
-	implementation(libs.android.core.ktx)
-
 	val composeBom = platform(libs.compose.bom)
 	implementation(composeBom)
-	implementation(libs.bundles.compose)
+	implementation(libs.compose.material3)
 	debugImplementation(libs.compose.ui.tooling)
 
 	implementation(libs.lifecycle.runtime.compose)
 	implementation(libs.lifecycle.viewmodel.compose)
-	implementation(libs.hilt.navigation.compose)
+	implementation(libs.hilt.lifecycle.viewmodel.compose)
 	implementation(libs.activity.compose)
 
 	androidTestImplementation(composeBom)

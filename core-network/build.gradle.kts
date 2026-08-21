@@ -45,7 +45,6 @@ android {
 }
 
 dependencies {
-	implementation(libs.android.core.ktx)
 	implementation(libs.coroutines.android)
 
 	implementation(libs.okhttp.logging.interceptor)

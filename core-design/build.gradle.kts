@@ -42,8 +42,5 @@ dependencies {
 	implementation(libs.google.fonts)
 
 	androidTestImplementation(composeBom)
-	androidTestImplementation(libs.compose.junit)
 	debugImplementation(libs.compose.test.manifest)
-
-	testImplementation(libs.junit)
 }

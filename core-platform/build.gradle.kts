@@ -34,12 +34,6 @@ android {
 }
 
 dependencies {
-	implementation(libs.android.core.ktx)
-	implementation(libs.timber)
-
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
-	androidTestImplementation(libs.android.junit)
 }

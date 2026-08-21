@@ -46,7 +46,6 @@ dependencies {
 	implementation(project(":core-data"))
 	implementation(project(":core-models"))
 
-	implementation(libs.android.core.ktx)
 	implementation(libs.timber)
 
 	implementation(libs.mlkit.text.recognition)
@@ -58,7 +57,7 @@ dependencies {
 
 	implementation(libs.lifecycle.runtime.compose)
 	implementation(libs.lifecycle.viewmodel.compose)
-	implementation(libs.hilt.navigation.compose)
+	implementation(libs.hilt.lifecycle.viewmodel.compose)
 	implementation(libs.activity.compose)
 
 	androidTestImplementation(composeBom)
