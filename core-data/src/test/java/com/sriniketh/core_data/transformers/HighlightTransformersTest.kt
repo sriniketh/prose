@@ -31,10 +31,10 @@ class HighlightTransformersTest {
 
     @Test
     fun `when converting Highlight to HighlightEntity then saved timestamp is mapped correctly`() {
-        val timestamp = "2023-12-25 10:30 AM"
-        val highlight = createTestHighlight(savedOnTimestamp = timestamp)
+        val epochMillis = 1_703_500_200_000L
+        val highlight = createTestHighlight(savedOnEpochMillis = epochMillis)
         val highlightEntity = highlight.asHighlightEntity()
-        assertEquals(timestamp, highlightEntity.savedOnTimestamp)
+        assertEquals(epochMillis, highlightEntity.savedOnEpochMillis)
     }
 
     @Test
@@ -61,33 +61,33 @@ class HighlightTransformersTest {
 
     @Test
     fun `when converting HighlightEntity to Highlight then saved timestamp is mapped correctly`() {
-        val timestamp = "2024-01-15 03:45 PM"
-        val highlightEntity = createTestHighlightEntity(savedOnTimestamp = timestamp)
+        val epochMillis = 1_705_337_100_000L
+        val highlightEntity = createTestHighlightEntity(savedOnEpochMillis = epochMillis)
         val highlight = highlightEntity.asHighlight()
-        assertEquals(timestamp, highlight.savedOnTimestamp)
+        assertEquals(epochMillis, highlight.savedOnEpochMillis)
     }
 
     private fun createTestHighlight(
         id: String = "test-id",
         bookId: String = "test-book-id",
         text: String = "test text",
-        savedOnTimestamp: String = "test timestamp"
+        savedOnEpochMillis: Long = 1_672_531_200_000L
     ) = Highlight(
         id = id,
         bookId = bookId,
         text = text,
-        savedOnTimestamp = savedOnTimestamp
+        savedOnEpochMillis = savedOnEpochMillis
     )
 
     private fun createTestHighlightEntity(
         id: String = "test-id",
         bookId: String = "test-book-id",
         text: String = "test text",
-        savedOnTimestamp: String = "test timestamp"
+        savedOnEpochMillis: Long = 1_672_531_200_000L
     ) = HighlightEntity(
         id = id,
         bookId = bookId,
         text = text,
-        savedOnTimestamp = savedOnTimestamp
+        savedOnEpochMillis = savedOnEpochMillis
     )
 }

@@ -1,5 +1,6 @@
 plugins {
 	alias(libs.plugins.android.library)
+	alias(libs.plugins.kotlin.serialization)
 	alias(libs.plugins.hilt)
 	alias(libs.plugins.ksp)
 }
@@ -35,6 +36,12 @@ android {
 		buildConfig = true
 	}
 	namespace = "com.sriniketh.core_db"
+
+	sourceSets {
+		getByName("androidTest") {
+			assets.directories.add("$projectDir/schemas")
+		}
+	}
 }
 
 dependencies {
@@ -44,8 +51,15 @@ dependencies {
 	implementation(libs.room.ktx)
 	ksp(libs.room.compiler)
 
+	implementation(libs.kotlinx.serialization.json)
+
 	implementation(libs.hilt.android)
 	ksp(libs.hilt.compiler)
 
 	testImplementation(libs.junit)
+
+	androidTestImplementation(libs.junit)
+	androidTestImplementation(libs.android.junit)
+	androidTestImplementation(libs.android.test.runner)
+	androidTestImplementation(libs.room.testing)
 }

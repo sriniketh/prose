@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
+import com.sriniketh.core_data.usecases.FormatHighlightTimestampUseCase
 import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +27,8 @@ import javax.inject.Inject
 class ViewHighlightsViewModel @Inject constructor(
     private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase,
     private val deleteHighlightUseCase: DeleteHighlightUseCase,
-    private val exportHighlightsUseCase: ExportHighlightsUseCase
+    private val exportHighlightsUseCase: ExportHighlightsUseCase,
+    private val formatHighlightTimestampUseCase: FormatHighlightTimestampUseCase
 ) : ViewModel() {
 
     private val _highlightsUIStateFlow: MutableStateFlow<ViewHighlightsUIState> =
@@ -44,7 +46,7 @@ class ViewHighlightsViewModel @Inject constructor(
             }
             getAllSavedHighlightsUseCase(bookId).collect { result ->
                 if (result.isSuccess) {
-                    val highlights = result.getOrThrow().sortedBy { it.savedOnTimestamp }
+                    val highlights = result.getOrThrow()
                     _highlightsUIStateFlow.update { state ->
                         state.copy(
                             isLoading = false,
@@ -120,7 +122,7 @@ class ViewHighlightsViewModel @Inject constructor(
     private fun Highlight.asHighlightUIState(): HighlightUIState = HighlightUIState(
         id = id,
         text = text,
-        savedOn = savedOnTimestamp
+        savedOn = formatHighlightTimestampUseCase(savedOnEpochMillis)
     )
 }
 

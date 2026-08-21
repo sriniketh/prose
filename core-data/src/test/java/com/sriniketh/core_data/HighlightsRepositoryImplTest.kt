@@ -25,10 +25,10 @@ class HighlightsRepositoryImplTest {
     fun `insertHighlightIntoDb returns success result when highlight is inserted into db`() =
         runTest {
             val highlight = Highlight(
-                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+                id = "possim", bookId = "eius", text = "ignota", savedOnEpochMillis = 111L
             )
             val highlightEntity = HighlightEntity(
-                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+                id = "possim", bookId = "eius", text = "ignota", savedOnEpochMillis = 111L
             )
 
             highlightDao.shouldInsertHighlightThrowException = false
@@ -42,7 +42,7 @@ class HighlightsRepositoryImplTest {
     fun `insertHighlightIntoDb returns failure result when exception occurs during insertion`() =
         runTest {
             val highlight = Highlight(
-                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+                id = "possim", bookId = "eius", text = "ignota", savedOnEpochMillis = 111L
             )
 
             highlightDao.shouldInsertHighlightThrowException = true
@@ -57,7 +57,7 @@ class HighlightsRepositoryImplTest {
     fun `loadHighlightFromDb returns success result when highlight present in db`() =
         runTest {
             val highlightEntity = HighlightEntity(
-                id = "someid", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+                id = "someid", bookId = "eius", text = "ignota", savedOnEpochMillis = 111L
             )
             highlightDao.highlightEntityToReturn = highlightEntity
             highlightDao.shouldGetHighlightByIdThrowException = false
@@ -68,7 +68,7 @@ class HighlightsRepositoryImplTest {
             assertEquals("someid", highlight?.id)
             assertEquals("eius", highlight?.bookId)
             assertEquals("ignota", highlight?.text)
-            assertEquals("diam", highlight?.savedOnTimestamp)
+            assertEquals(111L, highlight?.savedOnEpochMillis)
         }
 
     @Test
@@ -89,7 +89,7 @@ class HighlightsRepositoryImplTest {
             highlightDao.shouldGetAllHighlightsForBookThrowException = false
             highlightDao.highlightsInDb.add(
                 HighlightEntity(
-                    id = "iaculis", bookId = "pellentesque", text = "nisi", savedOnTimestamp = "vim"
+                    id = "iaculis", bookId = "pellentesque", text = "nisi", savedOnEpochMillis = 222L
                 )
             )
             highlightsRepositoryImpl.getAllHighlightsForBookFromDb("someId").test {
@@ -101,7 +101,7 @@ class HighlightsRepositoryImplTest {
                 assertEquals("iaculis", highlight?.id)
                 assertEquals("pellentesque", highlight?.bookId)
                 assertEquals("nisi", highlight?.text)
-                assertEquals("vim", highlight?.savedOnTimestamp)
+                assertEquals(222L, highlight?.savedOnEpochMillis)
                 awaitComplete()
             }
             assertEquals("someId", highlightDao.bookIdPassed)
@@ -113,7 +113,7 @@ class HighlightsRepositoryImplTest {
             highlightDao.shouldGetAllHighlightsForBookThrowException = true
             highlightDao.highlightsInDb.add(
                 HighlightEntity(
-                    id = "iaculis", bookId = "pellentesque", text = "nisi", savedOnTimestamp = "vim"
+                    id = "iaculis", bookId = "pellentesque", text = "nisi", savedOnEpochMillis = 222L
                 )
             )
 

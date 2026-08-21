@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.sriniketh.core_db.BookDatabase
 import com.sriniketh.core_db.dao.BookDao
 import com.sriniketh.core_db.dao.HighlightDao
+import com.sriniketh.core_db.migrations.MIGRATION_1_2
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,7 @@ object DatabaseModule {
         @ApplicationContext context: Context
     ): BookDatabase {
         return Room.databaseBuilder(context, BookDatabase::class.java, "book-db")
-            .fallbackToDestructiveMigration(dropAllTables = true)
+            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

@@ -96,20 +96,25 @@ Retrofit 3 + kotlinx.serialization client for the Google Books API.
 
 ### `core-db`
 Room database `book-db`.
-- [`BookDatabase`](../core-db/src/main/java/com/sriniketh/core_db/BookDatabase.kt) — version 1,
+- [`BookDatabase`](../core-db/src/main/java/com/sriniketh/core_db/BookDatabase.kt) — version 2,
   `exportSchema = true` (schemas under `core-db/schemas`).
 - [`BookEntity`](../core-db/src/main/java/com/sriniketh/core_db/entity/BookEntity.kt) and
   [`HighlightEntity`](../core-db/src/main/java/com/sriniketh/core_db/entity/HighlightEntity.kt). The
   highlight has a **foreign key to the book with `ON DELETE CASCADE`** and an index on `bookId`, so
-  deleting a book removes its highlights.
+  deleting a book removes its highlights. `HighlightEntity.savedOnEpochMillis` is an epoch-millis
+  `Long`.
 - [`BookDao`](../core-db/src/main/java/com/sriniketh/core_db/dao/BookDao.kt) (insert IGNORE,
-  observe-all `Flow`, exists, get-by-id, delete) and
+  observe-all `Flow` ordered by `title`, exists, get-by-id, delete) and
   [`HighlightDao`](../core-db/src/main/java/com/sriniketh/core_db/dao/HighlightDao.kt) (insert
-  REPLACE, get-by-id, observe-for-book `Flow`, delete-by-id).
+  REPLACE, get-by-id, observe-for-book `Flow` ordered by `savedOnEpochMillis`, delete-by-id).
 - [`ListTypeConverter`](../core-db/src/main/java/com/sriniketh/core_db/converters/ListTypeConverter.kt)
-  — stores `List<String>` (authors) as a `|`-delimited string.
-- The database is built with `fallbackToDestructiveMigration(dropAllTables = true)` — schema changes
-  drop and recreate rather than migrate.
+  — stores `List<String>` (authors) as a kotlinx.serialization JSON array.
+- The database uses a real [`MIGRATION_1_2`](../core-db/src/main/java/com/sriniketh/core_db/migrations/Migration1To2.kt)
+  (no `fallbackToDestructiveMigration`) that rewrites the legacy `|`-delimited `authors` column to
+  JSON and converts `HighlightEntity`'s formatted `savedOnTimestamp` string column to the
+  `savedOnEpochMillis` `Long` column, recreating the table to change the column's SQL affinity.
+  Covered by [`Migration1To2Test`](../core-db/src/androidTest/java/com/sriniketh/core_db/migrations/Migration1To2Test.kt)
+  (`MigrationTestHelper`, instrumented).
 
 ### `core-design`
 Compose design system: `AppTheme` (Material 3 + dynamic color), shared components
@@ -137,10 +142,10 @@ This is the bridge between data sources and presentation. See
 | `SaveHighlightUseCase` | `HighlightsRepository.insertHighlightIntoDb` | Save highlight |
 | `LoadHighlightUseCase` | `HighlightsRepository.loadHighlightFromDb` | Edit highlight |
 | `DeleteHighlightUseCase` | `HighlightsRepository.deleteHighlightFromDb` | View highlights |
-| `ExportHighlightsUseCase` | both repos + `FileSource` | Export/share |
+| `ExportHighlightsUseCase` | both repos + `FileSource` + `FormatHighlightTimestampUseCase` | Export/share |
 | `CreateTempImageFileUseCase` | `FileSource.createNewFile` | Capture |
 | `DeleteFileUseCase` | `FileSource.deleteFile` | Capture / OCR cleanup |
-| `FormatCurrentDateTimeUseCase` | `DateTimeFormatter` | Save highlight |
+| `FormatHighlightTimestampUseCase` | `DateTimeFormatter` | View highlights / Export/share (display formatting only; storage is `savedOnEpochMillis`) |
 
 ---
 

@@ -5,7 +5,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.usecases.DeleteFileUseCase
-import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.core_data.usecases.LoadHighlightUseCase
 import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.core_models.book.Highlight
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.time.ZoneId
 import java.util.UUID
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -31,7 +31,6 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     private val textAnalyzer: TextAnalyzer,
     private val saveHighlightUseCase: SaveHighlightUseCase,
     private val loadHighlightUseCase: LoadHighlightUseCase,
-    private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
     private val deleteFileUseCase: DeleteFileUseCase
 ) : ViewModel() {
 
@@ -43,7 +42,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     private val _effects = Channel<EditAndSaveHighlightEffect>(Channel.BUFFERED)
     internal val effects: Flow<EditAndSaveHighlightEffect> = _effects.receiveAsFlow()
 
-    private var savedOnTimestamp: String? = null
+    private var savedOnEpochMillis: Long? = null
 
     internal fun processImageForHighlightText(uri: Uri) {
         _uiState.update { state ->
@@ -84,7 +83,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                         highlightText = highlight?.text.orEmpty()
                     )
                 }
-                savedOnTimestamp = highlight?.savedOnTimestamp
+                savedOnEpochMillis = highlight?.savedOnEpochMillis
             } else {
                 _uiState.update { state ->
                     state.copy(isLoading = false)
@@ -126,8 +125,8 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                     id = highlightId,
                     bookId = bookId,
                     text = highlightText,
-                    savedOnTimestamp = savedOnTimestamp
-                        ?: formatCurrentDateTimeUseCase(dateTimeSource.now())
+                    savedOnEpochMillis = savedOnEpochMillis
+                        ?: dateTimeSource.now().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
                 )
             )
             if (result.isSuccess) {
