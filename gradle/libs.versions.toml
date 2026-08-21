@@ -14,7 +14,6 @@ hilt-plugin-version = "2.60"
 android-navigation-safe-args-plugin-version = "2.9.8"
 
 # Library dependencies
-android-ktx-version = "1.19.0"
 coroutines-android-version = "1.11.0"
 android-appcompat-version = "1.7.1"
 compose-bom-version = "2026.06.00"
@@ -38,12 +37,10 @@ kotlinx-collections-immutable-version = "0.5.0"
 
 junit-version = "4.13.2"
 android-junit-version = "1.3.0"
-espresso-version = "3.7.0"
 turbine-version = "1.2.1"
 mockk-version = "1.14.11"
 
 [libraries]
-android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android-version" }
 android-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "android-appcompat-version" }
 google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "google-font-version" }
@@ -56,12 +53,10 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room-version" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room-version" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room-version" }
 mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "mlkit-version" }
 lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-version" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-version" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-version" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-version" }
 hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "hilt-navigation-version" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
@@ -77,7 +72,6 @@ junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
 compose-junit = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-version" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
