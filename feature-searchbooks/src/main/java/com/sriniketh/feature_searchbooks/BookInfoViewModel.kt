@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.BooksRepository
-import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -22,8 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookInfoViewModel @Inject constructor(
-    private val booksRepository: BooksRepository,
-    private val isBookInDbUseCase: IsBookInDbUseCase
+    private val booksRepository: BooksRepository
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<BookInfoUiState> =
@@ -41,7 +39,7 @@ class BookInfoViewModel @Inject constructor(
             val result = booksRepository.fetchBookInfo(volumeId)
             if (result.isSuccess) {
                 val book = result.getOrThrow()
-                val isInDb = isBookInDbUseCase(book)
+                val isInDb = booksRepository.doesBookExistInDb(book.id)
                 _uiState.update { state ->
                     state.copy(
                         isLoading = false,

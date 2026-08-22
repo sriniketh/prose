@@ -1,7 +1,6 @@
 package com.sriniketh.feature_searchbooks
 
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.feature_searchbooks.fakes.FakeBooksRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,18 +21,13 @@ import org.junit.Test
 class BookInfoViewModelTest {
 
     private lateinit var fakeBooksRepository: FakeBooksRepository
-    private lateinit var isBookInDbUseCase: IsBookInDbUseCase
     private lateinit var viewModel: BookInfoViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeBooksRepository = FakeBooksRepository()
-        isBookInDbUseCase = IsBookInDbUseCase(fakeBooksRepository)
-        viewModel = BookInfoViewModel(
-            fakeBooksRepository,
-            isBookInDbUseCase
-        )
+        viewModel = BookInfoViewModel(fakeBooksRepository)
     }
 
     @After
