@@ -4,10 +4,10 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.core_data.usecases.LoadHighlightUseCase
-import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
 import com.sriniketh.core_platform.logTag
@@ -29,7 +29,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class EditAndSaveHighlightViewModel @Inject constructor(
     private val dateTimeSource: DateTimeSource,
     private val textAnalyzer: TextAnalyzer,
-    private val saveHighlightUseCase: SaveHighlightUseCase,
+    private val highlightsRepository: HighlightsRepository,
     private val loadHighlightUseCase: LoadHighlightUseCase,
     private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
     private val deleteFileUseCase: DeleteFileUseCase
@@ -121,7 +121,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(isLoading = true)
             }
-            val result = saveHighlightUseCase(
+            val result = highlightsRepository.insertHighlightIntoDb(
                 highlight = Highlight(
                     id = highlightId,
                     bookId = bookId,

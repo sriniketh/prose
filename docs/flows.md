@@ -159,7 +159,7 @@ save_highlight_from_uri/{bookId}/{uri}
 
 [user edits text, taps save]
   → saveHighlight(bookId, text)
-      → SaveHighlightUseCase → HighlightsRepository.insertHighlightIntoDb
+      → HighlightsRepository.insertHighlightIntoDb
           → HighlightDao.insertHighlight(highlight.asHighlightEntity())  (onConflict = REPLACE)
       timestamp = FormatCurrentDateTimeUseCase(DateTimeSource.now())
   → Effect.HighlightSaved → goBack to view_highlights/{bookId}
@@ -227,5 +227,5 @@ Details:
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
-| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
+| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |
