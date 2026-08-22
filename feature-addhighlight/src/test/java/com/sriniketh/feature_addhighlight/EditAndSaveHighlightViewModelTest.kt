@@ -2,10 +2,7 @@ package com.sriniketh.feature_addhighlight
 
 import android.net.Uri
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
-import com.sriniketh.core_data.usecases.LoadHighlightUseCase
-import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.feature_addhighlight.fakes.FakeDateTimeSource
 import com.sriniketh.feature_addhighlight.fakes.FakeFileSource
 import com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository
@@ -31,10 +28,7 @@ class EditAndSaveHighlightViewModelTest {
     private lateinit var fakeTextAnalyzer: FakeTextAnalyzer
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
     private lateinit var fakeFileSource: FakeFileSource
-    private lateinit var saveHighlightUseCase: SaveHighlightUseCase
-    private lateinit var loadHighlightUseCase: LoadHighlightUseCase
     private lateinit var formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase
-    private lateinit var deleteFileUseCase: DeleteFileUseCase
     private lateinit var viewModel: EditAndSaveHighlightViewModel
 
     @Before
@@ -44,18 +38,14 @@ class EditAndSaveHighlightViewModelTest {
         fakeTextAnalyzer = FakeTextAnalyzer()
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeFileSource = FakeFileSource()
-        saveHighlightUseCase = SaveHighlightUseCase(fakeHighlightsRepository)
-        loadHighlightUseCase = LoadHighlightUseCase(fakeHighlightsRepository)
         formatCurrentDateTimeUseCase = FormatCurrentDateTimeUseCase()
-        deleteFileUseCase = DeleteFileUseCase(fakeFileSource)
-        
+
         viewModel = EditAndSaveHighlightViewModel(
             dateTimeSource = fakeDateTimeSource,
             textAnalyzer = fakeTextAnalyzer,
-            saveHighlightUseCase = saveHighlightUseCase,
-            loadHighlightUseCase = loadHighlightUseCase,
+            highlightsRepository = fakeHighlightsRepository,
             formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
-            deleteFileUseCase = deleteFileUseCase
+            fileSource = fakeFileSource
         )
     }
 

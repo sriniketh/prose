@@ -1,7 +1,6 @@
 package com.sriniketh.feature_searchbooks
 
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.SearchForBookUseCase
 import com.sriniketh.core_models.search.BookSearch
 import com.sriniketh.feature_searchbooks.fakes.FakeBooksRepository
 import kotlinx.coroutines.Dispatchers
@@ -25,15 +24,13 @@ private const val DEBOUNCE_MILLIS = 300L
 class SearchBookViewModelTest {
 
     private lateinit var fakeBooksRepository: FakeBooksRepository
-    private lateinit var searchForBookUseCase: SearchForBookUseCase
     private lateinit var viewModel: SearchBookViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeBooksRepository = FakeBooksRepository()
-        searchForBookUseCase = SearchForBookUseCase(fakeBooksRepository)
-        viewModel = SearchBookViewModel(searchForBookUseCase)
+        viewModel = SearchBookViewModel(fakeBooksRepository)
     }
 
     @After

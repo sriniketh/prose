@@ -4,12 +4,11 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.usecases.DeleteFileUseCase
+import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
-import com.sriniketh.core_data.usecases.LoadHighlightUseCase
-import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
+import com.sriniketh.core_platform.FileSource
 import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -29,10 +28,9 @@ import kotlin.coroutines.cancellation.CancellationException
 class EditAndSaveHighlightViewModel @Inject constructor(
     private val dateTimeSource: DateTimeSource,
     private val textAnalyzer: TextAnalyzer,
-    private val saveHighlightUseCase: SaveHighlightUseCase,
-    private val loadHighlightUseCase: LoadHighlightUseCase,
+    private val highlightsRepository: HighlightsRepository,
     private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
-    private val deleteFileUseCase: DeleteFileUseCase
+    private val fileSource: FileSource
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<EditAndSaveHighlightUiState> =
@@ -65,7 +63,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 }
                 _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))
             } finally {
-                deleteFileUseCase(uri)
+                fileSource.deleteFile(uri)
             }
         }
     }
@@ -75,7 +73,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
             state.copy(isLoading = true, screenTitle = R.string.edit_highlight_title_text)
         }
         viewModelScope.launch {
-            val result = loadHighlightUseCase(highlightId)
+            val result = highlightsRepository.loadHighlightFromDb(highlightId)
             if (result.isSuccess) {
                 val highlight = result.getOrNull()
                 _uiState.update { state ->
@@ -121,7 +119,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(isLoading = true)
             }
-            val result = saveHighlightUseCase(
+            val result = highlightsRepository.insertHighlightIntoDb(
                 highlight = Highlight(
                     id = highlightId,
                     bookId = bookId,

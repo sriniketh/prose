@@ -127,19 +127,7 @@ This is the bridge between data sources and presentation. See
 
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
-| `SearchForBookUseCase` | `BooksRepository.searchForBooks` | Search |
-| `FetchBookInfoUseCase` | `BooksRepository.fetchBookInfo` | Book info |
-| `IsBookInDbUseCase` | `BooksRepository.doesBookExistInDb` | Book info |
-| `AddBookToShelfUseCase` | `BooksRepository.insertBookIntoDb` | Add book |
-| `GetAllSavedBooksUseCase` | `BooksRepository.getAllSavedBooksFromDb` | Bookshelf |
-| `DeleteBookUseCase` | `BooksRepository.deleteBookFromDb` | (book removal) |
-| `GetAllSavedHighlightsUseCase` | `HighlightsRepository.getAllHighlightsForBookFromDb` | View highlights |
-| `SaveHighlightUseCase` | `HighlightsRepository.insertHighlightIntoDb` | Save highlight |
-| `LoadHighlightUseCase` | `HighlightsRepository.loadHighlightFromDb` | Edit highlight |
-| `DeleteHighlightUseCase` | `HighlightsRepository.deleteHighlightFromDb` | View highlights |
 | `ExportHighlightsUseCase` | both repos + `FileSource` | Export/share |
-| `CreateTempImageFileUseCase` | `FileSource.createNewFile` | Capture |
-| `DeleteFileUseCase` | `FileSource.deleteFile` | Capture / OCR cleanup |
 | `FormatCurrentDateTimeUseCase` | `DateTimeFormatter` | Save highlight |
 
 ---

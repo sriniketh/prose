@@ -1,9 +1,7 @@
 package com.sriniketh.feature_viewhighlights
 
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
-import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.feature_viewhighlights.fakes.FakeBooksRepository
 import com.sriniketh.feature_viewhighlights.fakes.FakeFileSource
 import com.sriniketh.feature_viewhighlights.fakes.FakeHighlightsRepository
@@ -27,8 +25,6 @@ class ViewHighlightsViewModelTest {
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
     private lateinit var fakeBooksRepository: FakeBooksRepository
     private lateinit var fakeFileSource: FakeFileSource
-    private lateinit var getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
-    private lateinit var deleteHighlightUseCase: DeleteHighlightUseCase
     private lateinit var exportHighlightsUseCase: ExportHighlightsUseCase
     private lateinit var viewModel: ViewHighlightsViewModel
 
@@ -38,12 +34,9 @@ class ViewHighlightsViewModelTest {
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeBooksRepository = FakeBooksRepository()
         fakeFileSource = FakeFileSource()
-        getAllSavedHighlightsUseCase = GetAllSavedHighlightsUseCase(fakeHighlightsRepository)
-        deleteHighlightUseCase = DeleteHighlightUseCase(fakeHighlightsRepository)
         exportHighlightsUseCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
         viewModel = ViewHighlightsViewModel(
-            getAllSavedHighlightsUseCase,
-            deleteHighlightUseCase,
+            fakeHighlightsRepository,
             exportHighlightsUseCase
         )
     }
