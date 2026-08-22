@@ -129,7 +129,6 @@ This is the bridge between data sources and presentation. See
 |----------|-----------|--------------|
 | `SaveHighlightUseCase` | `HighlightsRepository.insertHighlightIntoDb` | Save highlight |
 | `LoadHighlightUseCase` | `HighlightsRepository.loadHighlightFromDb` | Edit highlight |
-| `DeleteHighlightUseCase` | `HighlightsRepository.deleteHighlightFromDb` | View highlights |
 | `ExportHighlightsUseCase` | both repos + `FileSource` | Export/share |
 | `CreateTempImageFileUseCase` | `FileSource.createNewFile` | Capture |
 | `DeleteFileUseCase` | `FileSource.deleteFile` | Capture / OCR cleanup |

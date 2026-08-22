@@ -112,7 +112,7 @@ ViewHighlightsScreen → ViewHighlightsViewModel.getHighlights(bookId)
 
 Actions are dispatched through `processAction(ViewHighlightsAction)`
 ([`ViewHighlightsViewModel`](../feature-viewhighlights/src/main/java/com/sriniketh/feature_viewhighlights/ViewHighlightsViewModel.kt)):
-- **Delete** → `DeleteHighlightUseCase` → `HighlightDao.deleteHighlightById(id)`.
+- **Delete** → `HighlightsRepository.deleteHighlightFromDb` → `HighlightDao.deleteHighlightById(id)`.
 - **Export** → see flow 6.
 - **Camera permission denied** → `permission_denied` snackbar. The screen's camera-permission
   launcher requests `CAMERA`; on grant it navigates into the capture flow, on deny it dispatches the
@@ -225,7 +225,7 @@ Details:
 | Bookshelf | `feature-bookshelf` | `BooksRepository.getAllSavedBooksFromDb` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
-| View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
+| View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
 | OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |
