@@ -85,7 +85,7 @@ BookInfoScreen → BookInfoViewModel.getBookDetail(volumeId)
   → IsBookInDbUseCase → BookDao.doesBookExist(bookId)   → canAddToShelf = !isInDb
 
 [user taps "Add to shelf"]
-  → AddBookToShelfUseCase → BooksRepository.insertBookIntoDb
+  → BooksRepository.insertBookIntoDb
        → BookDao.insertBook(book.asBookEntity())   (onConflict = IGNORE)
   → Effect.NavigateToBookshelf
 ```
@@ -224,7 +224,7 @@ Details:
 |------|--------------------|-------------|-------------|
 | Bookshelf | `feature-bookshelf` | `GetAllSavedBooksUseCase` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `SearchForBookUseCase` | Books API `getVolumes` |
-| Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `FetchBookInfoUseCase`, `IsBookInDbUseCase`, `AddBookToShelfUseCase` | API `getVolume` + `BookDao` |
+| Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `FetchBookInfoUseCase`, `IsBookInDbUseCase`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
 | OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |

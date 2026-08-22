@@ -130,7 +130,6 @@ This is the bridge between data sources and presentation. See
 | `SearchForBookUseCase` | `BooksRepository.searchForBooks` | Search |
 | `FetchBookInfoUseCase` | `BooksRepository.fetchBookInfo` | Book info |
 | `IsBookInDbUseCase` | `BooksRepository.doesBookExistInDb` | Book info |
-| `AddBookToShelfUseCase` | `BooksRepository.insertBookIntoDb` | Add book |
 | `GetAllSavedBooksUseCase` | `BooksRepository.getAllSavedBooksFromDb` | Bookshelf |
 | `DeleteBookUseCase` | `BooksRepository.deleteBookFromDb` | (book removal) |
 | `GetAllSavedHighlightsUseCase` | `HighlightsRepository.getAllHighlightsForBookFromDb` | View highlights |

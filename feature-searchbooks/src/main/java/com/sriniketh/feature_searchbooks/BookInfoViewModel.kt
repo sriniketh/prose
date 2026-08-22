@@ -3,7 +3,7 @@ package com.sriniketh.feature_searchbooks
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
+import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
 import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.core_models.book.Book
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookInfoViewModel @Inject constructor(
     private val fetchBookInfoUseCase: FetchBookInfoUseCase,
-    private val addBookToShelfUseCase: AddBookToShelfUseCase,
+    private val booksRepository: BooksRepository,
     private val isBookInDbUseCase: IsBookInDbUseCase
 ) : ViewModel() {
 
@@ -66,7 +66,7 @@ class BookInfoViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(isLoading = true)
             }
-            val result = addBookToShelfUseCase(book)
+            val result = booksRepository.insertBookIntoDb(book)
             if (result.isSuccess) {
                 _uiState.update { state ->
                     state.copy(

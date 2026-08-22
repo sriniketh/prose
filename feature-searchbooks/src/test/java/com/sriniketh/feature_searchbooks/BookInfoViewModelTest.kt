@@ -1,7 +1,6 @@
 package com.sriniketh.feature_searchbooks
 
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
 import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
 import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.feature_searchbooks.fakes.FakeBooksRepository
@@ -25,7 +24,6 @@ class BookInfoViewModelTest {
 
     private lateinit var fakeBooksRepository: FakeBooksRepository
     private lateinit var fetchBookInfoUseCase: FetchBookInfoUseCase
-    private lateinit var addBookToShelfUseCase: AddBookToShelfUseCase
     private lateinit var isBookInDbUseCase: IsBookInDbUseCase
     private lateinit var viewModel: BookInfoViewModel
 
@@ -34,11 +32,10 @@ class BookInfoViewModelTest {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeBooksRepository = FakeBooksRepository()
         fetchBookInfoUseCase = FetchBookInfoUseCase(fakeBooksRepository)
-        addBookToShelfUseCase = AddBookToShelfUseCase(fakeBooksRepository)
         isBookInDbUseCase = IsBookInDbUseCase(fakeBooksRepository)
         viewModel = BookInfoViewModel(
             fetchBookInfoUseCase,
-            addBookToShelfUseCase,
+            fakeBooksRepository,
             isBookInDbUseCase
         )
     }
