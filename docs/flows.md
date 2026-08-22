@@ -31,7 +31,7 @@ ProseApplication (@HiltAndroidApp, plants Timber in debug)
 ```
 BookshelfScreen
   → BookshelfViewModel.init
-      → GetAllSavedBooksUseCase()                       (core-data)
+      → BooksRepository.getAllSavedBooksFromDb()        (core-data)
         → BooksRepository.getAllSavedBooksFromDb(): Flow<Result<List<Book>>>
           → BookDao.getAllBooks(): Flow<List<BookEntity>>   (Room, core-db)
       ← entities.map { it.asBook() }  → map to BookUIState (ImmutableList)
@@ -222,7 +222,7 @@ Details:
 
 | Flow | Screen / ViewModel | Use case(s) | Data source |
 |------|--------------------|-------------|-------------|
-| Bookshelf | `feature-bookshelf` | `GetAllSavedBooksUseCase` | Room `BookDao` (Flow) |
+| Bookshelf | `feature-bookshelf` | `BooksRepository.getAllSavedBooksFromDb` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
