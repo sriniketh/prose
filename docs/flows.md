@@ -131,7 +131,7 @@ This is the most involved flow and spans two ViewModels and three navigation des
 ```
 capture_and_crop_image/{bookId}
   → CaptureAndCropImageScreen + CaptureAndCropImageViewModel
-      imageUri = CreateTempImageFileUseCase()  → FileSource.createNewFile("<uuid>.jpg")
+      imageUri = FileSource.createNewFile("<uuid>.jpg")
                  (cacheDir file, exposed via FileProvider; stored in SavedStateHandle)
       state: CaptureImage → CropImage → ImageCapturedAndCropped
 ```
@@ -226,6 +226,6 @@ Details:
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
-| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
+| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `FileSource.createNewFile`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
 | OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |
