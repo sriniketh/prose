@@ -104,7 +104,7 @@ Details ([`BookInfoViewModel`](../feature-searchbooks/src/main/java/com/sriniket
 
 ```
 ViewHighlightsScreen → ViewHighlightsViewModel.getHighlights(bookId)
-  → GetAllSavedHighlightsUseCase(bookId)
+  → HighlightsRepository.getAllHighlightsForBookFromDb(bookId)
       → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
         → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
   ← sortedBy { savedOnTimestamp } → HighlightUIState list
@@ -225,7 +225,7 @@ Details:
 | Bookshelf | `feature-bookshelf` | `BooksRepository.getAllSavedBooksFromDb` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
-| View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
+| View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
 | OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |

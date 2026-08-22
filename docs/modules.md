@@ -127,7 +127,6 @@ This is the bridge between data sources and presentation. See
 
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
-| `GetAllSavedHighlightsUseCase` | `HighlightsRepository.getAllHighlightsForBookFromDb` | View highlights |
 | `SaveHighlightUseCase` | `HighlightsRepository.insertHighlightIntoDb` | Save highlight |
 | `LoadHighlightUseCase` | `HighlightsRepository.loadHighlightFromDb` | Edit highlight |
 | `DeleteHighlightUseCase` | `HighlightsRepository.deleteHighlightFromDb` | View highlights |
