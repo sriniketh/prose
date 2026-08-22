@@ -5,10 +5,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.HighlightsRepository
-import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
+import com.sriniketh.core_platform.FileSource
 import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -30,7 +30,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     private val textAnalyzer: TextAnalyzer,
     private val highlightsRepository: HighlightsRepository,
     private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
-    private val deleteFileUseCase: DeleteFileUseCase
+    private val fileSource: FileSource
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<EditAndSaveHighlightUiState> =
@@ -63,7 +63,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 }
                 _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))
             } finally {
-                deleteFileUseCase(uri)
+                fileSource.deleteFile(uri)
             }
         }
     }

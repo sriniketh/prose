@@ -3,7 +3,6 @@ package com.sriniketh.feature_addhighlight
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_platform.FileSource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CaptureAndCropImageViewModel @Inject constructor(
     private val fileSource: FileSource,
-    private val deleteFileUseCase: DeleteFileUseCase,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -40,7 +38,7 @@ class CaptureAndCropImageViewModel @Inject constructor(
 
     override fun onCleared() {
         if (screenState.value !is CaptureAndCropImageScreenState.ImageCapturedAndCropped) {
-            deleteFileUseCase(imageUri)
+            fileSource.deleteFile(imageUri)
             savedStateHandle.remove<Uri>("imageUri")
         }
         super.onCleared()

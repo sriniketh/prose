@@ -155,7 +155,7 @@ save_highlight_from_uri/{bookId}/{uri}
       processImageForHighlightText(uri):
         → TextAnalyzer.analyzeImage(uri)        (ML Kit on-device Latin OCR)
         → visionText.text.replace("\n", " ")    → editable highlightText
-        finally → DeleteFileUseCase(uri)         (delete the temp image)
+        finally → FileSource.deleteFile(uri)     (delete the temp image)
 
 [user edits text, taps save]
   → saveHighlight(bookId, text)
@@ -226,6 +226,6 @@ Details:
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
-| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `FileSource.createNewFile`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
-| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
+| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `FileSource.createNewFile`, `FileSource.deleteFile` | `FileSource` (cacheDir) |
+| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase`, `FileSource.deleteFile` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |

@@ -128,7 +128,6 @@ This is the bridge between data sources and presentation. See
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
 | `ExportHighlightsUseCase` | both repos + `FileSource` | Export/share |
-| `DeleteFileUseCase` | `FileSource.deleteFile` | Capture / OCR cleanup |
 | `FormatCurrentDateTimeUseCase` | `DateTimeFormatter` | Save highlight |
 
 ---
