@@ -127,7 +127,6 @@ This is the bridge between data sources and presentation. See
 
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
-| `SearchForBookUseCase` | `BooksRepository.searchForBooks` | Search |
 | `GetAllSavedBooksUseCase` | `BooksRepository.getAllSavedBooksFromDb` | Bookshelf |
 | `DeleteBookUseCase` | `BooksRepository.deleteBookFromDb` | (book removal) |
 | `GetAllSavedHighlightsUseCase` | `HighlightsRepository.getAllHighlightsForBookFromDb` | View highlights |

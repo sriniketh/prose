@@ -60,7 +60,7 @@ SearchBookScreen (text field) → SearchBookViewModel.searchForBook(query)
       .filter { length > 3 }
       .debounce(300ms)
       .distinctUntilChanged()
-      .flatMapLatest { SearchForBookUseCase(query) }     ← cancels the previous search
+      .flatMapLatest { BooksRepository.searchForBooks(query) }     ← cancels the previous search
         → BooksRepository.searchForBooks
           → BooksRemoteDataSource.getVolumes(query)  (projection = "lite")
           ← Volumes.asBookSearchResult()  → BookSearch  → BookUiState list
@@ -223,7 +223,7 @@ Details:
 | Flow | Screen / ViewModel | Use case(s) | Data source |
 |------|--------------------|-------------|-------------|
 | Bookshelf | `feature-bookshelf` | `GetAllSavedBooksUseCase` | Room `BookDao` (Flow) |
-| Search | `feature-searchbooks` (`SearchBookViewModel`) | `SearchForBookUseCase` | Books API `getVolumes` |
+| Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
