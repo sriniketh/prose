@@ -127,7 +127,6 @@ This is the bridge between data sources and presentation. See
 
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
-| `LoadHighlightUseCase` | `HighlightsRepository.loadHighlightFromDb` | Edit highlight |
 | `ExportHighlightsUseCase` | both repos + `FileSource` | Export/share |
 | `CreateTempImageFileUseCase` | `FileSource.createNewFile` | Capture |
 | `DeleteFileUseCase` | `FileSource.deleteFile` | Capture / OCR cleanup |

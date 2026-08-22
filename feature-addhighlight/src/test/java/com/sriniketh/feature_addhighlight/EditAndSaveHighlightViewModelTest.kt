@@ -4,7 +4,6 @@ import android.net.Uri
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
-import com.sriniketh.core_data.usecases.LoadHighlightUseCase
 import com.sriniketh.feature_addhighlight.fakes.FakeDateTimeSource
 import com.sriniketh.feature_addhighlight.fakes.FakeFileSource
 import com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository
@@ -30,7 +29,6 @@ class EditAndSaveHighlightViewModelTest {
     private lateinit var fakeTextAnalyzer: FakeTextAnalyzer
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
     private lateinit var fakeFileSource: FakeFileSource
-    private lateinit var loadHighlightUseCase: LoadHighlightUseCase
     private lateinit var formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase
     private lateinit var deleteFileUseCase: DeleteFileUseCase
     private lateinit var viewModel: EditAndSaveHighlightViewModel
@@ -42,7 +40,6 @@ class EditAndSaveHighlightViewModelTest {
         fakeTextAnalyzer = FakeTextAnalyzer()
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeFileSource = FakeFileSource()
-        loadHighlightUseCase = LoadHighlightUseCase(fakeHighlightsRepository)
         formatCurrentDateTimeUseCase = FormatCurrentDateTimeUseCase()
         deleteFileUseCase = DeleteFileUseCase(fakeFileSource)
 
@@ -50,7 +47,6 @@ class EditAndSaveHighlightViewModelTest {
             dateTimeSource = fakeDateTimeSource,
             textAnalyzer = fakeTextAnalyzer,
             highlightsRepository = fakeHighlightsRepository,
-            loadHighlightUseCase = loadHighlightUseCase,
             formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
             deleteFileUseCase = deleteFileUseCase
         )

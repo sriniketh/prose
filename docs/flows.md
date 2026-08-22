@@ -177,7 +177,7 @@ Details:
 ```
 save_highlight_from_highlight_id/{bookId}/{highlightId}
   → EditAndSaveHighlightViewModel.loadHighlightText(highlightId)
-      → LoadHighlightUseCase → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
+      → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
   ← prefilled text + screen title switches to "edit"; original savedOnTimestamp is preserved
 [save] → updateHighlight(bookId, text, highlightId)   (same UUID → REPLACE updates the row)
 ```
@@ -227,5 +227,5 @@ Details:
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
-| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
+| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |

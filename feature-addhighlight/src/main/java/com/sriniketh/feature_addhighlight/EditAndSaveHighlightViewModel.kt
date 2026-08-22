@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
-import com.sriniketh.core_data.usecases.LoadHighlightUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
 import com.sriniketh.core_platform.logTag
@@ -30,7 +29,6 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     private val dateTimeSource: DateTimeSource,
     private val textAnalyzer: TextAnalyzer,
     private val highlightsRepository: HighlightsRepository,
-    private val loadHighlightUseCase: LoadHighlightUseCase,
     private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
     private val deleteFileUseCase: DeleteFileUseCase
 ) : ViewModel() {
@@ -75,7 +73,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
             state.copy(isLoading = true, screenTitle = R.string.edit_highlight_title_text)
         }
         viewModelScope.launch {
-            val result = loadHighlightUseCase(highlightId)
+            val result = highlightsRepository.loadHighlightFromDb(highlightId)
             if (result.isSuccess) {
                 val highlight = result.getOrNull()
                 _uiState.update { state ->
