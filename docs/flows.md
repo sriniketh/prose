@@ -80,7 +80,7 @@ Details ([`SearchBookViewModel`](../feature-searchbooks/src/main/java/com/srinik
 
 ```
 BookInfoScreen → BookInfoViewModel.getBookDetail(volumeId)
-  → FetchBookInfoUseCase → BooksRepository.fetchBookInfo
+  → BooksRepository.fetchBookInfo
        → BooksRemoteDataSource.getVolume(volumeId)  → Volume.asBook()
   → IsBookInDbUseCase → BookDao.doesBookExist(bookId)   → canAddToShelf = !isInDb
 
@@ -224,7 +224,7 @@ Details:
 |------|--------------------|-------------|-------------|
 | Bookshelf | `feature-bookshelf` | `GetAllSavedBooksUseCase` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `SearchForBookUseCase` | Books API `getVolumes` |
-| Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `FetchBookInfoUseCase`, `IsBookInDbUseCase`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
+| Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `IsBookInDbUseCase`, `BooksRepository.fetchBookInfo`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
 | Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
 | OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |

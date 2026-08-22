@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.BooksRepository
-import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
 import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,7 +22,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BookInfoViewModel @Inject constructor(
-    private val fetchBookInfoUseCase: FetchBookInfoUseCase,
     private val booksRepository: BooksRepository,
     private val isBookInDbUseCase: IsBookInDbUseCase
 ) : ViewModel() {
@@ -40,7 +38,7 @@ class BookInfoViewModel @Inject constructor(
             _uiState.update { state ->
                 state.copy(isLoading = true)
             }
-            val result = fetchBookInfoUseCase(volumeId)
+            val result = booksRepository.fetchBookInfo(volumeId)
             if (result.isSuccess) {
                 val book = result.getOrThrow()
                 val isInDb = isBookInDbUseCase(book)

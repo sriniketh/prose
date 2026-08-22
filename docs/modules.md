@@ -128,7 +128,6 @@ This is the bridge between data sources and presentation. See
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
 | `SearchForBookUseCase` | `BooksRepository.searchForBooks` | Search |
-| `FetchBookInfoUseCase` | `BooksRepository.fetchBookInfo` | Book info |
 | `IsBookInDbUseCase` | `BooksRepository.doesBookExistInDb` | Book info |
 | `GetAllSavedBooksUseCase` | `BooksRepository.getAllSavedBooksFromDb` | Bookshelf |
 | `DeleteBookUseCase` | `BooksRepository.deleteBookFromDb` | (book removal) |
