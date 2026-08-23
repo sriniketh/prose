@@ -81,3 +81,6 @@ lint/outputs/
 lint/tmp/
 # lint/reports/
 .worktrees/
+
+# Claude Code hook state
+.claude/.docs-reminder-state
