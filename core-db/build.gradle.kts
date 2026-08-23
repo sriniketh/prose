@@ -1,48 +1,19 @@
 plugins {
-	alias(libs.plugins.android.library)
-	alias(libs.plugins.hilt)
-	alias(libs.plugins.ksp)
-}
-
-kotlin {
-	jvmToolchain(libs.versions.jvmToolchainVersion.get().toInt())
+    id("prose.android.library")
+    id("prose.android.hilt")
 }
 
 ksp {
-	arg("room.schemaLocation", "$projectDir/schemas")
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 android {
-	compileSdk = libs.versions.compileSdkVersion.get().toInt()
-
-	defaultConfig {
-		minSdk = libs.versions.minSdkVersion.get().toInt()
-
-		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-		consumerProguardFiles("consumer-rules.pro")
-	}
-
-	buildTypes {
-		release {
-			isMinifyEnabled = false
-			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
-			)
-		}
-	}
-	buildFeatures {
-		buildConfig = true
-	}
-	namespace = "com.sriniketh.core_db"
+    namespace = "com.sriniketh.core_db"
 }
 
 dependencies {
-	implementation(libs.room.runtime)
-	ksp(libs.room.compiler)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
 
-	implementation(libs.hilt.android)
-	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
+    testImplementation(libs.junit)
 }
