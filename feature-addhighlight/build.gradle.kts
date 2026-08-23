@@ -1,77 +1,18 @@
 plugins {
-	alias(libs.plugins.android.library)
-	alias(libs.plugins.kotlin.compose)
-	alias(libs.plugins.hilt)
-	alias(libs.plugins.ksp)
-	alias(libs.plugins.android.navigation.safe.args)
-}
-
-kotlin {
-	jvmToolchain(libs.versions.jvmToolchainVersion.get().toInt())
+    id("prose.android.feature")
 }
 
 android {
-	compileSdk = libs.versions.compileSdkVersion.get().toInt()
-
-	defaultConfig {
-		minSdk = libs.versions.minSdkVersion.get().toInt()
-
-		testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-		consumerProguardFiles("consumer-rules.pro")
-	}
-
-	buildTypes {
-		release {
-			isMinifyEnabled = false
-			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
-			)
-		}
-	}
-
-	buildFeatures {
-		viewBinding = true
-		buildConfig = true
-		compose = true
-	}
-
-	namespace = "com.sriniketh.feature_addhighlight"
+    namespace = "com.sriniketh.feature_addhighlight"
 }
 
 dependencies {
+    implementation(project(":core-platform"))
 
-	implementation(project(":core-design"))
-	implementation(project(":core-platform"))
-	implementation(project(":core-data"))
-	implementation(project(":core-models"))
+    implementation(libs.timber)
+    implementation(libs.mlkit.text.recognition)
+    implementation(libs.cropify)
+    implementation(libs.activity.compose)
 
-	implementation(libs.timber)
-
-	implementation(libs.mlkit.text.recognition)
-
-	val composeBom = platform(libs.compose.bom)
-	implementation(composeBom)
-	implementation(libs.bundles.compose)
-	debugImplementation(libs.compose.ui.tooling)
-
-	implementation(libs.lifecycle.runtime.compose)
-	implementation(libs.lifecycle.viewmodel.compose)
-	implementation(libs.hilt.lifecycle.viewmodel.compose)
-	implementation(libs.activity.compose)
-
-	androidTestImplementation(composeBom)
-	androidTestImplementation(libs.compose.junit)
-	debugImplementation(libs.compose.test.manifest)
-
-	implementation(libs.cropify)
-
-	implementation(libs.hilt.android)
-	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
-	testImplementation(libs.coroutines.test)
-	testImplementation(libs.cashapp.turbine)
-	testImplementation(libs.mockk)
-	androidTestImplementation(libs.android.junit)
+    testImplementation(libs.mockk)
 }
