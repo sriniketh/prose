@@ -495,21 +495,9 @@ To prove a dependency change did what you meant, diff the resolved graph:
 
 ## Known remaining cleanups
 
-Two pieces of dead or redundant configuration survive the migration. Each is a small, independent
-follow-up.
+One piece of dead or redundant configuration survives the migration.
 
-**1. The Safe Args catalog entry is unused.** The plugin was dropped from the root
-`build.gradle.kts` and from the three feature modules that applied it — it generates code from XML
-navigation graphs, and there are none:
-
-```bash
-find . -type d -name navigation -not -path "*/build/*"    # no results
-```
-
-`android-navigation-safe-args-plugin-version` and the `android-navigation-safe-args` plugin alias
-are still in `gradle/libs.versions.toml` and can go.
-
-**2. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
+**1. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
 now warns:
 
 ```
