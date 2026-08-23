@@ -11,7 +11,6 @@ kotlin-jvm-plugin-version = "2.4.0"
 kotlin-compose-plugin-version = "2.4.0"
 ksp-plugin-version = "2.3.9"
 hilt-plugin-version = "2.60"
-android-navigation-safe-args-plugin-version = "2.9.8"
 
 # Library dependencies
 coroutines-android-version = "1.11.0"
@@ -95,4 +94,3 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 java-library = { id = "java-library" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-plugin-version" }
-android-navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "android-navigation-safe-args-plugin-version" }

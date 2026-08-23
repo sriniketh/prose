@@ -489,27 +489,16 @@ To prove a dependency change did what you meant, diff the resolved graph:
 
 ## Known remaining cleanups
 
-Three pieces of dead or redundant configuration survive the migration. Each is a small, independent
+Two pieces of dead or redundant configuration survive the migration. Each is a small, independent
 follow-up.
 
-**1. The Safe Args catalog entry is unused.** The plugin was dropped from the root
-`build.gradle.kts` and from the three feature modules that applied it — it generates code from XML
-navigation graphs, and there are none:
-
-```bash
-find . -type d -name navigation -not -path "*/build/*"    # no results
-```
-
-`android-navigation-safe-args-plugin-version` and the `android-navigation-safe-args` plugin alias
-are still in `gradle/libs.versions.toml` and can go.
-
-**2. `buildConfig = true` is enabled for every Android module.** Only `app` (`BuildConfig.DEBUG`)
+**1. `buildConfig = true` is enabled for every Android module.** Only `app` (`BuildConfig.DEBUG`)
 and `core-network` (`BOOKS_API_KEY`, `DEBUG`) read a `BuildConfig` class. Moving
 `buildFeatures.buildConfig = true` out of `configureAndroidCommon` into the application plugin, and
 adding it explicitly to `core-network/build.gradle.kts`, removes a generated class and a compile
 task from seven modules.
 
-**3. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
+**2. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
 now warns:
 
 ```
