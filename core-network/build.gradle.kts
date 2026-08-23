@@ -23,6 +23,10 @@ android {
     defaultConfig {
         buildConfigField("String", "BOOKS_API_KEY", apikeyProperties["BOOKS_API_KEY"] as String)
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
 
 dependencies {
