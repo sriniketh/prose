@@ -76,6 +76,13 @@ coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
 
+# Gradle plugin artifacts, for the build-logic compile classpath only
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-application-plugin-version" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-jvm-plugin-version" }
+compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin-compose-plugin-version" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp-plugin-version" }
+hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt-plugin-version" }
+
 [bundles]
 compose = ["compose-material3", "compose-ui-tooling-preview"]
 
