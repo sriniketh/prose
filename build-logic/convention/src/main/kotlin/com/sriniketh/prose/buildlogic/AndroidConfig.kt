@@ -19,7 +19,5 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
                 "proguard-rules.pro"
             )
         }
-
-        buildFeatures.buildConfig = true
     }
 }
