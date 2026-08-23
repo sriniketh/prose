@@ -24,7 +24,6 @@ way, and the AGP 9 constraints that dictate how the plugins are written.
 - [Adding a new module](#adding-a-new-module)
 - [Changing a convention](#changing-a-convention)
 - [Troubleshooting](#troubleshooting)
-- [Known remaining cleanups](#known-remaining-cleanups)
 
 ---
 
@@ -483,23 +482,6 @@ To prove a dependency change did what you meant, diff the resolved graph:
 | `libs.versions.minSdkVersion` unresolved in plugin *source* | Type-safe accessors are not generated for plugin projects | Use the `Project.libs` helper |
 | `NoSuchElementException` at configuration time | Typo in a `findLibrary` / `findVersion` key | Check the key against `gradle/libs.versions.toml` |
 | `Supplied consumer proguard configuration does not exist` | New library module without `consumer-rules.pro` | `touch <module>/consumer-rules.pro` |
-
----
-
-## Known remaining cleanups
-
-One piece of dead or redundant configuration survives the migration.
-
-**1. The Safe Args catalog entry is unused.** The plugin was dropped from the root
-`build.gradle.kts` and from the three feature modules that applied it — it generates code from XML
-navigation graphs, and there are none:
-
-```bash
-find . -type d -name navigation -not -path "*/build/*"    # no results
-```
-
-`android-navigation-safe-args-plugin-version` and the `android-navigation-safe-args` plugin alias
-are still in `gradle/libs.versions.toml` and can go.
 
 ---
 
