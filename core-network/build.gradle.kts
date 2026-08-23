@@ -2,10 +2,9 @@ import java.util.Properties
 import java.io.FileInputStream
 
 plugins {
-	alias(libs.plugins.android.library)
-	alias(libs.plugins.kotlin.serialization)
-	alias(libs.plugins.hilt)
-	alias(libs.plugins.ksp)
+    id("prose.android.library")
+    id("prose.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 val apikeyPropertiesFile = file("apikey.properties")
@@ -13,48 +12,27 @@ val apikeyProperties = Properties()
 apikeyProperties.load(FileInputStream(apikeyPropertiesFile))
 
 kotlin {
-	jvmToolchain(libs.versions.jvmToolchainVersion.get().toInt())
-	compilerOptions {
-		optIn.add("kotlin.RequiresOptIn")
-	}
+    compilerOptions {
+        optIn.add("kotlin.RequiresOptIn")
+    }
 }
 
 android {
-	compileSdk = libs.versions.compileSdkVersion.get().toInt()
+    namespace = "com.sriniketh.prose.core_network"
 
-	defaultConfig {
-		minSdk = libs.versions.minSdkVersion.get().toInt()
-
-		buildConfigField("String", "BOOKS_API_KEY", apikeyProperties["BOOKS_API_KEY"] as String)
-		consumerProguardFiles("consumer-rules.pro")
-	}
-
-	buildTypes {
-		release {
-			isMinifyEnabled = false
-			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
-			)
-		}
-	}
-	buildFeatures {
-		buildConfig = true
-	}
-	namespace = "com.sriniketh.prose.core_network"
+    defaultConfig {
+        buildConfigField("String", "BOOKS_API_KEY", apikeyProperties["BOOKS_API_KEY"] as String)
+    }
 }
 
 dependencies {
-	implementation(libs.coroutines.android)
+    implementation(libs.coroutines.android)
 
-	implementation(libs.okhttp.logging.interceptor)
-	implementation(libs.retrofit)
-	implementation(libs.retrofit.kotlinx.serialization.converter)
-	implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.kotlinx.serialization.converter)
+    implementation(libs.kotlinx.serialization.json)
 
-	implementation(libs.hilt.android)
-	ksp(libs.hilt.compiler)
-
-	testImplementation(libs.junit)
-	testImplementation(libs.coroutines.test)
+    testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
 }
