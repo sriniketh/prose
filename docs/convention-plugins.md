@@ -38,7 +38,7 @@ build-logic/
     └── src/main/kotlin/com/sriniketh/prose/buildlogic/
         ├── ProjectExtensions.kt         # version-catalog access helper
         ├── KotlinConfig.kt              # shared Kotlin config (toolchain, compiler args)
-        ├── AndroidConfig.kt             # shared Android config (SDKs, ProGuard, buildConfig)
+        ├── AndroidConfig.kt             # shared Android config (SDKs, ProGuard)
         ├── AndroidApplicationConventionPlugin.kt
         ├── AndroidLibraryConventionPlugin.kt
         ├── AndroidComposeConventionPlugin.kt
@@ -147,11 +147,14 @@ pluginManager.apply("com.android.application")
 extensions.configure<ApplicationExtension> {
 	configureAndroidCommon(this)
 	defaultConfig.targetSdk = libs.version("targetSdkVersion").toInt()
+	buildFeatures.buildConfig = true
 }
 configureKotlin()
 ```
 
-Structurally identical to the library plugin, plus `targetSdk` (an application-only property).
+Structurally identical to the library plugin, plus `targetSdk` (an application-only property) and
+`buildFeatures.buildConfig = true` — `app` is the only module that gets `BuildConfig` generation for
+free; every other module opts in per-module (`core-network` does, in its own `build.gradle.kts`).
 `applicationId`, `versionCode`, and `versionName` deliberately stay in `app/build.gradle.kts` —
 they are identity, not convention.
 
@@ -302,14 +305,17 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
 				"proguard-rules.pro"
 			)
 		}
-
-		buildFeatures.buildConfig = true
 	}
 }
 ```
 
 The property-access style (`defaultConfig.apply { }`, `buildTypes.getByName(…)`) is required, not
 stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-buildtypes-as-properties-only).
+
+`buildConfig` generation is **not** part of this shared helper — only `app` and `core-network` read
+a generated `BuildConfig` class, so `prose.android.application` sets
+`buildFeatures.buildConfig = true` itself, and `core-network/build.gradle.kts` opts in explicitly.
+The other seven Android modules get no `BuildConfig` class or compile task at all.
 
 ---
 
@@ -321,7 +327,7 @@ stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-bu
 | `core-models` | `prose.jvm.library` | — |
 | `core-platform` | `prose.android.library`, `prose.android.hilt` | — |
 | `core-db` | `prose.android.library`, `prose.android.hilt` | `ksp { arg("room.schemaLocation", …) }` |
-| `core-network` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | `apikey.properties` loading, `buildConfigField`, `optIn` |
+| `core-network` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | `apikey.properties` loading, `buildFeatures.buildConfig = true`, `buildConfigField`, `optIn` |
 | `core-data` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | — |
 | `core-design` | `prose.android.library`, `prose.android.compose` | — |
 | `feature-bookshelf` | `prose.android.feature` | — |
@@ -489,16 +495,9 @@ To prove a dependency change did what you meant, diff the resolved graph:
 
 ## Known remaining cleanups
 
-Two pieces of dead or redundant configuration survive the migration. Each is a small, independent
-follow-up.
+One piece of dead or redundant configuration survives the migration.
 
-**1. `buildConfig = true` is enabled for every Android module.** Only `app` (`BuildConfig.DEBUG`)
-and `core-network` (`BOOKS_API_KEY`, `DEBUG`) read a `BuildConfig` class. Moving
-`buildFeatures.buildConfig = true` out of `configureAndroidCommon` into the application plugin, and
-adding it explicitly to `core-network/build.gradle.kts`, removes a generated class and a compile
-task from seven modules.
-
-**2. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
+**1. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
 now warns:
 
 ```
