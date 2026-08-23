@@ -24,7 +24,6 @@ way, and the AGP 9 constraints that dictate how the plugins are written.
 - [Adding a new module](#adding-a-new-module)
 - [Changing a convention](#changing-a-convention)
 - [Troubleshooting](#troubleshooting)
-- [Known remaining cleanups](#known-remaining-cleanups)
 
 ---
 
@@ -271,18 +270,11 @@ the shared `kotlin { }` configuration for both Android and JVM modules:
 extensions.configure<KotlinBaseExtension> {
 	jvmToolchain(libs.version("jvmToolchainVersion").toInt())
 }
-tasks.withType<KotlinCompile>().configureEach {
-	compilerOptions {
-		freeCompilerArgs.add("-Xannotation-default-target=param-property")
-	}
-}
 ```
 
 `KotlinBaseExtension` is the common supertype of the Android and JVM Kotlin extensions, and Gradle's
 `getByType` matches on subtype — so one function serves `prose.android.library` and
-`prose.jvm.library` both. `tasks.withType<KotlinCompile>` replaced the old root `subprojects { }`
-block, and does match AGP 9's built-in Kotlin compile tasks even though no Kotlin Android plugin is
-applied.
+`prose.jvm.library` both.
 
 **[`AndroidConfig.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidConfig.kt)** —
 the shared `android { }` configuration, taking a plain `CommonExtension` so it serves both `app` and
@@ -490,22 +482,6 @@ To prove a dependency change did what you meant, diff the resolved graph:
 | `libs.versions.minSdkVersion` unresolved in plugin *source* | Type-safe accessors are not generated for plugin projects | Use the `Project.libs` helper |
 | `NoSuchElementException` at configuration time | Typo in a `findLibrary` / `findVersion` key | Check the key against `gradle/libs.versions.toml` |
 | `Supplied consumer proguard configuration does not exist` | New library module without `consumer-rules.pro` | `touch <module>/consumer-rules.pro` |
-
----
-
-## Known remaining cleanups
-
-One piece of dead or redundant configuration survives the migration.
-
-**1. `-Xannotation-default-target=param-property` is redundant on Kotlin 2.4.** Every compile task
-now warns:
-
-```
-w: The argument '-Xannotation-default-target=param-property' is redundant for the current language version 2.4.
-```
-
-It is already the default. The `tasks.withType<KotlinCompile>` block in `KotlinConfig.kt` can be
-deleted, leaving `configureKotlin()` as just the toolchain call.
 
 ---
 
