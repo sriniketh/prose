@@ -186,6 +186,40 @@ Notes:
 
 ---
 
+## Build logic
+
+Gradle configuration is centralized in [`build-logic/`](../build-logic), an **included build** that
+publishes six convention plugins. Nothing shared is repeated in a module file: SDK levels, the JDK 17
+toolchain, ProGuard wiring, Compose enablement, and Hilt/KSP wiring all arrive via a plugin.
+
+| Plugin | Encodes |
+|--------|---------|
+| `prose.android.application` | AGP application + shared Android/Kotlin config + `targetSdk` |
+| `prose.android.library` | AGP library + shared Android/Kotlin config + `consumerProguardFiles` |
+| `prose.android.compose` | Compose compiler plugin, `buildFeatures.compose`, the Compose BOM and dependency set |
+| `prose.android.hilt` | KSP + Hilt plugin and their dependencies |
+| `prose.android.feature` | library + compose + hilt + the dependency set every feature shares |
+| `prose.jvm.library` | `java-library` + Kotlin JVM + toolchain |
+
+The plugins are **composable rather than monolithic** — `prose.android.compose` never applies AGP,
+so it works on `app` and on library modules alike, and `prose.android.feature` is defined by applying
+the other three. A convention plugin should encode a decision ("this module renders Compose UI"),
+not a module.
+
+Two consequences worth knowing when touching the build:
+
+- AGP 9 provides Kotlin support built in, so **no Android module applies
+  `org.jetbrains.kotlin.android`** — doing so now fails the build. `core-models` still applies
+  `org.jetbrains.kotlin.jvm`, which is not subsumed.
+- The root [`build.gradle.kts`](../build.gradle.kts) `plugins { … apply false }` block is
+  load-bearing: it puts AGP on the buildscript classpath so `build-logic` can declare it
+  `compileOnly`.
+
+[convention-plugins.md](convention-plugins.md) is the full reference — per-plugin source, the AGP 9
+constraints that shape it, and how to add a module or change a convention.
+
+---
+
 ## Cross-cutting conventions
 
 - **No code comments.** The codebase is intentionally comment-free; names and small functions carry
@@ -194,7 +228,11 @@ Notes:
 - **Timber + `logTag()`** for logging; tags are prefixed `PROSE_DEBUG_LOG:`.
 - **Immutable Compose inputs** via `kotlinx.collections.immutable`.
 - **Version catalog only** — reference `libs.*` / `libs.versions.*` / `libs.plugins.*`, never
-  hardcode versions ([`gradle/libs.versions.toml`](../gradle/libs.versions.toml)).
+  hardcode versions ([`gradle/libs.versions.toml`](../gradle/libs.versions.toml)). Convention
+  plugins read the same catalog through the runtime API (`libs.version("…")`,
+  `libs.findLibrary("…")`) because type-safe accessors are not generated inside `build-logic`.
+- **Shared build config lives in `build-logic`, never in a module** — a module's `build.gradle.kts`
+  declares `namespace` and `dependencies` and little else. See [Build logic](#build-logic) below.
 - **Testing** — ViewModels are unit-tested with Turbine + fake repositories and a
   `StandardTestDispatcher`; fakes live under each module's `src/test/.../fakes/`. UI tests use the
   Compose test rule. See `AGENTS.md` for the full testing notes.

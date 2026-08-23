@@ -1,10 +1,12 @@
 # Modules & Dependency Graph
 
-Prose is split into **7 core modules** and **4 feature modules**, assembled by the `app` module. The
+Prose is split into **6 core modules** and **4 feature modules**, assembled by the `app` module. The
 split enforces the layering described in [architecture.md](architecture.md): features depend on
 `core-data` for everything data-related and never reach a data source directly.
 
-All modules are listed in [`settings.gradle.kts`](../settings.gradle.kts).
+All modules are listed in [`settings.gradle.kts`](../settings.gradle.kts). Their Gradle
+configuration comes from convention plugins in [`build-logic/`](../build-logic) — see
+[convention-plugins.md](convention-plugins.md) and [Build configuration](#build-configuration) below.
 
 ## Dependency graph
 
@@ -66,11 +68,38 @@ Key invariants:
 
 ---
 
+## Build configuration
+
+Module `build.gradle.kts` files declare only identity — `namespace`, module-local settings, and
+`dependencies`. Everything shared comes from a convention plugin published by the
+[`build-logic`](../build-logic) included build.
+
+| Module | Convention plugins | Module-local build config |
+|---|---|---|
+| `app` | `prose.android.application` + `prose.android.compose` + `prose.android.hilt` | `applicationId`, `versionCode`, `versionName` |
+| `core-models` | `prose.jvm.library` | — |
+| `core-platform` | `prose.android.library` + `prose.android.hilt` | — |
+| `core-db` | `prose.android.library` + `prose.android.hilt` | `ksp { arg("room.schemaLocation", …) }` |
+| `core-network` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | `apikey.properties`, `buildConfigField`, `optIn` |
+| `core-data` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | — |
+| `core-design` | `prose.android.library` + `prose.android.compose` | — |
+| `feature-*` (×4) | `prose.android.feature` | — |
+
+`prose.android.feature` is itself `prose.android.library` + `prose.android.compose` +
+`prose.android.hilt` plus the dependency set every feature shares (`core-design`, `core-data`,
+`core-models`, lifecycle/Compose ViewModel, immutable collections, and the JUnit + coroutines-test +
+Turbine test trio).
+
+`build-logic` is **not** a module of the app — it is a separate Gradle build on the plugin
+classpath, so it never appears in the dependency graph above and ships nothing into the APK.
+
+---
+
 ## Core modules
 
 ### `core-models`
-Pure Kotlin library (`java-library`, `kotlin-jvm`). Domain types only: `Book`, `BookInfo`,
-`Highlight`, `BookSearch`. No DI, no Android.
+Pure Kotlin library (`prose.jvm.library` → `java-library` + `kotlin-jvm`). Domain types only:
+`Book`, `BookInfo`, `Highlight`, `BookSearch`. No DI, no Android.
 
 ### `core-platform`
 Android OS abstractions that keep upper layers testable and `Context`-free.

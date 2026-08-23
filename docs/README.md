@@ -16,18 +16,21 @@ with a single search.
 | [architecture.md](architecture.md) | Layering, the unidirectional data-flow (UDF) contract, dependency injection, navigation, and the cross-cutting conventions every module follows. |
 | [modules.md](modules.md) | Every Gradle module, what it owns, its public surface, and the full inter-module dependency graph. |
 | [flows.md](flows.md) | Step-by-step walkthroughs of each user-facing flow (bootstrap, bookshelf, search, add book, view highlights, capture→OCR→save, export/share) traced from UI down to the data source. |
+| [convention-plugins.md](convention-plugins.md) | The `build-logic` included build: what each convention plugin does, the AGP 9 constraints that shape them, and how to add a module or change a build convention. |
 
 ## Fast facts
 
 - **Language / build:** Kotlin, Gradle (Kotlin DSL), JVM toolchain 17. Versions are centralized in
-  [`gradle/libs.versions.toml`](../gradle/libs.versions.toml).
+  [`gradle/libs.versions.toml`](../gradle/libs.versions.toml); shared Gradle configuration lives in
+  convention plugins under [`build-logic/`](../build-logic), so module build files carry only
+  `namespace` and `dependencies`.
 - **UI:** Jetpack Compose, Material 3 with dynamic color, Navigation Compose, shared-element transitions.
 - **Async:** Coroutines + Flow. `StateFlow` for screen state, `Channel`/`receiveAsFlow` for one-shot effects.
 - **DI:** Hilt, one `@Module` per layer installed in `SingletonComponent`.
 - **Persistence:** Room (`book-db`) for books and highlights.
 - **Network:** Retrofit 3 + kotlinx.serialization against the Google Books API.
 - **OCR:** ML Kit on-device Latin text recognition.
-- **Min / target / compile SDK:** 26 / 35 / 36.
+- **Min / target / compile SDK:** 26 / 35 / 37.
 - **Entry point:** [`app/.../MainActivity.kt`](../app/src/main/java/com/sriniketh/prose/MainActivity.kt)
   → [`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt).
 
