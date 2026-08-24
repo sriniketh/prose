@@ -6,7 +6,3 @@ plugins {
 android {
     namespace = "com.sriniketh.core_platform"
 }
-
-dependencies {
-    testImplementation(libs.junit)
-}
