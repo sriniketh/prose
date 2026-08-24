@@ -129,7 +129,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew :feature-bookshelf:createDebugAndroidTestCoverageReport :feature-searchbooks:createDebugAndroidTestCoverageReport :feature-viewhighlights:createDebugAndroidTestCoverageReport :feature-addhighlight:createDebugAndroidTestCoverageReport :core-design:createDebugAndroidTestCoverageReport :core-db:createDebugAndroidTestCoverageReport :core-platform:createDebugAndroidTestCoverageReport :app:createDebugAndroidTestCoverageReport
+          script: ./gradlew --max-workers=2 :feature-bookshelf:createDebugAndroidTestCoverageReport :feature-searchbooks:createDebugAndroidTestCoverageReport :feature-viewhighlights:createDebugAndroidTestCoverageReport :feature-addhighlight:createDebugAndroidTestCoverageReport :core-design:createDebugAndroidTestCoverageReport :core-db:createDebugAndroidTestCoverageReport :core-platform:createDebugAndroidTestCoverageReport :app:createDebugAndroidTestCoverageReport
 
       - name: Upload UI test results
         uses: actions/upload-artifact@v7
