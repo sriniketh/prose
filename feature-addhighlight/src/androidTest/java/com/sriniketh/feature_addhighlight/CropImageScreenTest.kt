@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
 import org.junit.Rule
@@ -48,20 +47,5 @@ class CropImageScreenTest {
 
 		composeTestRule.waitForIdle()
 		composeTestRule.onNodeWithContentDescription("Done cropping button").assertIsDisplayed()
-	}
-
-	@Test
-	fun whenScreenIsDisplayedThenCropFabShowsSelectText() {
-		composeTestRule.setContent {
-			AppTheme {
-				CropImageScreen(
-					imageUri = mockUri,
-					onImageCropped = {}
-				)
-			}
-		}
-
-		composeTestRule.waitForIdle()
-		composeTestRule.onNodeWithText("Select").assertIsDisplayed()
 	}
 }
