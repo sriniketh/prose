@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.sriniketh.core_design.ui.GeneratedPreview
 import com.sriniketh.core_design.ui.theme.AppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,6 +39,7 @@ fun ProseTopAppBar(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun ProseTopAppBarPreview() {

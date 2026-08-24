@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.AnimationConstants
+import com.sriniketh.core_design.ui.GeneratedPreview
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.sharedBoundsTransition
@@ -210,6 +211,7 @@ internal fun Bookshelf(
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun BookshelfScreenSuccessPreview() {
@@ -257,6 +259,7 @@ internal fun BookshelfScreenSuccessPreview() {
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun BookshelfScreenLoadingPreview() {
@@ -267,6 +270,7 @@ internal fun BookshelfScreenLoadingPreview() {
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun BookshelfScreenSuccessNoBooksPreview() {

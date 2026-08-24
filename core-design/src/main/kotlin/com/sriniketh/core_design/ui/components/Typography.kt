@@ -10,8 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.sriniketh.core_design.ui.GeneratedPreview
 import com.sriniketh.core_design.ui.theme.AppTheme
 
+@GeneratedPreview
 @Preview
 @Composable
 internal fun Typography() {
