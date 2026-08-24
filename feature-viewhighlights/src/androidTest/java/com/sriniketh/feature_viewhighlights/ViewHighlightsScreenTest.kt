@@ -9,6 +9,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToIndex
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
 import kotlinx.collections.immutable.persistentListOf
@@ -308,6 +309,118 @@ class ViewHighlightsScreenTest {
 
         composeTestRule.onNodeWithText("Edited highlight text").assertIsDisplayed()
         composeTestRule.onNodeWithText("Original highlight text").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenShareButtonIsClickedThenOnExportHighlightsEventIsTriggered() {
+        val bookId = "test-book-id"
+        val uiState = ViewHighlightsUIState()
+        var actionTriggered: ViewHighlightsAction? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = bookId,
+                    onAction = { actionTriggered = it }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Share highlights").performClick()
+        assertTrue(actionTriggered is ViewHighlightsAction.OnExportHighlights)
+        assertEquals(bookId, (actionTriggered as ViewHighlightsAction.OnExportHighlights).bookId)
+    }
+
+    @Test
+    fun whenCopyMenuItemIsClickedThenDropdownMenuIsDismissed() {
+        val highlights = persistentListOf(createTestHighlightUIState())
+        val uiState = ViewHighlightsUIState(highlights = highlights)
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Options Menu").performClick()
+        composeTestRule.onNodeWithTag("HighlightMenuItemCopy").performClick()
+
+        composeTestRule.onNodeWithText("Copy").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenHighlightTextExceedsLimitThenTruncatedTextIsDisplayedWithEllipsis() {
+        val longText = "A".repeat(300)
+        val truncatedText = "A".repeat(250) + " ..."
+        val highlights = persistentListOf(createTestHighlightUIState(text = longText))
+        val uiState = ViewHighlightsUIState(highlights = highlights)
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText(truncatedText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(longText).assertDoesNotExist()
+    }
+
+    @Test
+    fun whenTruncatedHighlightIsClickedThenFullTextIsDisplayed() {
+        val longText = "B".repeat(300)
+        val truncatedText = "B".repeat(250) + " ..."
+        val highlights = persistentListOf(createTestHighlightUIState(text = longText))
+        val uiState = ViewHighlightsUIState(highlights = highlights)
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText(truncatedText).performClick()
+
+        composeTestRule.onNodeWithText(longText).assertIsDisplayed()
+        composeTestRule.onNodeWithText(truncatedText).assertDoesNotExist()
+    }
+
+    @Test
+    fun whenScrolledPastSecondItemThenFloatingActionButtonIsHidden() {
+        val highlights = persistentListOf(
+            *Array(20) { index ->
+                createTestHighlightUIState(id = "id-$index", text = "Highlight $index")
+            }
+        )
+        val uiState = ViewHighlightsUIState(highlights = highlights)
+
+        composeTestRule.setContent {
+            AppTheme {
+                ViewHighlights(
+                    uiState = uiState,
+                    bookId = "test-book-id",
+                    onAction = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").assertIsDisplayed()
+
+        composeTestRule.onNodeWithTag("HighlightsList").performScrollToIndex(15)
+
+        composeTestRule.onNodeWithContentDescription("Add highlight").assertDoesNotExist()
     }
 
     private fun createTestHighlightUIState(
