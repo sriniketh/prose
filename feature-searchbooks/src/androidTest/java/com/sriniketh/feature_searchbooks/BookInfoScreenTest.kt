@@ -270,6 +270,91 @@ class BookInfoScreenTest {
         composeTestRule.onNodeWithText("2023-01-01", substring = true).assertIsDisplayed()
     }
 
+    @Test
+    fun whenRatingsAreNullThenRatingsTextIsNotDisplayed() {
+        val book = createTestBook(averageRating = null, ratingsCount = null)
+        val uiState = BookInfoUiState(book = book)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfo(
+                    uiState = uiState,
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Ratings:", substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun whenPageCountIsNullThenPageCountTextIsNotDisplayed() {
+        val book = createTestBook(pageCount = null)
+        val uiState = BookInfoUiState(book = book)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfo(
+                    uiState = uiState,
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Number of pages", substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun whenPublisherIsNullThenPublisherTextIsNotDisplayed() {
+        val book = createTestBook(publisher = null)
+        val uiState = BookInfoUiState(book = book)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfo(
+                    uiState = uiState,
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Test Publisher").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenPublishedDateIsNullThenPublishedDateTextIsNotDisplayed() {
+        val book = createTestBook(publishedDate = null)
+        val uiState = BookInfoUiState(book = book)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfo(
+                    uiState = uiState,
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("2023", substring = true).assertDoesNotExist()
+    }
+
+    @Test
+    fun whenDescriptionIsNullThenDescriptionIsNotDisplayed() {
+        val book = createTestBook(description = null)
+        val uiState = BookInfoUiState(book = book)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfo(
+                    uiState = uiState,
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Test Description").assertDoesNotExist()
+    }
+
     private fun createTestBook(
         title: String = "Test Title",
         authors: List<String> = listOf("Test Author"),

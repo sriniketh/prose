@@ -19,6 +19,8 @@ class FakeHighlightsRepository : HighlightsRepository {
         savedOnTimestamp = "2023-01-01 12:00 PM"
     )
 
+    var highlightsToReturn: List<Highlight> = listOf(fakeHighlight)
+
     override suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit> {
         return Result.success(Unit)
     }
@@ -32,7 +34,7 @@ class FakeHighlightsRepository : HighlightsRepository {
         if (shouldGetAllHighlightsForBookFromDbThrowException) {
             emit(Result.failure(RuntimeException("Get all highlights failed")))
         } else {
-            emit(Result.success(listOf(fakeHighlight)))
+            emit(Result.success(highlightsToReturn))
         }
     }
 
