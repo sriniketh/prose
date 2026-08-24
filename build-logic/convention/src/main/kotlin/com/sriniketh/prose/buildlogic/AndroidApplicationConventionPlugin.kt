@@ -16,6 +16,7 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             buildFeatures.buildConfig = true
         }
         configureKotlin()
+        configureAndroidUnitTestJacoco()
 
         dependencies {
             "androidTestImplementation"(libs.findLibrary("android-junit").get())

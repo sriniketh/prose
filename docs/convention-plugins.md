@@ -19,6 +19,7 @@ way, and the AGP 9 constraints that dictate how the plugins are written.
 - [Layout](#layout)
 - [The plugins](#the-plugins)
 - [Which module applies what](#which-module-applies-what)
+- [Coverage reporting](#coverage-reporting)
 - [AGP 9 constraints](#agp-9-constraints)
 - [How the pieces fit](#how-the-pieces-fit)
 - [Adding a new module](#adding-a-new-module)
@@ -38,6 +39,7 @@ build-logic/
         ├── ProjectExtensions.kt         # version-catalog access helper
         ├── KotlinConfig.kt              # shared Kotlin config (toolchain, compiler args)
         ├── AndroidConfig.kt             # shared Android config (SDKs, ProGuard)
+        ├── JacocoConfig.kt              # shared unit-test JaCoCo wiring (Android side)
         ├── AndroidApplicationConventionPlugin.kt
         ├── AndroidLibraryConventionPlugin.kt
         ├── AndroidComposeConventionPlugin.kt
@@ -48,46 +50,22 @@ build-logic/
 
 `build-logic` is a **separate Gradle build**, not a `buildSrc` directory, so editing one convention
 plugin does not invalidate the whole main build's configuration cache. It is wired in from the root
-[`settings.gradle.kts`](../settings.gradle.kts):
-
-```kotlin
-pluginManagement {
-	includeBuild("build-logic")
-	repositories {
-		google()
-		mavenCentral()
-		gradlePluginPortal()
-	}
-}
-```
+[`settings.gradle.kts`](../settings.gradle.kts), whose `pluginManagement { }` block calls
+`includeBuild("build-logic")` and declares the repositories (`google()`, `mavenCentral()`,
+`gradlePluginPortal()`) an included build needs for itself, since it inherits none from the root.
 
 `includeBuild` must be inside `pluginManagement`. A top-level `includeBuild` composites builds for
 *dependency* substitution, not plugin resolution, and the plugin IDs will not be found.
 
-`build-logic/settings.gradle.kts` declares its own repositories (an included build inherits none)
-and points at the same catalog file the modules use, so plugin versions can never drift:
+[`build-logic/settings.gradle.kts`](../build-logic/settings.gradle.kts) declares its own repositories
+(an included build inherits none) and its `dependencyResolutionManagement { versionCatalogs { } }`
+block points a catalog also named `"libs"` at the very same `../gradle/libs.versions.toml` the
+modules use, so plugin versions can never drift between the two builds.
 
-```kotlin
-dependencyResolutionManagement {
-	versionCatalogs {
-		create("libs") {
-			from(files("../gradle/libs.versions.toml"))
-		}
-	}
-}
-```
-
-The catalog carries the plugins' own JAR coordinates under `[libraries]` — separate from the
-`[plugins]` markers, which only work in a `plugins { }` block:
-
-```toml
-# Gradle plugin artifacts, for the build-logic compile classpath only
-android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-application-plugin-version" }
-kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-jvm-plugin-version" }
-compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin-compose-plugin-version" }
-ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp-plugin-version" }
-hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt-plugin-version" }
-```
+The catalog carries the plugins' own JAR coordinates under `[libraries]` in
+[`gradle/libs.versions.toml`](../gradle/libs.versions.toml) — separate from the `[plugins]` markers,
+which only work in a `plugins { }` block. Look for `android-gradlePlugin`, `kotlin-gradlePlugin`,
+`compose-gradlePlugin`, `ksp-gradlePlugin`, and `hilt-gradlePlugin` there.
 
 These are `compileOnly` in `build-logic/convention/build.gradle.kts` — the convention plugins need
 AGP's *types* to compile, but AGP is already on the buildscript classpath at runtime via the root
@@ -105,38 +83,21 @@ one monolith. Each encodes *a decision*, not *a module*.
 
 [`JvmLibraryConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/JvmLibraryConventionPlugin.kt)
 
-```kotlin
-pluginManager.apply("java-library")
-pluginManager.apply("org.jetbrains.kotlin.jvm")
-configureKotlin()
-```
-
-Pure Kotlin/JVM module. `org.jetbrains.kotlin.jvm` **is** still required here — AGP 9's built-in
-Kotlin support covers Android modules only. `configureKotlin()` sets the JDK toolchain, which also
-configures the Java toolchain, so no separate `java { toolchain { … } }` block is needed.
+Pure Kotlin/JVM module: applies `java-library` and `org.jetbrains.kotlin.jvm` — the latter **is**
+still required here, since AGP 9's built-in Kotlin support covers Android modules only — then
+`configureKotlin()`, which sets the JDK toolchain and with it the Java toolchain, so no separate
+`java { toolchain { … } }` block is needed. It also applies `jacoco` and turns on XML + HTML reports
+for the plugin's own default `jacocoTestReport` task (see [Coverage reporting](#coverage-reporting)).
 
 ### `prose.android.library`
 
 [`AndroidLibraryConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidLibraryConventionPlugin.kt)
 
-```kotlin
-pluginManager.apply("com.android.library")
-
-extensions.configure<LibraryExtension> {
-	configureAndroidCommon(this)
-	defaultConfig.consumerProguardFiles("consumer-rules.pro")
-}
-configureKotlin()
-
-dependencies {
-	"testImplementation"(libs.findLibrary("junit").get())
-
-	"androidTestImplementation"(libs.findLibrary("android-junit").get())
-	"androidTestImplementation"(libs.findLibrary("android-test-runner").get())
-}
-```
-
-Applies AGP's library plugin and the shared Android + Kotlin configuration. `consumerProguardFiles`
+Applies AGP's library plugin, the shared Android + Kotlin configuration (`configureAndroidCommon`,
+`configureKotlin`), and the shared unit-test JaCoCo wiring (`configureAndroidUnitTestJacoco`, see
+[Coverage reporting](#coverage-reporting)), plus `consumerProguardFiles("consumer-rules.pro")` and a
+`dependencies { }` block covering `junit`, `android-junit`, and `android-test-runner`.
+`consumerProguardFiles`
 is library-only (it lives on `LibraryVariantDimension`, not `CommonExtension`), so it sits here
 rather than in the shared helper. Every library module already has a `consumer-rules.pro`; a new one
 without it fails at `mergeDebugConsumerProguardFiles` with a clear message.
@@ -155,23 +116,9 @@ gets them the moment it applies this plugin, whether or not it also has Compose.
 
 [`AndroidApplicationConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidApplicationConventionPlugin.kt)
 
-```kotlin
-pluginManager.apply("com.android.application")
-
-extensions.configure<ApplicationExtension> {
-	configureAndroidCommon(this)
-	defaultConfig.targetSdk = libs.version("targetSdkVersion").toInt()
-	buildFeatures.buildConfig = true
-}
-configureKotlin()
-
-dependencies {
-	"androidTestImplementation"(libs.findLibrary("android-junit").get())
-	"androidTestImplementation"(libs.findLibrary("android-test-runner").get())
-}
-```
-
-Structurally identical to the library plugin, plus `targetSdk` (an application-only property) and
+Structurally identical to the library plugin (same `configureAndroidCommon`, `configureKotlin`,
+`configureAndroidUnitTestJacoco`, and an `android-junit`/`android-test-runner` dependencies block),
+plus `targetSdk` (an application-only property) and
 `buildFeatures.buildConfig = true` — `app` is the only module that gets `BuildConfig` generation for
 free; every other module opts in per-module (`core-network` does, in its own `build.gradle.kts`).
 `applicationId`, `versionCode`, and `versionName` deliberately stay in `app/build.gradle.kts` —
@@ -185,27 +132,12 @@ plugins are siblings, not one built on the other, so each needs its own copy.
 
 [`AndroidComposeConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidComposeConventionPlugin.kt)
 
-```kotlin
-pluginManager.apply("org.jetbrains.kotlin.plugin.compose")
-
-pluginManager.withPlugin("com.android.base") {
-	extensions.getByType<CommonExtension>().buildFeatures.compose = true
-}
-
-dependencies {
-	val bom = platform(libs.findLibrary("compose-bom").get())
-	"implementation"(bom)
-	"implementation"(libs.findBundle("compose").get())
-	"debugImplementation"(libs.findLibrary("compose-ui-tooling").get())
-	"androidTestImplementation"(bom)
-	"androidTestImplementation"(libs.findLibrary("compose-junit").get())
-	"debugImplementation"(libs.findLibrary("compose-test-manifest").get())
-}
-```
-
-It applies *only* the Compose compiler plugin and never AGP — that is what makes it composable
-across `app` and library modules alike. `CommonExtension` is the supertype of both
-`ApplicationExtension` and `LibraryExtension`, so one lookup serves both.
+Applies *only* the Compose compiler plugin (`org.jetbrains.kotlin.plugin.compose`) and never AGP —
+that is what makes it composable across `app` and library modules alike — then, deferred behind
+`pluginManager.withPlugin("com.android.base")`, turns on `buildFeatures.compose` via a plain
+`CommonExtension` lookup (the supertype of both `ApplicationExtension` and `LibraryExtension`, so one
+lookup serves both). Its `dependencies { }` block adds the Compose BOM + bundle + tooling to
+`implementation`/`debugImplementation`, and the BOM + `compose-junit` to `androidTestImplementation`.
 
 The `pluginManager.withPlugin("com.android.base")` callback is what makes plugin **order in the
 module's `plugins { }` block irrelevant**. `getByType` is eager, so a direct call would require the
@@ -222,17 +154,9 @@ drives a `ComposeTestRule`.
 
 [`AndroidHiltConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidHiltConventionPlugin.kt)
 
-```kotlin
-pluginManager.apply("com.google.devtools.ksp")
-pluginManager.apply("com.google.dagger.hilt.android")
-
-dependencies {
-	"implementation"(libs.findLibrary("hilt-android").get())
-	"ksp"(libs.findLibrary("hilt-compiler").get())
-}
-```
-
-KSP is applied first because the Hilt plugin looks for an annotation processor to attach to, and
+Applies KSP (`com.google.devtools.ksp`) then Hilt (`com.google.dagger.hilt.android`), and adds
+`hilt-android` on `implementation` plus `hilt-compiler` on `ksp`. KSP is applied first because the
+Hilt plugin looks for an annotation processor to attach to, and
 because the `"ksp"` configuration only exists once the KSP plugin is applied.
 
 Bundling KSP with Hilt is a judgement call: in this repo every KSP consumer is also a Hilt consumer
@@ -243,25 +167,10 @@ Bundling KSP with Hilt is a judgement call: in this repo every KSP consumer is a
 
 [`AndroidFeatureConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidFeatureConventionPlugin.kt)
 
-```kotlin
-pluginManager.apply("prose.android.library")
-pluginManager.apply("prose.android.compose")
-pluginManager.apply("prose.android.hilt")
-
-dependencies {
-	"implementation"(project(":core-design"))
-	"implementation"(project(":core-data"))
-	"implementation"(project(":core-models"))
-
-	"implementation"(libs.findLibrary("lifecycle-runtime-compose").get())
-	"implementation"(libs.findLibrary("lifecycle-viewmodel-compose").get())
-	"implementation"(libs.findLibrary("hilt-lifecycle-viewmodel-compose").get())
-	"implementation"(libs.findLibrary("kotlinx-collections-immutable").get())
-
-	"testImplementation"(libs.findLibrary("coroutines-test").get())
-	"testImplementation"(libs.findLibrary("cashapp-turbine").get())
-}
-```
+Applies `prose.android.library` + `prose.android.compose` + `prose.android.hilt`, then a
+`dependencies { }` block: `implementation` on `core-design`, `core-data`, `core-models`, the
+lifecycle/Compose-ViewModel libraries, and immutable collections; `testImplementation` on
+`coroutines-test` and Turbine.
 
 The one deliberate bundle: "this is a Prose feature module". A convention plugin can apply other
 convention plugins by ID, which is the payoff of the composable design.
@@ -280,29 +189,19 @@ What is **not** here, and why:
 
 **[`ProjectExtensions.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/ProjectExtensions.kt)** —
 Gradle does not generate type-safe catalog accessors for code compiled inside another build, so
-`libs.versions.minSdkVersion` does not exist in plugin source. These helpers reach the catalog
-through its runtime API instead:
-
-```kotlin
-internal val Project.libs: VersionCatalog
-	get() = extensions.getByType<VersionCatalogsExtension>().named("libs")
-
-internal fun VersionCatalog.version(name: String): String =
-	findVersion(name).get().requiredVersion
-```
+`libs.versions.minSdkVersion` does not exist in plugin source. It reaches the catalog through its
+runtime API instead: a `Project.libs` extension property (`VersionCatalogsExtension` lookup by name)
+and a `VersionCatalog.version(name)` helper (`findVersion(name).get().requiredVersion`) — these are
+what every `libs.version("…")` / `libs.findLibrary("…")` call in the other plugins resolves to.
 
 The trade-off is that catalog keys become strings — a typo is a configuration-time
 `NoSuchElementException` rather than a compile error. It still fails on the first build after the
 mistake. Keys keep their dashes in this form: `findLibrary("cashapp-turbine")`.
 
 **[`KotlinConfig.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/KotlinConfig.kt)** —
-the shared `kotlin { }` configuration for both Android and JVM modules:
-
-```kotlin
-extensions.configure<KotlinBaseExtension> {
-	jvmToolchain(libs.version("jvmToolchainVersion").toInt())
-}
-```
+the shared `kotlin { }` configuration for both Android and JVM modules: a `configureKotlin()`
+extension function that does one thing, `jvmToolchain(libs.version("jvmToolchainVersion").toInt())`,
+against a plain `KotlinBaseExtension` lookup.
 
 `KotlinBaseExtension` is the common supertype of the Android and JVM Kotlin extensions, and Gradle's
 `getByType` matches on subtype — so one function serves `prose.android.library` and
@@ -310,28 +209,10 @@ extensions.configure<KotlinBaseExtension> {
 
 **[`AndroidConfig.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidConfig.kt)** —
 the shared `android { }` configuration, taking a plain `CommonExtension` so it serves both `app` and
-every library:
-
-```kotlin
-internal fun Project.configureAndroidCommon(extension: CommonExtension) {
-	with(extension) {
-		compileSdk = libs.version("compileSdkVersion").toInt()
-
-		defaultConfig.apply {
-			minSdk = libs.version("minSdkVersion").toInt()
-			testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-		}
-
-		buildTypes.getByName("release") {
-			isMinifyEnabled = false
-			proguardFiles(
-				getDefaultProguardFile("proguard-android-optimize.txt"),
-				"proguard-rules.pro"
-			)
-		}
-	}
-}
-```
+every library. `configureAndroidCommon(extension)` sets `compileSdk`, `defaultConfig.minSdk` and
+`testInstrumentationRunner`, `buildTypes["debug"].enableAndroidTestCoverage = true`, and
+`buildTypes["release"]`'s `isMinifyEnabled = false` + ProGuard files
+(`proguard-android-optimize.txt` + the module's own `proguard-rules.pro`).
 
 The property-access style (`defaultConfig.apply { }`, `buildTypes.getByName(…)`) is required, not
 stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-buildtypes-as-properties-only).
@@ -340,6 +221,10 @@ stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-bu
 a generated `BuildConfig` class, so `prose.android.application` sets
 `buildFeatures.buildConfig = true` itself, and `core-network/build.gradle.kts` opts in explicitly.
 The other seven Android modules get no `BuildConfig` class or compile task at all.
+
+`enableAndroidTestCoverage` makes AGP instrument the debug variant so `connectedDebugAndroidTest`
+produces its own JaCoCo data, surfaced through the auto-generated `createDebugAndroidTestCoverageReport`
+task (HTML + XML, no custom task needed) — see [Coverage reporting](#coverage-reporting) below.
 
 ---
 
@@ -363,6 +248,30 @@ The other seven Android modules get no `BuildConfig` class or compile task at al
 it, so a plugin would not earn its keep. Applying it *after* a convention plugin works fine.
 
 Every module additionally declares its `namespace` and its own `dependencies { }` block.
+
+---
+
+## Coverage reporting
+
+Every module gets a `jacocoTestReport` task producing HTML + XML from its unit tests — Android
+modules via [`JacocoConfig.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/JacocoConfig.kt)'s
+`configureAndroidUnitTestJacoco()` (called from `prose.android.library` and
+`prose.android.application`), JVM modules via the `jacoco` plugin's own default wiring to the plain
+`test` task (`prose.jvm.library`). The task name is deliberately the same in both cases, so
+`./gradlew jacocoTestReport` runs it project-wide regardless of module type.
+
+Instrumented-test coverage needs no custom task at all: `enableAndroidTestCoverage = true` on the
+debug build type (set in `AndroidConfig.kt`, see [above](#shared-helpers)) makes AGP instrument that
+variant, and `connectedDebugAndroidTest` gets a sibling task, `createDebugAndroidTestCoverageReport`,
+that runs the tests and writes `build/reports/coverage/androidTest/debug/connected/report.xml`.
+
+CI (`.github/workflows/build.yml`) uploads both to Codecov as separate flags — `unittests` from the
+`unit-tests` job, `androidtests` from the `ui-tests` job (the job that already has a device to run
+`connectedDebugAndroidTest` on) — which Codecov merges into one project view. The `jacocoVersion`
+catalog entry is the single source of truth both wiring paths read from, so it never drifts between
+the Android and JVM cases. [`codecov.yml`](../codecov.yml) at the repo root excludes generated code
+(Hilt, `R`, `BuildConfig`, DI modules) from the numbers and has both status checks (`project`,
+`patch`) turned off — reporting only, no merge gating, until real thresholds are chosen.
 
 ---
 

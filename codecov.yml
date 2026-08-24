@@ -1,0 +1,22 @@
+coverage:
+  status:
+    project: off
+    patch: off
+
+ignore:
+  - "**/build/**"
+  - "**/R.java"
+  - "**/R.kt"
+  - "**/BuildConfig.java"
+  - "**/BuildConfig.kt"
+  - "**/*_Factory.kt"
+  - "**/*_Factory.java"
+  - "**/*_MembersInjector.kt"
+  - "**/*_MembersInjector.java"
+  - "**/*_HiltModules.kt"
+  - "**/*_HiltModules.java"
+  - "**/Hilt_*.kt"
+  - "**/Hilt_*.java"
+  - "**/hilt_aggregated_deps/**"
+  - "**/dagger/**"
+  - "**/di/**"

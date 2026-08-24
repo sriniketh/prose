@@ -36,7 +36,7 @@ jobs:
         run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
 
       - name: Run unit tests
-        run: ./gradlew test
+        run: ./gradlew test jacocoTestReport
 
       - name: Upload unit test results
         uses: actions/upload-artifact@v7
@@ -46,6 +46,22 @@ jobs:
           path: |
             **/build/test-results/test*/**/*.xml
             **/build/reports/tests/test*/**/*
+
+      - name: Upload unit test coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: >-
+            core-network/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-db/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-data/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-platform/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-bookshelf/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-searchbooks/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-viewhighlights/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-addhighlight/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
+          flags: unittests
+          fail_ci_if_error: false
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -113,7 +129,7 @@ jobs:
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: ./gradlew :feature-bookshelf:connectedDebugAndroidTest :feature-searchbooks:connectedDebugAndroidTest :feature-viewhighlights:connectedDebugAndroidTest :feature-addhighlight:connectedDebugAndroidTest :core-design:connectedDebugAndroidTest :core-db:connectedDebugAndroidTest :core-platform:connectedDebugAndroidTest :app:connectedDebugAndroidTest
+          script: ./gradlew --max-workers=2 :feature-bookshelf:createDebugAndroidTestCoverageReport :feature-searchbooks:createDebugAndroidTestCoverageReport :feature-viewhighlights:createDebugAndroidTestCoverageReport :feature-addhighlight:createDebugAndroidTestCoverageReport :core-design:createDebugAndroidTestCoverageReport :core-db:createDebugAndroidTestCoverageReport :core-platform:createDebugAndroidTestCoverageReport :app:createDebugAndroidTestCoverageReport
 
       - name: Upload UI test results
         uses: actions/upload-artifact@v7
@@ -121,3 +137,19 @@ jobs:
         with:
           name: ui-test-results
           path: '**/build/outputs/androidTest-results/**/*.xml'
+
+      - name: Upload instrumented test coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: >-
+            feature-bookshelf/build/reports/coverage/androidTest/debug/connected/report.xml,
+            feature-searchbooks/build/reports/coverage/androidTest/debug/connected/report.xml,
+            feature-viewhighlights/build/reports/coverage/androidTest/debug/connected/report.xml,
+            feature-addhighlight/build/reports/coverage/androidTest/debug/connected/report.xml,
+            core-design/build/reports/coverage/androidTest/debug/connected/report.xml,
+            core-db/build/reports/coverage/androidTest/debug/connected/report.xml,
+            core-platform/build/reports/coverage/androidTest/debug/connected/report.xml,
+            app/build/reports/coverage/androidTest/debug/connected/report.xml
+          flags: androidtests
+          fail_ci_if_error: false
