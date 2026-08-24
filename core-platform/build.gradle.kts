@@ -9,7 +9,4 @@ android {
 
 dependencies {
     testImplementation(libs.junit)
-
-    androidTestImplementation(libs.android.junit)
-    androidTestImplementation(libs.android.test.runner)
 }
