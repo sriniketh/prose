@@ -5,6 +5,7 @@ import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_models.search.BookSearch
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 
 class FakeBooksRepository : BooksRepository {
@@ -28,6 +29,8 @@ class FakeBooksRepository : BooksRepository {
 		)
 	)
 
+	val savedBooksFlow = MutableStateFlow<Result<List<Book>>>(Result.success(listOf(fakeBook)))
+
 	override suspend fun searchForBooks(searchQuery: String): Result<BookSearch> {
 		return Result.success(BookSearch(items = listOf(fakeBook)))
 	}
@@ -48,7 +51,7 @@ class FakeBooksRepository : BooksRepository {
 		return if (shouldGetAllSavedBooksFromDbThrowException) {
 			flowOf(Result.failure(RuntimeException("Get all books failed")))
 		} else {
-			flowOf(Result.success(listOf(fakeBook)))
+			savedBooksFlow
 		}
 	}
 

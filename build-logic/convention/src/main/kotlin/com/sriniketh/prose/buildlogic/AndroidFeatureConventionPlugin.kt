@@ -23,9 +23,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             "testImplementation"(libs.findLibrary("junit").get())
             "testImplementation"(libs.findLibrary("coroutines-test").get())
             "testImplementation"(libs.findLibrary("cashapp-turbine").get())
-
-            "androidTestImplementation"(libs.findLibrary("android-junit").get())
-            "androidTestImplementation"(libs.findLibrary("compose-junit").get())
         }
     }
 }
