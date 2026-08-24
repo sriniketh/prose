@@ -15,14 +15,5 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             buildFeatures.buildConfig = true
         }
         configureKotlin()
-
-        // AGP pins androidx.concurrent:concurrent-futures for application modules' androidTest
-        // classpaths, which conflicts with the newer version androidx.test.ext:junit requires.
-        // Library modules don't enforce this pin, only applications do, so this override lives here.
-        configurations.matching { it.name.endsWith("AndroidTestRuntimeClasspath") }.configureEach {
-            resolutionStrategy.force(
-                "androidx.concurrent:concurrent-futures:${libs.version("androidx-concurrent-futures-version")}"
-            )
-        }
     }
 }
