@@ -61,7 +61,7 @@ jobs:
             feature-viewhighlights/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
             feature-addhighlight/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
           flags: unittests
-          fail_ci_if_error: false
+          fail_ci_if_error: true
 
   ui-tests:
     runs-on: ubuntu-latest
@@ -152,4 +152,4 @@ jobs:
             core-platform/build/reports/coverage/androidTest/debug/connected/report.xml,
             app/build/reports/coverage/androidTest/debug/connected/report.xml
           flags: androidtests
-          fail_ci_if_error: false
+          fail_ci_if_error: true
