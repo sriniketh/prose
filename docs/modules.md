@@ -87,8 +87,9 @@ Module `build.gradle.kts` files declare only identity — `namespace`, module-lo
 
 `prose.android.feature` is itself `prose.android.library` + `prose.android.compose` +
 `prose.android.hilt` plus the dependency set every feature shares (`core-design`, `core-data`,
-`core-models`, lifecycle/Compose ViewModel, immutable collections, and the JUnit + coroutines-test +
-Turbine test trio).
+`core-models`, lifecycle/Compose ViewModel, immutable collections, and the coroutines-test + Turbine
+test duo — `junit` and the `android-junit`/`android-test-runner`/`compose-junit` androidTest trio
+come from the library and compose conventions it applies, not from this plugin directly).
 
 `build-logic` is **not** a module of the app — it is a separate Gradle build on the plugin
 classpath, so it never appears in the dependency graph above and ships nothing into the APK.

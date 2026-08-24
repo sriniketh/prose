@@ -127,6 +127,13 @@ extensions.configure<LibraryExtension> {
 	defaultConfig.consumerProguardFiles("consumer-rules.pro")
 }
 configureKotlin()
+
+dependencies {
+	"testImplementation"(libs.findLibrary("junit").get())
+
+	"androidTestImplementation"(libs.findLibrary("android-junit").get())
+	"androidTestImplementation"(libs.findLibrary("android-test-runner").get())
+}
 ```
 
 Applies AGP's library plugin and the shared Android + Kotlin configuration. `consumerProguardFiles`
@@ -135,6 +142,14 @@ rather than in the shared helper. Every library module already has a `consumer-r
 without it fails at `mergeDebugConsumerProguardFiles` with a clear message.
 
 Note there is **no** `org.jetbrains.kotlin.android` — see [constraint 1](#1-do-not-apply-orgjetbrainskotlinandroid).
+
+The dependency block gives every library module the JVM-unit-test basics (`junit`) and the two
+things any `androidTest` needs regardless of Compose: `android-junit` (`androidx.test.ext:junit`,
+the `AndroidJUnit4` class behind `@RunWith(AndroidJUnit4::class)`) and `android-test-runner`
+(`androidx.test:runner`, the `AndroidJUnitRunner` *instrumentation* class every module's
+`testInstrumentationRunner` — set in [`AndroidConfig.kt`](#shared-helpers) — names). Both are
+declared explicitly rather than left to arrive transitively through `compose-junit`, so a module
+gets them the moment it applies this plugin, whether or not it also has Compose.
 
 ### `prose.android.application`
 
@@ -149,6 +164,11 @@ extensions.configure<ApplicationExtension> {
 	buildFeatures.buildConfig = true
 }
 configureKotlin()
+
+dependencies {
+	"androidTestImplementation"(libs.findLibrary("android-junit").get())
+	"androidTestImplementation"(libs.findLibrary("android-test-runner").get())
+}
 ```
 
 Structurally identical to the library plugin, plus `targetSdk` (an application-only property) and
@@ -156,6 +176,10 @@ Structurally identical to the library plugin, plus `targetSdk` (an application-o
 free; every other module opts in per-module (`core-network` does, in its own `build.gradle.kts`).
 `applicationId`, `versionCode`, and `versionName` deliberately stay in `app/build.gradle.kts` —
 they are identity, not convention.
+
+The `android-junit`/`android-test-runner` pair is duplicated here rather than shared with the
+library plugin because `app` applies `com.android.application`, not `com.android.library` — the two
+plugins are siblings, not one built on the other, so each needs its own copy.
 
 ### `prose.android.compose`
 
@@ -174,6 +198,7 @@ dependencies {
 	"implementation"(libs.findBundle("compose").get())
 	"debugImplementation"(libs.findLibrary("compose-ui-tooling").get())
 	"androidTestImplementation"(bom)
+	"androidTestImplementation"(libs.findLibrary("compose-junit").get())
 	"debugImplementation"(libs.findLibrary("compose-test-manifest").get())
 }
 ```
@@ -185,6 +210,13 @@ across `app` and library modules alike. `CommonExtension` is the supertype of bo
 The `pluginManager.withPlugin("com.android.base")` callback is what makes plugin **order in the
 module's `plugins { }` block irrelevant**. `getByType` is eager, so a direct call would require the
 Android plugin to be applied first; deferring until AGP's base plugin lands removes that trap.
+
+`compose-junit` (`androidx.compose.ui:ui-test-junit4`, `createComposeRule()` and the
+`onNodeWith*`/`assert*` semantics-tree API) is the **only** androidTest dependency this plugin adds —
+`android-junit`/`android-test-runner` live in the library/application plugins instead, because those
+two are useful to *any* module with `androidTest`, Compose or not (`core-db`'s DAO tests,
+`core-platform`'s `UriExtensionsTest`), while `compose-junit` only matters to a module that actually
+drives a `ComposeTestRule`.
 
 ### `prose.android.hilt`
 
@@ -226,12 +258,8 @@ dependencies {
 	"implementation"(libs.findLibrary("hilt-lifecycle-viewmodel-compose").get())
 	"implementation"(libs.findLibrary("kotlinx-collections-immutable").get())
 
-	"testImplementation"(libs.findLibrary("junit").get())
 	"testImplementation"(libs.findLibrary("coroutines-test").get())
 	"testImplementation"(libs.findLibrary("cashapp-turbine").get())
-
-	"androidTestImplementation"(libs.findLibrary("android-junit").get())
-	"androidTestImplementation"(libs.findLibrary("compose-junit").get())
 }
 ```
 
@@ -240,6 +268,10 @@ convention plugins by ID, which is the payoff of the composable design.
 
 What is **not** here, and why:
 
+- `junit` (`testImplementation`) and `android-junit`/`android-test-runner`/`compose-junit`
+  (`androidTestImplementation`) — inherited transitively from `prose.android.library` and
+  `prose.android.compose`, which this plugin already applies. Declaring them again here would be a
+  pure duplicate.
 - `core-platform` — `feature-viewhighlights` needs it only on `testImplementation`, so it stays a
   per-module line.
 - `mockk` — only two of the four features use it. Two explicit lines beat two unused dependencies.
