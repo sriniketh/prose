@@ -7,6 +7,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -15,6 +16,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -226,6 +228,97 @@ class SearchBookScreenTest {
         composeTestRule.onNodeWithContentDescription("Close icon").performClick()
 
         assertTrue(resetSearchCalled)
+    }
+
+    @Test
+    fun whenCloseIconIsClickedWithNoTextThenSearchBarCollapsesWithoutResettingSearch() {
+        val uiState = BookSearchUiState()
+        var resetSearchCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = { resetSearchCalled = true }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithContentDescription("Close icon").performClick()
+
+        assertFalse(resetSearchCalled)
+        composeTestRule.onNodeWithContentDescription("Close icon").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenSearchTextIsShortThenSearchForBooksIsNotCalled() {
+        val uiState = BookSearchUiState()
+        var searchQuery: String? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = { searchQuery = it },
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("abc")
+
+        assertEquals(null, searchQuery)
+    }
+
+    @Test
+    fun whenSearchActionIsTriggeredWithLongQueryThenSearchForBooksIsCalled() {
+        val uiState = BookSearchUiState()
+        var searchQuery: String? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = { searchQuery = it },
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test query")
+        searchQuery = null
+        composeTestRule.onNodeWithTag("SearchBookTextField").performImeAction()
+
+        assertEquals("test query", searchQuery)
+    }
+
+    @Test
+    fun whenSearchActionIsTriggeredWithLongQueryThenSearchBarCollapses() {
+        val uiState = BookSearchUiState()
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test query")
+        composeTestRule.onNodeWithTag("SearchBookTextField").performImeAction()
+
+        composeTestRule.onNodeWithContentDescription("Close icon").assertDoesNotExist()
     }
 
     @Test
