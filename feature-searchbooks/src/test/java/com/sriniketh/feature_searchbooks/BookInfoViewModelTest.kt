@@ -169,6 +169,60 @@ class BookInfoViewModelTest {
     }
 
     @Test
+    fun `when add book to shelf is called then loading state is set to true`() = runTest {
+        fakeBooksRepository.doesBookExistResult = false
+
+        viewModel.getBookDetail("test-volume-id")
+        advanceUntilIdle()
+
+        val addToShelf = viewModel.uiState.value.addBookToShelf
+
+        viewModel.uiState.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isLoading)
+
+            addToShelf()
+
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isLoading)
+
+            skipItems(1)
+        }
+    }
+
+    @Test
+    fun `when add book to shelf fails then loading is set to false and error is shown`() = runTest {
+        fakeBooksRepository.doesBookExistResult = false
+        fakeBooksRepository.shouldInsertBookIntoDboThrowException = true
+
+        viewModel.getBookDetail("test-volume-id")
+        advanceUntilIdle()
+
+        val addToShelf = viewModel.uiState.value.addBookToShelf
+
+        viewModel.effects.test {
+            addToShelf()
+
+            assertEquals(
+                BookInfoEffect.ShowMessage(R.string.add_to_bookshelf_error_message),
+                awaitItem()
+            )
+        }
+
+        val finalState = viewModel.uiState.value
+        assertFalse(finalState.isLoading)
+        assertTrue(finalState.canAddToShelf)
+    }
+
+    @Test
+    fun `when get book detail succeeds then book id is passed to does book exist in db`() = runTest {
+        viewModel.getBookDetail("test-volume-id")
+        advanceUntilIdle()
+
+        assertEquals("test-id", fakeBooksRepository.bookIdPassed)
+    }
+
+    @Test
     fun `when initialized then state has correct defaults`() = runTest {
         viewModel.uiState.test {
             val initialState = awaitItem()

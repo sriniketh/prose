@@ -226,7 +226,8 @@ internal fun ViewHighlights(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding),
+                    .padding(contentPadding)
+                    .testTag("HighlightsList"),
                 state = lazyListState
             ) {
                 items(uiState.highlights, key = { it.id }) { highlightUiState ->

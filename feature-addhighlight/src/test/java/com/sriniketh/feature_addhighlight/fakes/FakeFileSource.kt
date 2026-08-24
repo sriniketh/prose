@@ -8,9 +8,12 @@ class FakeFileSource : FileSource {
 
     var deletedUris = mutableListOf<Uri>()
     var shouldDeleteFail = false
+    var createdFileNames = mutableListOf<String>()
+    var uriToReturnForNewFile: Uri = mockk<Uri>()
 
     override fun createNewFile(fileName: String): Uri {
-        return mockk<Uri>()
+        createdFileNames.add(fileName)
+        return uriToReturnForNewFile
     }
 
     override fun writeToFile(fileName: String, content: String): Uri {
