@@ -9,4 +9,6 @@ android {
 
 dependencies {
     implementation(libs.google.fonts)
+
+    androidTestImplementation(libs.android.junit)
 }
