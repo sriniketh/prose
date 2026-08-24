@@ -1,9 +1,12 @@
 package com.sriniketh.feature_searchbooks
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTouchHeightIsEqualTo
 import androidx.compose.ui.test.assertTouchWidthIsEqualTo
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -12,19 +15,23 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import com.sriniketh.feature_searchbooks.fakes.FakeBooksRepository
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class SearchBookScreenTest {
 
@@ -373,6 +380,103 @@ class SearchBookScreenTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("New Top Book 0").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenSearchActionIsTriggeredWithShortQueryThenSearchForBooksIsNotCalled() {
+        val uiState = BookSearchUiState()
+        var searchQuery: String? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = { searchQuery = it },
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("abc")
+        composeTestRule.onNodeWithTag("SearchBookTextField").performImeAction()
+
+        assertNull(searchQuery)
+    }
+
+    @Test
+    fun whenSearchFailsThenErrorSnackbarIsShownFromScreen() {
+        val fakeBooksRepository = FakeBooksRepository().apply {
+            shouldSearchForBooksThrowException = true
+        }
+        val viewModel = SearchBookViewModel(fakeBooksRepository)
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBookScreen(
+                    viewModel = viewModel,
+                    goToBookInfo = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test query")
+
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Error searching for book. Please try again."),
+            timeoutMillis = 5_000
+        )
+        composeTestRule.onNodeWithText("Error searching for book. Please try again.")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun whenBookItemIsClickedFromScreenThenGoToBookInfoIsCalledWithVolumeId() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = SearchBookViewModel(fakeBooksRepository)
+        var navigatedBookId: String? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBookScreen(
+                    viewModel = viewModel,
+                    goToBookInfo = { navigatedBookId = it }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test query")
+
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SearchResultItem_test-id"), timeoutMillis = 5_000)
+        composeTestRule.onNodeWithTag("SearchResultItem_test-id").performClick()
+
+        assertEquals("test-id", navigatedBookId)
+    }
+
+    @Test
+    fun whenCloseIconIsClickedFromScreenThenResultsAreClearedThroughViewModel() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = SearchBookViewModel(fakeBooksRepository)
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBookScreen(
+                    viewModel = viewModel,
+                    goToBookInfo = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookTextField").performTextInput("test query")
+
+        composeTestRule.waitUntilAtLeastOneExists(hasTestTag("SearchResultItem_test-id"), timeoutMillis = 5_000)
+        composeTestRule.onNodeWithContentDescription("Close icon").performClick()
+
+        composeTestRule.onNodeWithTag("SearchResultItem_test-id").assertDoesNotExist()
     }
 
     @Test

@@ -1,21 +1,27 @@
 package com.sriniketh.feature_searchbooks
 
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.waitUntilAtLeastOneExists
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import com.sriniketh.feature_searchbooks.fakes.FakeBooksRepository
 import kotlinx.collections.immutable.toImmutableList
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@OptIn(ExperimentalTestApi::class)
 @RunWith(AndroidJUnit4::class)
 class BookInfoScreenTest {
 
@@ -353,6 +359,98 @@ class BookInfoScreenTest {
         }
 
         composeTestRule.onNodeWithText("Test Description").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenBookIdIsProvidedThenBookDetailIsLoadedFromScreen() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = BookInfoViewModel(fakeBooksRepository)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfoScreen(
+                    viewModel = viewModel,
+                    bookId = "test-volume-id",
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.waitUntilAtLeastOneExists(hasText("Test Title"), timeoutMillis = 5_000)
+        composeTestRule.onNodeWithText("Test Title").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenLoadFailsThenErrorSnackbarIsShownFromScreen() {
+        val fakeBooksRepository = FakeBooksRepository().apply {
+            shouldFetchBookInfoThrowException = true
+        }
+        val viewModel = BookInfoViewModel(fakeBooksRepository)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfoScreen(
+                    viewModel = viewModel,
+                    bookId = "test-volume-id",
+                    goBack = {}
+                )
+            }
+        }
+
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasText("Error loading book details."),
+            timeoutMillis = 5_000
+        )
+        composeTestRule.onNodeWithText("Error loading book details.").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenAddingToShelfSucceedsFromScreenThenOnBookAddedToShelfIsCalled() {
+        val fakeBooksRepository = FakeBooksRepository().apply {
+            doesBookExistResult = false
+        }
+        val viewModel = BookInfoViewModel(fakeBooksRepository)
+        var onBookAddedToShelfCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfoScreen(
+                    viewModel = viewModel,
+                    bookId = "test-volume-id",
+                    goBack = {},
+                    onBookAddedToShelf = { onBookAddedToShelfCalled = true }
+                )
+            }
+        }
+
+        composeTestRule.waitUntilAtLeastOneExists(
+            hasContentDescription("Add to shelf"),
+            timeoutMillis = 5_000
+        )
+        composeTestRule.onNodeWithContentDescription("Add to shelf").performClick()
+
+        composeTestRule.waitUntil(timeoutMillis = 5_000) { onBookAddedToShelfCalled }
+        assertTrue(onBookAddedToShelfCalled)
+    }
+
+    @Test
+    fun whenBackButtonIsClickedFromScreenThenGoBackIsCalled() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = BookInfoViewModel(fakeBooksRepository)
+        var goBackCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookInfoScreen(
+                    viewModel = viewModel,
+                    bookId = "test-volume-id",
+                    goBack = { goBackCalled = true }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithContentDescription("Go back").performClick()
+        assertTrue(goBackCalled)
     }
 
     private fun createTestBook(
