@@ -23,6 +23,7 @@ class AndroidComposeConventionPlugin : Plugin<Project> {
             "debugImplementation"(libs.findLibrary("compose-ui-tooling").get())
             "androidTestImplementation"(bom)
             "androidTestImplementation"(libs.findLibrary("compose-junit").get())
+            "androidTestImplementation"(libs.findLibrary("android-junit").get())
             "debugImplementation"(libs.findLibrary("compose-test-manifest").get())
         }
     }
