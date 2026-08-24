@@ -51,7 +51,15 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: '**/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml'
+          files: >-
+            core-network/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-db/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-data/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-platform/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-bookshelf/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-searchbooks/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-viewhighlights/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            feature-addhighlight/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
           flags: unittests
           fail_ci_if_error: false
 
@@ -134,6 +142,14 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: '**/build/reports/coverage/androidTest/debug/connected/report.xml'
+          files: >-
+            feature-bookshelf/build/reports/coverage/androidTest/debug/connected/report.xml,
+            feature-searchbooks/build/reports/coverage/androidTest/debug/connected/report.xml,
+            feature-viewhighlights/build/reports/coverage/androidTest/debug/connected/report.xml,
+            feature-addhighlight/build/reports/coverage/androidTest/debug/connected/report.xml,
+            core-design/build/reports/coverage/androidTest/debug/connected/report.xml,
+            core-db/build/reports/coverage/androidTest/debug/connected/report.xml,
+            core-platform/build/reports/coverage/androidTest/debug/connected/report.xml,
+            app/build/reports/coverage/androidTest/debug/connected/report.xml
           flags: androidtests
           fail_ci_if_error: false
