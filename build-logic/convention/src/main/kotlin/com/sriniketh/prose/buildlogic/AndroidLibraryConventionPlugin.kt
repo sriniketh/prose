@@ -16,6 +16,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
             defaultConfig.consumerProguardFiles("consumer-rules.pro")
         }
         configureKotlin()
+        configureAndroidUnitTestJacoco()
 
         dependencies {
             "testImplementation"(libs.findLibrary("junit").get())

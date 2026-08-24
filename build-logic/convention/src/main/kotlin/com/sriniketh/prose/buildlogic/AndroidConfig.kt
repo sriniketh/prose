@@ -12,6 +12,10 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
 
+        buildTypes.getByName("debug") {
+            enableAndroidTestCoverage = true
+        }
+
         buildTypes.getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
