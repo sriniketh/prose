@@ -26,4 +26,6 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.timber)
     implementation(libs.navigation.compose)
+
+    androidTestImplementation(libs.android.junit)
 }
