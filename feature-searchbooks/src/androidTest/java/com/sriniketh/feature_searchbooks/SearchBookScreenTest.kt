@@ -2,6 +2,8 @@ package com.sriniketh.feature_searchbooks
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTouchHeightIsEqualTo
+import androidx.compose.ui.test.assertTouchWidthIsEqualTo
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
@@ -10,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performScrollToIndex
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -370,6 +373,27 @@ class SearchBookScreenTest {
         composeTestRule.waitForIdle()
 
         composeTestRule.onNodeWithText("New Top Book 0").assertIsDisplayed()
+    }
+
+    @Test
+    fun clearSearchButtonHasMinimumTouchTargetSize() {
+        val uiState = BookSearchUiState()
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").performClick()
+        composeTestRule.onNodeWithTag("SearchBookClearButton")
+            .assertTouchWidthIsEqualTo(48.dp)
+            .assertTouchHeightIsEqualTo(48.dp)
     }
 
     private fun createTestBookUiState(

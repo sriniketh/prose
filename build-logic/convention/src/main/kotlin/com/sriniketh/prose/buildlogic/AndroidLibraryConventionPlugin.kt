@@ -18,6 +18,8 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         configureKotlin()
 
         dependencies {
+            "testImplementation"(libs.findLibrary("junit").get())
+
             "androidTestImplementation"(libs.findLibrary("android-junit").get())
             "androidTestImplementation"(libs.findLibrary("android-test-runner").get())
         }
