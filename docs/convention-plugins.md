@@ -273,6 +273,52 @@ the Android and JVM cases. [`codecov.yml`](../codecov.yml) at the repo root excl
 (Hilt, `R`, `BuildConfig`, DI modules) from the numbers and has both status checks (`project`,
 `patch`) turned off — reporting only, no merge gating, until real thresholds are chosen.
 
+### Excluding `@Preview` functions from coverage
+
+JaCoCo ships a built-in bytecode filter (`AnnotationGeneratedFilter`, part of `org.jacoco.core`
+itself, so it applies to both `jacocoTestReport` and AGP's `createDebugAndroidTestCoverageReport`
+without any extra wiring) that drops a class or method from analysis if it carries an annotation
+with `CLASS` or `RUNTIME` retention whose simple name **contains** `"Generated"`. The rule started
+as an exact-match on `Generated` in JaCoCo 0.8.2 and was loosened to a contains-match in 0.8.3; the
+`jacocoVersion` this repo pins (0.8.12) and the newer version AGP bundles for the instrumented-test
+report path (0.8.14, visible in the HTML report footer) both carry the loosened rule.
+
+[`GeneratedPreview`](../core-design/src/main/kotlin/com/sriniketh/core_design/ui/PreviewAnnotations.kt)
+is a marker annotation (`@Retention(AnnotationRetention.BINARY)`, `@Target(FUNCTION)`) declared in
+`core-design` that leans on this filter. It is applied directly on every `@Preview`/`@PreviewLightDark`
+function repo-wide, alongside the existing preview annotation:
+
+```kotlin
+@GeneratedPreview
+@PreviewLightDark
+@Composable
+internal fun BookshelfScreenSuccessPreview() { … }
+```
+
+This was chosen over `classDirectories.exclude()` glob patterns: excludes operate at the whole-class
+level, and a preview function's `FooKt` class is frequently shared with a real production composable
+in the same file (`ProseTopAppBarKt` holds both `ProseTopAppBar` and `ProseTopAppBarPreview`) — a
+glob exclude would hide that production composable's real coverage too. The annotation filter instead
+removes only the annotated *method*, verified empirically (before/after `jacocoTestReport`/
+`createDebugAndroidTestCoverageReport` HTML+XML) on `Typography.kt` first: `TypographyKt` disappeared
+from the report entirely (it had exactly one method, and it was the annotated preview), while in a
+mixed file like `ProseTopAppBar.kt`, `ProseTopAppBarKt` kept its production `ProseTopAppBar` method
+at full coverage and only lost the `ProseTopAppBarPreview` method.
+
+**Known residual gap:** the Compose compiler hoists a composable's non-capturing trailing lambdas
+(e.g. `AppTheme { Surface { Column { Text(…) } } }`) into a synthetic `ComposableSingletons$FooKt`
+class, shared by every composable in that file. That class's methods are never themselves annotated
+with `@GeneratedPreview` — only the enclosing source function is — so a preview that builds UI
+inline (rather than delegating to an already-tested production composable with sample data) still
+leaves that inline content counted as missed in `ComposableSingletons$FooKt`. `Typography.kt`'s
+preview *is* the UI, so this
+doesn't apply there; `ProseTopAppBarPreview`'s one `title = { Text(…) }` lambda is a small instance
+of it. The other five preview functions across the repo delegate to a production composable with
+plain data + no-op callbacks and contribute no new singleton-lambda content, so they have no residual
+at all. Excluding `ComposableSingletons$FooKt` wholesale via `classDirectories.exclude()` was
+considered and rejected for the same reason as above: that class also holds real, tested production
+lambdas (default parameter values, etc.) in every one of these files.
+
 ---
 
 ## AGP 9 constraints
