@@ -20,7 +20,6 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
             "implementation"(libs.findLibrary("hilt-lifecycle-viewmodel-compose").get())
             "implementation"(libs.findLibrary("kotlinx-collections-immutable").get())
 
-            "testImplementation"(libs.findLibrary("junit").get())
             "testImplementation"(libs.findLibrary("coroutines-test").get())
             "testImplementation"(libs.findLibrary("cashapp-turbine").get())
         }
