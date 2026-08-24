@@ -9,11 +9,14 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.lifecycle.SavedStateHandle
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.sriniketh.core_design.ui.theme.AppTheme
+import com.sriniketh.feature_bookshelf.fakes.FakeBooksRepository
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -269,6 +272,110 @@ class BookshelfScreenTest {
         }
 
         composeTestRule.onNodeWithText("Test Book Title").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenBookshelfScreenIsDisplayedThenBooksFromViewModelAreShown() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = BookshelfViewModel(fakeBooksRepository, SavedStateHandle())
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookshelfScreen(
+                    viewModel = viewModel,
+                    goToSearch = {},
+                    goToHighlight = {}
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("Test Title").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenBookAddedFlagIsSetThenBookshelfScreenShowsAddedSnackbarMessage() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val savedStateHandle = SavedStateHandle(mapOf(BOOKSHELF_SHOW_ADDED_MESSAGE to true))
+        val viewModel = BookshelfViewModel(fakeBooksRepository, savedStateHandle)
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookshelfScreen(
+                    viewModel = viewModel,
+                    goToSearch = {},
+                    goToHighlight = {}
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("Book has been added to shelf!").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenLoadingBooksFailsThenBookshelfScreenShowsErrorSnackbarMessage() {
+        val fakeBooksRepository = FakeBooksRepository().apply {
+            shouldGetAllSavedBooksFromDbThrowException = true
+        }
+        val viewModel = BookshelfViewModel(fakeBooksRepository, SavedStateHandle())
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookshelfScreen(
+                    viewModel = viewModel,
+                    goToSearch = {},
+                    goToHighlight = {}
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithText("Error retrieving saved books.").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenFabIsClickedOnBookshelfScreenThenGoToSearchLambdaIsInvoked() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = BookshelfViewModel(fakeBooksRepository, SavedStateHandle())
+        var goToSearchCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookshelfScreen(
+                    viewModel = viewModel,
+                    goToSearch = { goToSearchCalled = true },
+                    goToHighlight = {}
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        composeTestRule.onNodeWithContentDescription("search for a book button").performClick()
+        assertTrue(goToSearchCalled)
+    }
+
+    @Test
+    fun whenBookItemIsClickedOnBookshelfScreenThenGoToHighlightLambdaIsInvokedWithBookId() {
+        val fakeBooksRepository = FakeBooksRepository()
+        val viewModel = BookshelfViewModel(fakeBooksRepository, SavedStateHandle())
+        var calledBookId: String? = null
+
+        composeTestRule.setContent {
+            AppTheme {
+                BookshelfScreen(
+                    viewModel = viewModel,
+                    goToSearch = {},
+                    goToHighlight = { calledBookId = it }
+                )
+            }
+        }
+
+        composeTestRule.waitForIdle()
+        assertNull(calledBookId)
+
+        composeTestRule.onNodeWithTag("BookItem_test-id").performClick()
+        assertEquals("test-id", calledBookId)
     }
 
     private fun createTestBookUIState(
