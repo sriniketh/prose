@@ -9,5 +9,7 @@ android {
 
 dependencies {
     testImplementation(libs.junit)
-    testImplementation(libs.mockk)
+
+    androidTestImplementation(libs.android.junit)
+    androidTestImplementation(libs.android.test.runner)
 }
