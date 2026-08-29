@@ -106,4 +106,75 @@ class ExportHighlightsUseCaseTest {
         assertFalse(writtenContent.contains("\"publisher\""))
         assertFalse(writtenContent.contains("\"subtitle\""))
     }
+
+    @Test
+    fun `when book title contains path traversal sequence then filename is sanitized`() = runTest {
+        fakeBooksRepository.fakeBookToReturn = Book(
+            id = "test-id",
+            info = BookInfo(
+                title = "Book../Escape",
+                subtitle = null,
+                authors = listOf("Test Author"),
+                thumbnailLink = null,
+                publisher = null,
+                publishedDate = null,
+                description = null,
+                pageCount = null,
+                averageRating = null,
+                ratingsCount = null
+            )
+        )
+        useCase("test-book-id")
+        val fileName = fakeFileSource.lastWrittenFileName!!
+        assertFalse(fileName.contains(".."))
+        assertTrue(fileName.contains("_export.json"))
+        assertFalse(fileName.contains("/"))
+    }
+
+    @Test
+    fun `when book title contains forward slash then filename is sanitized`() = runTest {
+        fakeBooksRepository.fakeBookToReturn = Book(
+            id = "test-id",
+            info = BookInfo(
+                title = "TCP/IP Illustrated",
+                subtitle = null,
+                authors = listOf("Test Author"),
+                thumbnailLink = null,
+                publisher = null,
+                publishedDate = null,
+                description = null,
+                pageCount = null,
+                averageRating = null,
+                ratingsCount = null
+            )
+        )
+        val result = useCase("test-book-id")
+        assertTrue(result.isSuccess)
+        val fileName = fakeFileSource.lastWrittenFileName!!
+        assertFalse(fileName.contains("/"))
+        assertTrue(fileName.contains("_export.json"))
+    }
+
+    @Test
+    fun `when book title contains special characters then filename is sanitized to alphanumeric underscore dash only`() = runTest {
+        fakeBooksRepository.fakeBookToReturn = Book(
+            id = "test-id",
+            info = BookInfo(
+                title = "Book@#$%^&*()={}/\\:;'\"<>?|",
+                subtitle = null,
+                authors = listOf("Test Author"),
+                thumbnailLink = null,
+                publisher = null,
+                publishedDate = null,
+                description = null,
+                pageCount = null,
+                averageRating = null,
+                ratingsCount = null
+            )
+        )
+        val result = useCase("test-book-id")
+        assertTrue(result.isSuccess)
+        val fileName = fakeFileSource.lastWrittenFileName!!
+        assertTrue(fileName.matches(Regex("^[a-z0-9_-]+_export\\.json$")))
+    }
 }
