@@ -6,6 +6,10 @@ import com.sriniketh.core_data.fakes.FakeBooksRemoteDataSource
 import com.sriniketh.core_db.entity.BookEntity
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -14,6 +18,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BooksRepositoryImplTest {
 
 	private lateinit var booksRemoteDataSource: FakeBooksRemoteDataSource
@@ -65,6 +70,26 @@ class BooksRepositoryImplTest {
 			val exception = result.exceptionOrNull()
 			assertTrue(exception is RuntimeException)
 			assertEquals("some error fetching volumes", exception?.message)
+		}
+
+	@Test
+	fun `searchForBooks propagates CancellationException instead of converting it to a failure Result when the calling coroutine is cancelled`() =
+		runTest {
+			booksRemoteDataSource.shouldGetVolumesSuspendForever = true
+			var thrown: Throwable? = null
+
+			val job = launch {
+				try {
+					booksRepositoryImpl.searchForBooks("some query")
+				} catch (throwable: Throwable) {
+					thrown = throwable
+				}
+			}
+			runCurrent()
+			job.cancel()
+			job.join()
+
+			assertTrue(thrown is CancellationException)
 		}
 
 	@Test
