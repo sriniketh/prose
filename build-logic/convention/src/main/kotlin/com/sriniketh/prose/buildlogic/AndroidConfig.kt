@@ -24,7 +24,7 @@ internal fun Project.configureAndroidCommon(extension: CommonExtension) {
             )
         }
 
-        lint {
+        lint.apply {
             abortOnError = true
             baseline = file("lint-baseline.xml")
         }

@@ -8,7 +8,7 @@
         errorLine2="              ~~~~~~~~~">
         <location
             file="src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt"
-            line="45"
+            line="44"
             column="15"/>
     </issue>
 

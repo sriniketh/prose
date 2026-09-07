@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <baseline version="1.0">
-    <file name="build.gradle.kts">
-        <error line="8" column="77" source="standard:chain-method-continuation" />
-        <error line="8" column="83" source="standard:chain-method-continuation" />
-    </file>
     <file name="src/main/java/com/sriniketh/core_models/book/Book.kt">
         <error line="1" column="9" source="standard:package-name" />
         <error line="5" column="23" source="standard:trailing-comma-on-declaration-site" />

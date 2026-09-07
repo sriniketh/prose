@@ -16,6 +16,7 @@
     <ID>NewLineAtEndOfFile:FakeHighlightsRepository.kt$com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository.kt</ID>
     <ID>PackageNaming:CaptureAndCropImageScreen.kt$package com.sriniketh.feature_addhighlight</ID>
     <ID>PackageNaming:CaptureAndCropImageViewModel.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:CaptureAndCropImageViewModelTest.kt$package com.sriniketh.feature_addhighlight</ID>
     <ID>PackageNaming:CropImageScreen.kt$package com.sriniketh.feature_addhighlight</ID>
     <ID>PackageNaming:EditAndSaveHighlightScreen.kt$package com.sriniketh.feature_addhighlight</ID>
     <ID>PackageNaming:EditAndSaveHighlightViewModel.kt$package com.sriniketh.feature_addhighlight</ID>
@@ -25,8 +26,10 @@
     <ID>PackageNaming:FakeHighlightsRepository.kt$package com.sriniketh.feature_addhighlight.fakes</ID>
     <ID>PackageNaming:FakeTextAnalyzer.kt$package com.sriniketh.feature_addhighlight.fakes</ID>
     <ID>PackageNaming:ImageRotater.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:ImageRotaterTest.kt$package com.sriniketh.feature_addhighlight</ID>
     <ID>PackageNaming:TextAnalysisModule.kt$package com.sriniketh.feature_addhighlight.dagger</ID>
     <ID>PackageNaming:TextAnalyzer.kt$package com.sriniketh.feature_addhighlight</ID>
+    <ID>PackageNaming:TextAnalyzerImplTest.kt$package com.sriniketh.feature_addhighlight</ID>
     <ID>ReturnCount:ImageRotater.kt$ImageRotater$internal fun getRotatedBitmap(context: Context, imageUri: Uri): Bitmap?</ID>
     <ID>TooGenericExceptionCaught:ImageRotater.kt$ImageRotater$exception: Exception</ID>
     <ID>TooGenericExceptionThrown:FakeTextAnalyzer.kt$FakeTextAnalyzer$throw RuntimeException("Text analysis failed")</ID>
