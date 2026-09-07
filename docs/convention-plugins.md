@@ -124,6 +124,12 @@ free; every other module opts in per-module (`core-network` does, in its own `bu
 `applicationId`, `versionCode`, and `versionName` deliberately stay in `app/build.gradle.kts` —
 they are identity, not convention.
 
+It also layers a second `buildTypes { release { } }` call on top of `configureAndroidCommon`'s,
+turning on `isMinifyEnabled`/`isShrinkResources` and re-adding the same ProGuard files — `app` is the
+only module where an R8 pass has full-program visibility (library modules' own isolated R8 passes
+strip classes only referenced from sibling modules), so minification is enabled here rather than in
+the shared helper.
+
 The `android-junit`/`android-test-runner` pair is duplicated here rather than shared with the
 library plugin because `app` applies `com.android.application`, not `com.android.library` — the two
 plugins are siblings, not one built on the other, so each needs its own copy.
