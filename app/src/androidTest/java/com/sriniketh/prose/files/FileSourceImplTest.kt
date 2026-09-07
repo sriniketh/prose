@@ -3,6 +3,8 @@ package com.sriniketh.prose.files
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -14,7 +16,7 @@ import org.junit.runner.RunWith
 class FileSourceImplTest {
 
     private val context = ApplicationProvider.getApplicationContext<Context>()
-    private val fileSource = FileSourceImpl(context)
+    private val fileSource = FileSourceImpl(context, Dispatchers.IO)
 
     @Test
     fun whenCreateNewFileIsCalledThenItReturnsAResolvableContentUri() {
@@ -38,7 +40,7 @@ class FileSourceImplTest {
     }
 
     @Test
-    fun whenWriteToFileIsCalledThenTheReturnedUriContentIsReadableBack() {
+    fun whenWriteToFileIsCalledThenTheReturnedUriContentIsReadableBack() = runBlocking {
         val fileName = "written-file-${System.nanoTime()}.txt"
         val content = "hello prose"
 
@@ -49,7 +51,7 @@ class FileSourceImplTest {
     }
 
     @Test
-    fun whenDeleteFileIsCalledWithARealCreatedUriThenItReturnsTrue() {
+    fun whenDeleteFileIsCalledWithARealCreatedUriThenItReturnsTrue() = runBlocking {
         val fileName = "deletable-file-${System.nanoTime()}.txt"
         val uri = fileSource.writeToFile(fileName, "content to delete")
 
@@ -59,7 +61,7 @@ class FileSourceImplTest {
     }
 
     @Test
-    fun whenDeleteFileIsCalledWithAUriThatHasNoRealFileThenItReturnsFalse() {
+    fun whenDeleteFileIsCalledWithAUriThatHasNoRealFileThenItReturnsFalse() = runBlocking {
         val fileName = "never-written-${System.nanoTime()}.txt"
         val uri = fileSource.createNewFile(fileName)
 

@@ -13,11 +13,11 @@ class FakeFileSource : FileSource {
         return mockUri
     }
 
-    override fun writeToFile(fileName: String, content: String): Uri {
+    override suspend fun writeToFile(fileName: String, content: String): Uri {
         val mockUri = mockk<Uri>()
         every { mockUri.toString() } returns "content://com.test.fileProvider/cache/$fileName"
         return mockUri
     }
 
-    override fun deleteFile(uri: Uri): Boolean = true
+    override suspend fun deleteFile(uri: Uri): Boolean = true
 }

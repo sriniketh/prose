@@ -25,7 +25,9 @@ class CropImageScreenTest {
 			AppTheme {
 				CropImageScreen(
 					imageUri = mockUri,
-					onImageCropped = {}
+					rotatedBitmap = null,
+					onImageCropped = {},
+					onImageLoadFailed = {}
 				)
 			}
 		}
@@ -40,7 +42,9 @@ class CropImageScreenTest {
 			AppTheme {
 				CropImageScreen(
 					imageUri = mockUri,
-					onImageCropped = {}
+					rotatedBitmap = null,
+					onImageCropped = {},
+					onImageLoadFailed = {}
 				)
 			}
 		}
