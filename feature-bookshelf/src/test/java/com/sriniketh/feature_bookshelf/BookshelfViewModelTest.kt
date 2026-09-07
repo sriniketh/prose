@@ -107,7 +107,7 @@ class BookshelfViewModelTest {
     @Test
     fun `when loading fails then error message is set in state`() = runTest {
         fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
-        val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository), SavedStateHandle())
+        val failingViewModel = BookshelfViewModel(fakeBooksRepository, SavedStateHandle())
 
         advanceUntilIdle()
 
@@ -120,7 +120,7 @@ class BookshelfViewModelTest {
     @Test
     fun `when retry is invoked after a failure then books load and error clears`() = runTest {
         fakeBooksRepository.shouldGetAllSavedBooksFromDbThrowException = true
-        val failingViewModel = BookshelfViewModel(GetAllSavedBooksUseCase(fakeBooksRepository), SavedStateHandle())
+        val failingViewModel = BookshelfViewModel(fakeBooksRepository, SavedStateHandle())
         advanceUntilIdle()
         assertEquals(
             R.string.getallbooks_error_message,
