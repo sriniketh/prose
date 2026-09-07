@@ -13,33 +13,28 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import io.moyuru.cropify.Cropify
 import io.moyuru.cropify.rememberCropifyState
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun CropImageScreen(
     modifier: Modifier = Modifier,
     imageUri: Uri,
-    onImageCropped: () -> Unit,
-    ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    rotatedBitmap: Bitmap?,
+    onImageCropped: (Bitmap) -> Unit,
+    onImageLoadFailed: () -> Unit,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ) {
-    val context = LocalContext.current
     val cropifyState = rememberCropifyState()
-    val snackbarHostState = remember { SnackbarHostState() }
     Scaffold(
         modifier = modifier.testTag("AddHighlightCropImageScreen"),
         floatingActionButton = {
@@ -64,12 +59,6 @@ internal fun CropImageScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { contentPadding ->
 
-        val rotatedBitmapState = produceState<Bitmap?>(initialValue = null, key1 = imageUri) {
-            value = withContext(ioDispatcher) {
-                ImageRotater.getRotatedBitmap(context, imageUri)
-            }
-        }
-        val rotatedBitmap = rotatedBitmapState.value
         if (rotatedBitmap != null) {
             Cropify(
                 modifier = Modifier
@@ -78,11 +67,7 @@ internal fun CropImageScreen(
                 bitmap = rotatedBitmap.asImageBitmap(),
                 state = cropifyState,
                 onImageCropped = { imageBitmap ->
-                    val croppedBitmap = imageBitmap.asAndroidBitmap()
-                    context.contentResolver.openOutputStream(imageUri)?.use { outputStream ->
-                        croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                    }
-                    onImageCropped()
+                    onImageCropped(imageBitmap.asAndroidBitmap())
                 }
             )
         } else {
@@ -93,13 +78,9 @@ internal fun CropImageScreen(
                 uri = imageUri,
                 state = cropifyState,
                 onImageCropped = { imageBitmap ->
-                    val croppedBitmap = imageBitmap.asAndroidBitmap()
-                    context.contentResolver.openOutputStream(imageUri)?.use { outputStream ->
-                        croppedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                    }
-                    onImageCropped()
+                    onImageCropped(imageBitmap.asAndroidBitmap())
                 },
-                onFailedToLoadImage = { onImageCropped() }
+                onFailedToLoadImage = { onImageLoadFailed() }
             )
         }
     }

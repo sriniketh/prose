@@ -67,7 +67,9 @@ class CaptureAndCropImageScreenTest {
 			is CaptureAndCropImageScreenState.CropImage -> {
 				CropImageScreen(
 					imageUri = screenState.imageUri,
-					onImageCropped = onImageCropped
+					rotatedBitmap = null,
+					onImageCropped = { onImageCropped() },
+					onImageLoadFailed = {}
 				)
 			}
 

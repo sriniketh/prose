@@ -11,6 +11,7 @@ import com.sriniketh.core_platform.DateTimeSource
 import com.sriniketh.core_platform.FileSource
 import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
@@ -63,7 +65,9 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 }
                 _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))
             } finally {
-                fileSource.deleteFile(uri)
+                withContext(NonCancellable) {
+                    fileSource.deleteFile(uri)
+                }
             }
         }
     }

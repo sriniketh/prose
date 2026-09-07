@@ -140,12 +140,20 @@ Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/co
 [`CaptureAndCropImageScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageScreen.kt)):
 1. **CaptureImage** — a `TakePicture` activity-result launcher writes the photo into the temp
    FileProvider URI. On cancel/failure the screen calls `goBack()`.
-2. **CropImage** — `CropImageScreen` (Cropify) lets the user crop; `onImageCropped()` advances state.
+2. **CropImage** — entering this state kicks off `GetRotatedBitmapUseCase(imageUri)` (EXIF-aware
+   rotation, off Main via `@IoDispatcher`); [`CropImageScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CropImageScreen.kt)
+   (Cropify) then lets the user crop. A successful crop calls `viewModel.onImageCropped(bitmap)`,
+   which writes the bitmap back to the temp URI via `SaveCroppedImageUseCase` (also off Main) and
+   only then advances state. If the write fails, or Cropify fails to load the image at all
+   (`onFailedToLoadImage`), the ViewModel emits `CaptureAndCropImageEffect.ShowMessage` (a snackbar)
+   instead of silently advancing — the user stays on the crop screen and can retry.
 3. **ImageCapturedAndCropped** — the screen calls `onImageCaptured(uri)`, which URL-encodes the URI
    and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
 4. **Cleanup** — `onCleared()` deletes the temp file *unless* the flow completed
-   (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The completed file is handed
-   off to the next screen, which deletes it after OCR.
+   (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The delete runs suspend, off
+   Main, on a short-lived `CoroutineScope(SupervisorJob() + ioDispatcher)` (since `viewModelScope` is
+   already cancelled by the time `onCleared()` runs). The completed file is handed off to the next
+   screen, which deletes it after OCR.
 
 ### 5b. OCR & save
 
@@ -155,7 +163,9 @@ save_highlight_from_uri/{bookId}/{uri}
       processImageForHighlightText(uri):
         → TextAnalyzer.analyzeImage(uri)        (ML Kit on-device Latin OCR)
         → visionText.text.replace("\n", " ")    → editable highlightText
-        finally → FileSource.deleteFile(uri)     (delete the temp image)
+        finally → FileSource.deleteFile(uri)     (delete the temp image, wrapped in
+                                                    withContext(NonCancellable) since it's suspend
+                                                    and must still run even if cancelled)
 
 [user edits text, taps save]
   → saveHighlight(bookId, text)

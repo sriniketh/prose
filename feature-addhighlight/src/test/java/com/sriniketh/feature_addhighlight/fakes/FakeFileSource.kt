@@ -16,11 +16,11 @@ class FakeFileSource : FileSource {
         return uriToReturnForNewFile
     }
 
-    override fun writeToFile(fileName: String, content: String): Uri {
+    override suspend fun writeToFile(fileName: String, content: String): Uri {
         return Uri.parse("content://com.test.fileProvider/cache/$fileName")
     }
 
-    override fun deleteFile(uri: Uri): Boolean {
+    override suspend fun deleteFile(uri: Uri): Boolean {
         deletedUris.add(uri)
         return !shouldDeleteFail
     }
