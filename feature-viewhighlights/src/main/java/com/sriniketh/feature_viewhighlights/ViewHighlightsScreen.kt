@@ -1,7 +1,10 @@
 package com.sriniketh.feature_viewhighlights
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
@@ -43,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +54,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.Clipboard
 import androidx.compose.ui.platform.LocalClipboard
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
@@ -87,6 +92,8 @@ fun ViewHighlightsScreen(
     val resources = LocalResources.current
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    val activity = context as? Activity
 
     val shareLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
@@ -118,6 +125,16 @@ fun ViewHighlightsScreen(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
         bookId = bookId,
+        shouldShowCameraPermissionRationale = {
+            activity?.shouldShowRequestPermissionRationale(android.Manifest.permission.CAMERA) == true
+        },
+        onOpenAppSettings = {
+            context.startActivity(
+                Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", context.packageName, null)
+                }
+            )
+        },
         onAction = { action ->
             when (action) {
                 is ViewHighlightsAction.OnBackPressed -> {
@@ -145,17 +162,64 @@ internal fun ViewHighlights(
     bookId: String,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     modifier: Modifier = Modifier,
+    hasCameraPermissionBeenRequested: Boolean = false,
+    shouldShowCameraPermissionRationale: () -> Boolean = { false },
+    onOpenAppSettings: () -> Unit = {},
     onAction: (ViewHighlightsAction) -> Unit
 ) {
+    var cameraPermissionRequested by rememberSaveable(hasCameraPermissionBeenRequested) {
+        mutableStateOf(hasCameraPermissionBeenRequested)
+    }
+    var showCameraPermissionRationaleDialog by remember { mutableStateOf(false) }
+    var showCameraPermissionSettingsDialog by remember { mutableStateOf(false) }
+
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = { granted ->
+            cameraPermissionRequested = true
             if (granted) {
                 onAction(ViewHighlightsAction.OnCameraPermissionGranted)
             } else {
                 onAction(ViewHighlightsAction.OnCameraPermissionDenied)
             }
         })
+
+    val onCameraFabClick = {
+        when {
+            !cameraPermissionRequested -> {
+                cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+            }
+
+            shouldShowCameraPermissionRationale() -> {
+                showCameraPermissionRationaleDialog = true
+            }
+
+            else -> {
+                showCameraPermissionSettingsDialog = true
+            }
+        }
+    }
+
+    if (showCameraPermissionRationaleDialog) {
+        CameraPermissionRationaleDialog(
+            onConfirm = {
+                showCameraPermissionRationaleDialog = false
+                cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA)
+            },
+            hideDialog = { showCameraPermissionRationaleDialog = false }
+        )
+    }
+
+    if (showCameraPermissionSettingsDialog) {
+        CameraPermissionSettingsDialog(
+            onConfirm = {
+                showCameraPermissionSettingsDialog = false
+                onOpenAppSettings()
+            },
+            hideDialog = { showCameraPermissionSettingsDialog = false }
+        )
+    }
+
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
     val clipboard: Clipboard = LocalClipboard.current
 
@@ -195,7 +259,7 @@ internal fun ViewHighlights(
         floatingActionButton = {
             if (shouldFabBeVisible) {
                 FloatingActionButton(
-                    onClick = { cameraPermissionLauncher.launch(android.Manifest.permission.CAMERA) },
+                    onClick = { onCameraFabClick() },
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 ) {
@@ -347,6 +411,98 @@ internal fun ViewHighlights(
             }
         }
     }
+}
+
+@Composable
+private fun CameraPermissionRationaleDialog(
+    onConfirm: () -> Unit,
+    hideDialog: () -> Unit
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = stringResource(id = R.string.camera_permission_rationale_title),
+                style = MaterialTheme.typography.headlineMedium
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(id = R.string.camera_permission_rationale_message),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        },
+        confirmButton = {
+            ElevatedButton(
+                modifier = Modifier.testTag("CameraPermissionRationaleConfirmButton"),
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.camera_permission_rationale_positive_button_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                modifier = Modifier.testTag("CameraPermissionRationaleCancelButton"),
+                onClick = { hideDialog() }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.camera_permission_rationale_negative_button_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        onDismissRequest = { hideDialog() })
+}
+
+@Composable
+private fun CameraPermissionSettingsDialog(
+    onConfirm: () -> Unit,
+    hideDialog: () -> Unit
+) {
+    AlertDialog(
+        title = {
+            Text(
+                text = stringResource(id = R.string.camera_permission_settings_title),
+                style = MaterialTheme.typography.headlineMedium
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(id = R.string.camera_permission_settings_message),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        },
+        confirmButton = {
+            ElevatedButton(
+                modifier = Modifier.testTag("CameraPermissionSettingsConfirmButton"),
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.camera_permission_settings_positive_button_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                modifier = Modifier.testTag("CameraPermissionSettingsCancelButton"),
+                onClick = { hideDialog() }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.camera_permission_settings_negative_button_label),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        },
+        onDismissRequest = { hideDialog() })
 }
 
 @Composable

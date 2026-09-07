@@ -11,4 +11,5 @@ dependencies {
 
     testImplementation(project(":core-platform"))
     testImplementation(libs.mockk)
+    androidTestImplementation(libs.android.test.rules)
 }
