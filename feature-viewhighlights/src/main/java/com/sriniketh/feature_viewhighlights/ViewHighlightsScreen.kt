@@ -78,9 +78,6 @@ fun ViewHighlightsScreen(
     goToAddHighlightScreen: () -> Unit,
     goToEditHighlightScreen: (String) -> Unit
 ) {
-    LaunchedEffect(key1 = bookId) {
-        viewModel.getHighlights(bookId)
-    }
     val uiState: ViewHighlightsUIState by viewModel.highlightsUIStateFlow.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }

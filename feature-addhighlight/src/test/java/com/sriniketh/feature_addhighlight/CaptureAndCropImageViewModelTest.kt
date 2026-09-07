@@ -127,4 +127,39 @@ class CaptureAndCropImageViewModelTest {
         assertTrue(fakeFileSource.deletedUris.isEmpty())
         assertEquals(croppedUri, savedStateHandle.get<Uri>("imageUri"))
     }
+
+    @Test
+    fun `when recreated with same saved state handle after image captured then resumes at crop image instead of relaunching the camera`() {
+        val restoredSavedStateHandle = SavedStateHandle()
+        val originalViewModel = CaptureAndCropImageViewModel(
+            fileSource = fakeFileSource,
+            savedStateHandle = restoredSavedStateHandle
+        )
+        originalViewModel.onImageCaptured()
+
+        val recreatedViewModel = CaptureAndCropImageViewModel(
+            fileSource = fakeFileSource,
+            savedStateHandle = restoredSavedStateHandle
+        )
+
+        assertTrue(recreatedViewModel.screenState.value is CaptureAndCropImageScreenState.CropImage)
+    }
+
+    @Test
+    fun `when recreated with same saved state handle after image cropped then resumes at image captured and cropped`() {
+        val restoredSavedStateHandle = SavedStateHandle()
+        val originalViewModel = CaptureAndCropImageViewModel(
+            fileSource = fakeFileSource,
+            savedStateHandle = restoredSavedStateHandle
+        )
+        originalViewModel.onImageCaptured()
+        originalViewModel.onImageCropped()
+
+        val recreatedViewModel = CaptureAndCropImageViewModel(
+            fileSource = fakeFileSource,
+            savedStateHandle = restoredSavedStateHandle
+        )
+
+        assertTrue(recreatedViewModel.screenState.value is CaptureAndCropImageScreenState.ImageCapturedAndCropped)
+    }
 }

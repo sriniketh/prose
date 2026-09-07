@@ -112,6 +112,23 @@ uses a sealed `ViewHighlightsAction` dispatched through a single `processAction(
 **Collection in Compose** — screens read state with `collectAsStateWithLifecycle()` and drain effects
 inside `repeatOnLifecycle(STARTED)`.
 
+**Nav args and one-shot loads** — ViewModels that need a nav arg (`bookId`, `uri`, `highlightId`)
+inject `SavedStateHandle` (populated automatically by `hiltViewModel()` from the current
+`NavBackStackEntry`) and read the arg in `init` or a property initializer, never via a value pushed
+in from the composable. The initial load itself happens once, either directly in `init`
+(`ViewHighlightsViewModel`, `BookInfoViewModel`) or behind a "started" boolean guard on the
+triggering function (`EditAndSaveHighlightViewModel.processImageForHighlightText` /
+`loadHighlightText`) so a second call is a no-op. Screens must **not** re-trigger the load from a
+`LaunchedEffect` keyed on the nav arg — the arg doesn't change across a configuration change, but the
+`LaunchedEffect` still re-fires because the Compose tree (and its `remember`/`LaunchedEffect` slot
+table) is recreated on rotation even though the same `ViewModel` instance survives; an
+externally-triggered load has no way to know it already ran. `CaptureAndCropImageViewModel` is the
+reference implementation for reading a value out of `SavedStateHandle`
+(`savedStateHandle.get<Uri>("imageUri")`); it also persists which phase (capture / crop / done) it's
+in, so process death mid-crop resumes the crop step instead of relaunching the camera.
+`EditAndSaveHighlightViewModel` persists the in-progress highlight text the same way so an edit
+survives process death even after the source image file has been deleted.
+
 **State design conventions:**
 - UI state classes hold only what the screen renders. Domain models are mapped to per-screen
   `*UiState` types inside the ViewModel (e.g. `Book.asBookshelfUIState()`).
