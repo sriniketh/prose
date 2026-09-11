@@ -2,7 +2,6 @@ package com.sriniketh.feature_addhighlight
 
 import android.net.Uri
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.feature_addhighlight.fakes.FakeDateTimeSource
 import com.sriniketh.feature_addhighlight.fakes.FakeFileSource
 import com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository
@@ -21,6 +20,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.ZoneId
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class EditAndSaveHighlightViewModelTest {
@@ -28,7 +28,6 @@ class EditAndSaveHighlightViewModelTest {
     private lateinit var fakeTextAnalyzer: FakeTextAnalyzer
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
     private lateinit var fakeFileSource: FakeFileSource
-    private lateinit var formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase
     private lateinit var viewModel: EditAndSaveHighlightViewModel
 
     @Before
@@ -38,13 +37,11 @@ class EditAndSaveHighlightViewModelTest {
         fakeTextAnalyzer = FakeTextAnalyzer()
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeFileSource = FakeFileSource()
-        formatCurrentDateTimeUseCase = FormatCurrentDateTimeUseCase()
 
         viewModel = EditAndSaveHighlightViewModel(
             dateTimeSource = fakeDateTimeSource,
             textAnalyzer = fakeTextAnalyzer,
             highlightsRepository = fakeHighlightsRepository,
-            formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
             fileSource = fakeFileSource
         )
     }
@@ -204,8 +201,8 @@ class EditAndSaveHighlightViewModelTest {
         assertEquals("highlight text", insertedHighlight?.text)
         assertTrue(insertedHighlight?.id.orEmpty().isNotBlank())
         assertEquals(
-            formatCurrentDateTimeUseCase(fakeDateTimeSource.currentTime),
-            insertedHighlight?.savedOnTimestamp
+            fakeDateTimeSource.currentTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
+            insertedHighlight?.savedOnEpochMillis
         )
     }
 
@@ -319,8 +316,8 @@ class EditAndSaveHighlightViewModelTest {
             advanceUntilIdle()
 
             assertEquals(
-                "2023-01-01",
-                fakeHighlightsRepository.insertedHighlight?.savedOnTimestamp
+                1_672_531_200_000L,
+                fakeHighlightsRepository.insertedHighlight?.savedOnEpochMillis
             )
         }
 

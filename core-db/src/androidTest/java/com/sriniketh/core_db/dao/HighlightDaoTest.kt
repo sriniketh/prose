@@ -60,7 +60,7 @@ class HighlightDaoTest {
         id = id,
         bookId = bookId,
         text = text,
-        savedOnTimestamp = "2026-08-23T00:00:00Z"
+        savedOnEpochMillis = 1_787_522_400_000L
     )
 
     private suspend fun insertBook(id: String = "book-1") {

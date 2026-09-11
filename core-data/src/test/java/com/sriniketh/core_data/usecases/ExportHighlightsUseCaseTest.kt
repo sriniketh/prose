@@ -28,7 +28,12 @@ class ExportHighlightsUseCaseTest {
         fakeBooksRepository = FakeBooksRepository()
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeFileSource = FakeFileSource()
-        useCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
+        useCase = ExportHighlightsUseCase(
+            fakeBooksRepository,
+            fakeHighlightsRepository,
+            fakeFileSource,
+            FormatHighlightTimestampUseCase()
+        )
     }
 
     @Test
