@@ -114,6 +114,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v7
 
+      - name: Create API key properties file
+        run: echo "BOOKS_API_KEY=\"fake-key-for-ci\"" > core-network/apikey.properties
+
       - name: Check docs/ path references against the repo tree
         run: python3 scripts/check_docs_paths.py
 
