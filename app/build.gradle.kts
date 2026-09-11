@@ -2,6 +2,7 @@ plugins {
     id("prose.android.application")
     id("prose.android.compose")
     id("prose.android.hilt")
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -26,4 +27,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.timber)
     implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+    androidTestImplementation(libs.navigation.testing)
 }

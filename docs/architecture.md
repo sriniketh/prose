@@ -159,25 +159,32 @@ is `@HiltAndroidApp` and plants a Timber `DebugTree` in debug builds.
 
 ## Navigation
 
-Navigation Compose with **string routes**, defined as a sealed interface in
+Navigation Compose with **type-safe `@Serializable` routes** (Navigation 2.8+ pattern), defined as
+`@Serializable` `data object`/`data class` route types in
 [`Navigation.kt`](../app/src/main/java/com/sriniketh/prose/Navigation.kt) and wired in
-[`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt). The start
-destination is `bookshelf`. Arguments are passed as path segments (`view_highlights/{bookId}`).
+[`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt) via
+`composable<RouteType> { ... }`. The start destination is the `Bookshelf` route object. Navigation
+is done with route instances (`navController.navigate(ViewHighlights(bookId))`); arguments are read
+with `backStackEntry.toRoute<RouteType>()` — a missing/mismatched arg fails loudly instead of
+silently becoming `""`.
 
-| Route | Screen | Args |
+| Route type | Screen | Args |
 |-------|--------|------|
-| `bookshelf` | Bookshelf (start) | — |
-| `search` | Book search | — |
-| `book_info/{bookId}` | Book detail / add-to-shelf | `bookId` |
-| `view_highlights/{bookId}` | Highlights list | `bookId` |
-| `capture_and_crop_image/{bookId}` | Camera + crop | `bookId` |
-| `save_highlight_from_uri/{bookId}/{uri}` | OCR + save new highlight | `bookId`, encoded `uri` |
-| `save_highlight_from_highlight_id/{bookId}/{highlightId}` | Edit existing highlight | `bookId`, `highlightId` |
+| `Bookshelf` | Bookshelf (start) | — |
+| `Search` | Book search | — |
+| `BookInfo` | Book detail / add-to-shelf | `bookId: String` |
+| `ViewHighlights` | Highlights list | `bookId: String` |
+| `CaptureAndCropImage` | Camera + crop | `bookId: String` |
+| `SaveHighlightFromUri` | OCR + save new highlight | `bookId: String`, `uri: String` |
+| `SaveHighlightFromHighlightId` | Edit existing highlight | `bookId: String`, `highlightId: String` |
 
 Notes:
-- The image `uri` is URL-encoded/decoded across the route boundary via
-  [`UriExtensions`](../core-platform/src/main/java/com/sriniketh/core_platform/UriExtensions.kt)
-  (`encodeUri()` / `decodeUri()`).
+- The image `uri` is carried as a plain `String` route arg; Navigation Compose handles the
+  URL-encoding/decoding for type-safe routes, so no manual `encodeUri`/`decodeUri` round-trip is
+  needed. `ProseAppScreen` converts it back to a `Uri` with `String.toUri()` at the destination.
+- `popBackStack`/`getBackStackEntry` also take route instances
+  (`popBackStack(ViewHighlights(bookId), inclusive = false)`), so route renames are compile-time
+  checked rather than silent runtime string mismatches.
 - Cross-screen results use `savedStateHandle` on a back-stack entry. Adding a book sets
   `BOOKSHELF_SHOW_ADDED_MESSAGE` on the bookshelf entry, then pops back to it; the bookshelf
   ViewModel observes that handle and shows a confirmation snackbar.
