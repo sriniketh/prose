@@ -113,15 +113,22 @@ class ProseAppScreenNavigationTest {
         composeTestRule.onNodeWithTag("BookItem_$seededBookId").assertIsDisplayed()
     }
 
-    private fun pressSystemBackUntilBookshelfIsDisplayed(maxPresses: Int = 5) {
-        var presses = 0
-        while (presses < maxPresses &&
-            runCatching { composeTestRule.onNodeWithText("Bookshelf").assertIsDisplayed() }.isFailure
-        ) {
-            InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
-            composeTestRule.waitForIdle()
-            presses++
+    /**
+     * The search screen's `SearchBar` auto-focuses and opens its IME/expanded state on entry, so
+     * a single system back press only dismisses the keyboard/collapses focus — how many presses
+     * it takes before the event reaches the `NavController` is IME/SDK state, not app behavior,
+     * so this polls with a timeout (like [composeTestRule.waitUntil] above) instead of a fixed
+     * press count.
+     */
+    private fun pressSystemBackUntilBookshelfIsDisplayed(timeoutMillis: Long = 5_000) {
+        composeTestRule.waitUntil(timeoutMillis = timeoutMillis) {
+            val isBookshelfDisplayed =
+                runCatching { composeTestRule.onNodeWithText("Bookshelf").assertIsDisplayed() }.isSuccess
+            if (!isBookshelfDisplayed) {
+                InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+                composeTestRule.waitForIdle()
+            }
+            isBookshelfDisplayed
         }
-        composeTestRule.onNodeWithText("Bookshelf").assertIsDisplayed()
     }
 }
