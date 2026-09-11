@@ -26,4 +26,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.timber)
     implementation(libs.navigation.compose)
+
+    androidTestImplementation(project(":core-db"))
+    androidTestImplementation(libs.room.runtime)
 }
