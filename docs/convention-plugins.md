@@ -210,9 +210,14 @@ against a plain `KotlinBaseExtension` lookup.
 **[`AndroidConfig.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidConfig.kt)** —
 the shared `android { }` configuration, taking a plain `CommonExtension` so it serves both `app` and
 every library. `configureAndroidCommon(extension)` sets `compileSdk`, `defaultConfig.minSdk` and
-`testInstrumentationRunner`, `buildTypes["debug"].enableAndroidTestCoverage = true`, and
+`testInstrumentationRunner`, `buildTypes["debug"].enableAndroidTestCoverage = true`,
 `buildTypes["release"]`'s `isMinifyEnabled = false` + ProGuard files
-(`proguard-android-optimize.txt` + the module's own `proguard-rules.pro`).
+(`proguard-android-optimize.txt` + the module's own `proguard-rules.pro`), and a `lint` block
+(`abortOnError = true`, `baseline = file("lint-baseline.xml")`) resolved against each module's own
+directory. A module that needs different lint behavior (e.g. `app` disabling `GradleDependency`,
+`NewerVersionAvailable`, and `OldTargetApi`, which Renovate already covers) layers a second `lint { }`
+call in its own `build.gradle.kts` — AGP merges repeated calls into the same `Lint` object rather than
+replacing it.
 
 The property-access style (`defaultConfig.apply { }`, `buildTypes.getByName(…)`) is required, not
 stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-buildtypes-as-properties-only).

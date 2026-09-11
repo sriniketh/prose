@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:BookshelfScreen.kt$@Composable fun BookshelfScreen( modifier: Modifier = Modifier, viewModel: BookshelfViewModel = hiltViewModel(), goToSearch: () -&gt; Unit, goToHighlight: (String) -&gt; Unit )</ID>
+    <ID>FunctionNaming:BookshelfScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun Bookshelf( uiState: BookshelfUIState, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, goToSearch: () -&gt; Unit, goToHighlight: (String) -&gt; Unit )</ID>
+    <ID>FunctionNaming:BookshelfScreen.kt$@PreviewLightDark @Composable internal fun BookshelfScreenLoadingPreview()</ID>
+    <ID>FunctionNaming:BookshelfScreen.kt$@PreviewLightDark @Composable internal fun BookshelfScreenSuccessNoBooksPreview()</ID>
+    <ID>FunctionNaming:BookshelfScreen.kt$@PreviewLightDark @Composable internal fun BookshelfScreenSuccessPreview()</ID>
+    <ID>LongMethod:BookshelfScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun Bookshelf( uiState: BookshelfUIState, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, goToSearch: () -&gt; Unit, goToHighlight: (String) -&gt; Unit )</ID>
+    <ID>MaxLineLength:BookshelfScreen.kt$modifier = Modifier.sharedBoundsTransition(key = AnimationConstants.BOOKSHELF_TO_SEARCH_BOUNDS_TRANSITION_KEY)</ID>
+    <ID>PackageNaming:BookshelfScreen.kt$package com.sriniketh.feature_bookshelf</ID>
+    <ID>PackageNaming:BookshelfViewModel.kt$package com.sriniketh.feature_bookshelf</ID>
+    <ID>PackageNaming:BookshelfViewModelTest.kt$package com.sriniketh.feature_bookshelf</ID>
+    <ID>PackageNaming:FakeBooksRepository.kt$package com.sriniketh.feature_bookshelf.fakes</ID>
+  </CurrentIssues>
+</SmellBaseline>

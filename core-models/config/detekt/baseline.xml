@@ -1,0 +1,9 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>PackageNaming:Book.kt$package com.sriniketh.core_models.book</ID>
+    <ID>PackageNaming:BookSearch.kt$package com.sriniketh.core_models.search</ID>
+    <ID>PackageNaming:Highlight.kt$package com.sriniketh.core_models.book</ID>
+  </CurrentIssues>
+</SmellBaseline>

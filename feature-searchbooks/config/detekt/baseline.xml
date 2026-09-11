@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues/>
+  <CurrentIssues>
+    <ID>FunctionNaming:BookInfoScreen.kt$@Composable fun BookInfoScreen( modifier: Modifier = Modifier, viewModel: BookInfoViewModel = hiltViewModel(), bookId: String, goBack: () -&gt; Unit, onBookAddedToShelf: () -&gt; Unit = {} )</ID>
+    <ID>FunctionNaming:BookInfoScreen.kt$@Composable private fun BookInfoLayout( uiState: BookInfoUiState, contentPadding: PaddingValues )</ID>
+    <ID>FunctionNaming:BookInfoScreen.kt$@Composable private fun BookInfoScreenFloatingActionButton(buttonOnClick: () -&gt; Unit)</ID>
+    <ID>FunctionNaming:BookInfoScreen.kt$@Composable private fun BookInfoScreenTitle(uiState: BookInfoUiState)</ID>
+    <ID>FunctionNaming:BookInfoScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun BookInfo( uiState: BookInfoUiState, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, goBack: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:BookInfoScreen.kt$@PreviewLightDark @Composable internal fun BookInfoScreenLoadingPreview()</ID>
+    <ID>FunctionNaming:BookInfoScreen.kt$@PreviewLightDark @Composable internal fun BookInfoScreenPreview()</ID>
+    <ID>FunctionNaming:SearchBookScreen.kt$@Composable fun SearchBookScreen( modifier: Modifier = Modifier, viewModel: SearchBookViewModel = hiltViewModel(), goToBookInfo: (String) -&gt; Unit )</ID>
+    <ID>FunctionNaming:SearchBookScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun SearchBook( uiState: BookSearchUiState, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, searchForBooks: (String) -&gt; Unit, navigateToBookInfo: (String) -&gt; Unit, resetSearch: () -&gt; Unit )</ID>
+    <ID>FunctionNaming:SearchBookScreen.kt$@PreviewLightDark @Composable internal fun SearchBookScreenPreview()</ID>
+    <ID>LongMethod:BookInfoScreen.kt$@Composable private fun BookInfoLayout( uiState: BookInfoUiState, contentPadding: PaddingValues )</ID>
+    <ID>LongMethod:SearchBookScreen.kt$@OptIn(ExperimentalMaterial3Api::class) @Composable internal fun SearchBook( uiState: BookSearchUiState, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, searchForBooks: (String) -&gt; Unit, navigateToBookInfo: (String) -&gt; Unit, resetSearch: () -&gt; Unit )</ID>
+    <ID>LongParameterList:SearchBookScreen.kt$( uiState: BookSearchUiState, snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }, modifier: Modifier = Modifier, searchForBooks: (String) -&gt; Unit, navigateToBookInfo: (String) -&gt; Unit, resetSearch: () -&gt; Unit )</ID>
+    <ID>MaxLineLength:BookInfoScreen.kt$description = "some description that's repeated again and again so that we have this long piece of text. some description that's repeated again and again so that we have this long piece of text."</ID>
+    <ID>MaxLineLength:SearchBookViewModelTest.kt$SearchBookViewModelTest$fun</ID>
+    <ID>PackageNaming:BookInfoScreen.kt$package com.sriniketh.feature_searchbooks</ID>
+    <ID>PackageNaming:BookInfoViewModel.kt$package com.sriniketh.feature_searchbooks</ID>
+    <ID>PackageNaming:BookInfoViewModelTest.kt$package com.sriniketh.feature_searchbooks</ID>
+    <ID>PackageNaming:FakeBooksRepository.kt$package com.sriniketh.feature_searchbooks.fakes</ID>
+    <ID>PackageNaming:SearchBookScreen.kt$package com.sriniketh.feature_searchbooks</ID>
+    <ID>PackageNaming:SearchBookViewModel.kt$package com.sriniketh.feature_searchbooks</ID>
+    <ID>PackageNaming:SearchBookViewModelTest.kt$package com.sriniketh.feature_searchbooks</ID>
+  </CurrentIssues>
+</SmellBaseline>
