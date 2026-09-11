@@ -16,7 +16,7 @@ interface HighlightDao {
     @Query("SELECT * FROM highlightEntity WHERE id = :id")
     suspend fun getHighlightById(id: String): HighlightEntity?
 
-    @Query("SELECT * FROM highlightEntity WHERE bookId = :bookId")
+    @Query("SELECT * FROM highlightEntity WHERE bookId = :bookId ORDER BY savedOnEpochMillis ASC")
     fun getAllHighlightsForBook(bookId: String): Flow<List<HighlightEntity>>
 
     @Query("DELETE FROM highlightEntity WHERE id = :id")

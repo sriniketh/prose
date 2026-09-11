@@ -2,6 +2,7 @@ package com.sriniketh.feature_viewhighlights
 
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
+import com.sriniketh.core_data.usecases.FormatHighlightTimestampUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.feature_viewhighlights.fakes.FakeBooksRepository
 import com.sriniketh.feature_viewhighlights.fakes.FakeFileSource
@@ -19,6 +20,8 @@ import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.time.ZoneId
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewHighlightsViewModelTest {
@@ -27,24 +30,36 @@ class ViewHighlightsViewModelTest {
     private lateinit var fakeBooksRepository: FakeBooksRepository
     private lateinit var fakeFileSource: FakeFileSource
     private lateinit var exportHighlightsUseCase: ExportHighlightsUseCase
+    private lateinit var formatHighlightTimestampUseCase: FormatHighlightTimestampUseCase
     private lateinit var viewModel: ViewHighlightsViewModel
+    private lateinit var originalLocale: Locale
 
     @Before
     fun setup() {
+        originalLocale = Locale.getDefault()
+        Locale.setDefault(Locale.US)
         Dispatchers.setMain(StandardTestDispatcher())
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeBooksRepository = FakeBooksRepository()
         fakeFileSource = FakeFileSource()
-        exportHighlightsUseCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
+        formatHighlightTimestampUseCase = FormatHighlightTimestampUseCase()
+        exportHighlightsUseCase = ExportHighlightsUseCase(
+            fakeBooksRepository,
+            fakeHighlightsRepository,
+            fakeFileSource,
+            formatHighlightTimestampUseCase
+        )
         viewModel = ViewHighlightsViewModel(
             fakeHighlightsRepository,
-            exportHighlightsUseCase
+            exportHighlightsUseCase,
+            formatHighlightTimestampUseCase
         )
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
+        Locale.setDefault(originalLocale)
     }
 
     @Test
@@ -124,7 +139,7 @@ class ViewHighlightsViewModelTest {
     }
 
     @Test
-    fun `when getHighlights succeeds with multiple highlights then sorts by saved timestamp`() = runTest {
+    fun `when getHighlights succeeds then highlights preserve repository order without re-sorting`() = runTest {
         val bookId = "test-book-id"
         fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
         fakeHighlightsRepository.highlightsToReturn = listOf(
@@ -132,19 +147,30 @@ class ViewHighlightsViewModelTest {
                 id = "later",
                 bookId = bookId,
                 text = "later text",
-                savedOnTimestamp = "2023-03-01 10:00 AM"
+                savedOnEpochMillis = fakeHighlightsRepository.fakeHighlightSavedOnDateTime
+                    .plusMonths(2)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
             ),
             Highlight(
                 id = "earlier",
                 bookId = bookId,
                 text = "earlier text",
-                savedOnTimestamp = "2023-01-01 10:00 AM"
+                savedOnEpochMillis = fakeHighlightsRepository.fakeHighlightSavedOnDateTime
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
             ),
             Highlight(
                 id = "middle",
                 bookId = bookId,
                 text = "middle text",
-                savedOnTimestamp = "2023-02-01 10:00 AM"
+                savedOnEpochMillis = fakeHighlightsRepository.fakeHighlightSavedOnDateTime
+                    .plusMonths(1)
+                    .atZone(ZoneId.systemDefault())
+                    .toInstant()
+                    .toEpochMilli()
             )
         )
 
@@ -156,7 +182,7 @@ class ViewHighlightsViewModelTest {
             awaitItem()
             val finalState = awaitItem()
 
-            assertEquals(listOf("earlier", "middle", "later"), finalState.highlights.map { it.id })
+            assertEquals(listOf("later", "earlier", "middle"), finalState.highlights.map { it.id })
         }
     }
 
@@ -266,7 +292,7 @@ class ViewHighlightsViewModelTest {
             val highlightUIState = state.highlights.first()
             assertEquals("test-highlight-id", highlightUIState.id)
             assertEquals("Test highlight text", highlightUIState.text)
-            assertEquals("2023-01-01 12:00 PM", highlightUIState.savedOn)
+            assertEquals("01-01-2023 12:00 PM", highlightUIState.savedOn)
         }
     }
 
