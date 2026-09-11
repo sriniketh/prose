@@ -33,7 +33,7 @@ okhttp-version = "5.4.0"
 kotlinx-serialization-version = "1.11.0"
 cropify-version = "0.5.2"
 coil-version = "2.7.0"
-kotlinx-collections-immutable-version = "0.5.0"
+kotlinx-collections-immutable-version = "0.5.2"
 
 junit-version = "4.13.2"
 android-junit-version = "1.1.5"
