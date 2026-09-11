@@ -8,6 +8,8 @@ import androidx.compose.ui.test.assertTouchWidthIsEqualTo
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -428,7 +430,9 @@ class SearchBookScreenTest {
             hasText("Error searching for book. Please try again."),
             timeoutMillis = 5_000
         )
-        composeTestRule.onNodeWithText("Error searching for book. Please try again.")
+        composeTestRule.onNodeWithTag("SearchErrorState").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Error searching for book. Please try again.")
+            .onFirst()
             .assertIsDisplayed()
     }
 

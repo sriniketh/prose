@@ -5,6 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -331,7 +333,8 @@ class BookshelfScreenTest {
         }
 
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Error retrieving saved books.").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("BookshelfErrorState").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Error retrieving saved books.").onFirst().assertIsDisplayed()
     }
 
     @Test
