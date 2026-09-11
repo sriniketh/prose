@@ -2,6 +2,7 @@ package com.sriniketh.core_data.fakes
 
 import com.sriniketh.core_db.dao.HighlightDao
 import com.sriniketh.core_db.entity.HighlightEntity
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -10,7 +11,9 @@ class FakeHighlightDao : HighlightDao {
 
     var insertedHighlightEntity: HighlightEntity? = null
     var shouldInsertHighlightThrowException = false
+    var shouldInsertHighlightSuspendForever = false
     override suspend fun insertHighlight(highlightEntity: HighlightEntity) {
+        if (shouldInsertHighlightSuspendForever) awaitCancellation()
         if (shouldInsertHighlightThrowException) {
             throw RuntimeException("some error inserting highlight")
         }

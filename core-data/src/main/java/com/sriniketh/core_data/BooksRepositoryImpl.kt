@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class BooksRepositoryImpl @Inject constructor(
 	private val remoteBookDataSource: BooksRemoteDataSource,
@@ -23,6 +24,8 @@ class BooksRepositoryImpl @Inject constructor(
 		try {
 			val books = remoteBookDataSource.getVolumes(searchQuery).asBookSearchResult()
 			Result.success(books)
+		} catch (cancellationException: CancellationException) {
+			throw cancellationException
 		} catch (exception: Exception) {
 			Timber.e(exception, this.logTag())
 			Result.failure(exception)
@@ -32,6 +35,8 @@ class BooksRepositoryImpl @Inject constructor(
 		try {
 			val book = remoteBookDataSource.getVolume(volumeId).asBook()
 			Result.success(book)
+		} catch (cancellationException: CancellationException) {
+			throw cancellationException
 		} catch (exception: Exception) {
 			Timber.e(exception, this.logTag())
 			Result.failure(exception)
@@ -41,6 +46,8 @@ class BooksRepositoryImpl @Inject constructor(
 		try {
 			localBookDataSource.insertBook(book.asBookEntity())
 			Result.success(Unit)
+		} catch (cancellationException: CancellationException) {
+			throw cancellationException
 		} catch (exception: Exception) {
 			Timber.e(exception, this.logTag())
 			Result.failure(exception)
@@ -49,6 +56,8 @@ class BooksRepositoryImpl @Inject constructor(
 	override suspend fun doesBookExistInDb(bookId: String): Boolean =
 		try {
 			localBookDataSource.doesBookExist(bookId)
+		} catch (cancellationException: CancellationException) {
+			throw cancellationException
 		} catch (exception: Exception) {
 			Timber.e(exception, this.logTag())
 			false
@@ -72,6 +81,8 @@ class BooksRepositoryImpl @Inject constructor(
 			} else {
 				Result.failure(NoSuchElementException("Book not found: $bookId"))
 			}
+		} catch (cancellationException: CancellationException) {
+			throw cancellationException
 		} catch (exception: Exception) {
 			Timber.e(exception, this.logTag())
 			Result.failure(exception)
@@ -81,6 +92,8 @@ class BooksRepositoryImpl @Inject constructor(
 		try {
 			localBookDataSource.deleteBook(book.asBookEntity())
 			Result.success(Unit)
+		} catch (cancellationException: CancellationException) {
+			throw cancellationException
 		} catch (exception: Exception) {
 			Timber.e(exception, this.logTag())
 			Result.failure(exception)
