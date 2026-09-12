@@ -29,7 +29,7 @@ hilt-navigation-version = "1.4.0"
 
 timber-version = "5.0.1"
 retrofit-version = "3.0.0"
-okhttp-version = "5.4.0"
+okhttp-version = "5.5.0"
 kotlinx-serialization-version = "1.11.0"
 cropify-version = "0.5.2"
 coil-version = "2.7.0"
