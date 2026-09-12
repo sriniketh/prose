@@ -7,7 +7,7 @@ jacocoVersion = "0.8.12"
 
 # Plugin dependencies
 android-application-plugin-version = "9.4.0"
-android-library-plugin-version = "9.2.1"
+android-library-plugin-version = "9.4.0"
 kotlin-jvm-plugin-version = "2.4.20"
 kotlin-compose-plugin-version = "2.4.20"
 ksp-plugin-version = "2.3.12"
