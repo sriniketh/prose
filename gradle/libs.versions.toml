@@ -15,7 +15,7 @@ hilt-plugin-version = "2.60.1"
 
 # Library dependencies
 coroutines-android-version = "1.11.0"
-android-appcompat-version = "1.7.1"
+android-appcompat-version = "1.8.0"
 compose-bom-version = "2026.06.00"
 compose-nav-version = "2.10.1"
 hilt-version = "2.60.1"
