@@ -42,7 +42,7 @@ jobs:
             **/build/reports/tests/test*/**/*
 
       - name: Upload unit test coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: >-
@@ -127,7 +127,7 @@ jobs:
           path: '**/build/outputs/androidTest-results/**/*.xml'
 
       - name: Upload instrumented test coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: >-
