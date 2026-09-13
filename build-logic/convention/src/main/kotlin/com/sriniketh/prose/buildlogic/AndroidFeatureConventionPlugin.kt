@@ -12,7 +12,7 @@ class AndroidFeatureConventionPlugin : Plugin<Project> {
 
         dependencies {
             "implementation"(project(":core-design"))
-            "implementation"(project(":core-data"))
+            "implementation"(project(":core-data:api"))
             "implementation"(project(":core-models"))
 
             "implementation"(libs.findLibrary("lifecycle-runtime-compose").get())

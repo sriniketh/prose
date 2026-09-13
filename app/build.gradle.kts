@@ -17,6 +17,7 @@ android {
 dependencies {
     implementation(project(":core-design"))
     implementation(project(":core-platform"))
+    implementation(project(":core-data:impl"))
     implementation(project(":feature-bookshelf"))
     implementation(project(":feature-searchbooks"))
     implementation(project(":feature-viewhighlights"))

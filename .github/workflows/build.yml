@@ -48,7 +48,8 @@ jobs:
           files: >-
             core-network/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
             core-db/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
-            core-data/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-data/api/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
+            core-data/impl/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
             core-platform/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
             feature-bookshelf/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
             feature-searchbooks/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml,
