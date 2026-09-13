@@ -168,7 +168,7 @@ Bundling KSP with Hilt is a judgement call: in this repo every KSP consumer is a
 [`AndroidFeatureConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidFeatureConventionPlugin.kt)
 
 Applies `prose.android.library` + `prose.android.compose` + `prose.android.hilt`, then a
-`dependencies { }` block: `implementation` on `core-design`, `core-data`, `core-models`, the
+`dependencies { }` block: `implementation` on `core-design`, `core-data:api`, `core-models`, the
 lifecycle/Compose-ViewModel libraries, and immutable collections; `testImplementation` on
 `coroutines-test` and Turbine.
 
@@ -237,7 +237,8 @@ task (HTML + XML, no custom task needed) — see [Coverage reporting](#coverage-
 | `core-platform` | `prose.android.library`, `prose.android.hilt` | — |
 | `core-db` | `prose.android.library`, `prose.android.hilt` | `ksp { arg("room.schemaLocation", …) }` |
 | `core-network` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | `apikey.properties` loading, `buildFeatures.buildConfig = true`, `buildConfigField`, `optIn` |
-| `core-data` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | — |
+| `core-data:api` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | — |
+| `core-data:impl` | `prose.android.library`, `prose.android.hilt` | — |
 | `core-design` | `prose.android.library`, `prose.android.compose` | — |
 | `feature-bookshelf` | `prose.android.feature` | — |
 | `feature-searchbooks` | `prose.android.feature` | — |
@@ -349,8 +350,8 @@ gradle/libs.versions.toml ──┬─→ build-logic (compileOnly plugin JARs, 
                             │        ├─ prose.jvm.library ─────────→ core-models
                             │        │
                             │        ├─ prose.android.library ──┬──→ core-platform, core-db,
-                            │        │                          │    core-network, core-data,
-                            │        │                          │    core-design
+                            │        │                          │    core-network, core-data:api,
+                            │        │                          │    core-data:impl, core-design
                             │        ├─ prose.android.compose ──┤
                             │        ├─ prose.android.hilt ─────┤
                             │        │                          │
