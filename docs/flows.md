@@ -204,11 +204,11 @@ ViewHighlights "share" → ViewHighlightsViewModel.processAction(OnExportHighlig
 ```
 
 Details:
-- [`ExportHighlightsUseCase`](../core-data/src/main/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCase.kt)
+- [`ExportHighlightsUseCase`](../core-data/api/src/main/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCase.kt)
   is one of the few use cases that coordinates **both** repositories. It takes a one-shot snapshot of
   the highlights `Flow` via `.first()`.
 - The serialized shape is the `*Export` DTO set in
-  [`HighlightsExport.kt`](../core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)
+  [`HighlightsExport.kt`](../core-data/api/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)
   (kept separate from domain models so the on-disk format is independent of internal types).
   `explicitNulls = false` omits null fields from the JSON.
 - The file lands in the app cache dir and is shared through the `${applicationId}.fileProvider`

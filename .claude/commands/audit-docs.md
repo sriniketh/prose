@@ -21,8 +21,8 @@ The grep over-matches; do not report a hit as missing until you confirm it. Two 
 ## 2. Module graph — `docs/modules.md`
 
 - List actual Gradle modules from `settings.gradle.kts`. Compare against the per-module entries and the Mermaid + text dependency graph. Flag added/removed/renamed modules and any module missing an entry.
-- For each module, read its `build.gradle.kts` `dependencies {}` block and verify the documented inter-module edges (`implementation(project(":core-data"))` etc.) match the graph. A feature module depending on anything other than `core-data` for data is a doc-worthy violation of the stated rule.
-- Verify the use-case → repository → data-source index lists every `*UseCase` and `*Repository` actually present in `core-data`.
+- For each module, read its `build.gradle.kts` `dependencies {}` block and verify the documented inter-module edges (`implementation(project(":core-data:api"))` etc.) match the graph. A feature module depending on anything other than `core-data:api` for data — including `core-data:impl` directly — is a doc-worthy violation of the stated rule.
+- Verify the use-case → repository → data-source index lists every `*UseCase` and `*Repository` actually present in `core-data:api`/`core-data:impl`.
 
 ## 3. Architecture contract — `docs/architecture.md`
 

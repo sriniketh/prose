@@ -27,6 +27,8 @@ with a single search.
 - **UI:** Jetpack Compose, Material 3 with dynamic color, Navigation Compose, shared-element transitions.
 - **Async:** Coroutines + Flow. `StateFlow` for screen state, `Channel`/`receiveAsFlow` for one-shot effects.
 - **DI:** Hilt, one `@Module` per layer installed in `SingletonComponent`.
+- **Data layer:** `core-data:api` (repository interfaces + use cases, what features depend on) and
+  `core-data:impl` (repository implementations, wired in only by `app`) are separate Gradle modules.
 - **Persistence:** Room (`book-db`) for books and highlights.
 - **Network:** Retrofit 3 + kotlinx.serialization against the Google Books API.
 - **OCR:** ML Kit on-device Latin text recognition.
