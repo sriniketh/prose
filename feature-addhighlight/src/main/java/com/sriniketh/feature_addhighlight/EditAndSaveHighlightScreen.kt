@@ -40,6 +40,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.sriniketh.core_design.ui.GeneratedPreview
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.theme.AppTheme
@@ -239,6 +240,7 @@ internal fun EditAndSaveHighlight(
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun EditAndSaveHighlightPreview() {

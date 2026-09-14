@@ -54,6 +54,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.launch
 import coil.compose.AsyncImage
 import com.sriniketh.core_design.ui.AnimationConstants
+import com.sriniketh.core_design.ui.GeneratedPreview
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
 import com.sriniketh.core_design.ui.sharedBoundsTransition
 import com.sriniketh.core_design.ui.theme.AppTheme
@@ -257,6 +258,7 @@ internal fun SearchBook(
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun SearchBookScreenPreview() {

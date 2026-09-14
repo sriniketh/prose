@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.sriniketh.core_design.ui.GeneratedPreview
 import com.sriniketh.core_design.ui.components.NavigationBack
 import com.sriniketh.core_design.ui.components.ProseTopAppBar
 import com.sriniketh.core_design.ui.components.gradientPlaceholder
@@ -305,6 +306,7 @@ private fun BookInfoScreenTitle(uiState: BookInfoUiState) {
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun BookInfoScreenPreview() {
@@ -330,6 +332,7 @@ internal fun BookInfoScreenPreview() {
     }
 }
 
+@GeneratedPreview
 @PreviewLightDark
 @Composable
 internal fun BookInfoScreenLoadingPreview() {
