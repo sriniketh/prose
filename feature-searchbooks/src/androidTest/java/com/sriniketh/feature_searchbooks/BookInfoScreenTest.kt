@@ -6,6 +6,7 @@ import androidx.compose.ui.test.getUnclippedBoundsInRoot
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.lifecycle.SavedStateHandle
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -364,13 +365,15 @@ class BookInfoScreenTest {
     @Test
     fun whenBookIdIsProvidedThenBookDetailIsLoadedFromScreen() {
         val fakeBooksRepository = FakeBooksRepository()
-        val viewModel = BookInfoViewModel(fakeBooksRepository)
+        val viewModel = BookInfoViewModel(
+            fakeBooksRepository,
+            SavedStateHandle(mapOf("bookId" to "test-volume-id"))
+        )
 
         composeTestRule.setContent {
             AppTheme {
                 BookInfoScreen(
                     viewModel = viewModel,
-                    bookId = "test-volume-id",
                     goBack = {}
                 )
             }
@@ -385,13 +388,15 @@ class BookInfoScreenTest {
         val fakeBooksRepository = FakeBooksRepository().apply {
             shouldFetchBookInfoThrowException = true
         }
-        val viewModel = BookInfoViewModel(fakeBooksRepository)
+        val viewModel = BookInfoViewModel(
+            fakeBooksRepository,
+            SavedStateHandle(mapOf("bookId" to "test-volume-id"))
+        )
 
         composeTestRule.setContent {
             AppTheme {
                 BookInfoScreen(
                     viewModel = viewModel,
-                    bookId = "test-volume-id",
                     goBack = {}
                 )
             }
@@ -409,14 +414,16 @@ class BookInfoScreenTest {
         val fakeBooksRepository = FakeBooksRepository().apply {
             doesBookExistResult = false
         }
-        val viewModel = BookInfoViewModel(fakeBooksRepository)
+        val viewModel = BookInfoViewModel(
+            fakeBooksRepository,
+            SavedStateHandle(mapOf("bookId" to "test-volume-id"))
+        )
         var onBookAddedToShelfCalled = false
 
         composeTestRule.setContent {
             AppTheme {
                 BookInfoScreen(
                     viewModel = viewModel,
-                    bookId = "test-volume-id",
                     goBack = {},
                     onBookAddedToShelf = { onBookAddedToShelfCalled = true }
                 )
@@ -436,14 +443,16 @@ class BookInfoScreenTest {
     @Test
     fun whenBackButtonIsClickedFromScreenThenGoBackIsCalled() {
         val fakeBooksRepository = FakeBooksRepository()
-        val viewModel = BookInfoViewModel(fakeBooksRepository)
+        val viewModel = BookInfoViewModel(
+            fakeBooksRepository,
+            SavedStateHandle(mapOf("bookId" to "test-volume-id"))
+        )
         var goBackCalled = false
 
         composeTestRule.setContent {
             AppTheme {
                 BookInfoScreen(
                     viewModel = viewModel,
-                    bookId = "test-volume-id",
                     goBack = { goBackCalled = true }
                 )
             }

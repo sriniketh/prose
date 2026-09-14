@@ -1,13 +1,17 @@
 package com.sriniketh.feature_addhighlight
 
 import android.net.Uri
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.feature_addhighlight.fakes.FakeDateTimeSource
 import com.sriniketh.feature_addhighlight.fakes.FakeFileSource
 import com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository
 import com.sriniketh.feature_addhighlight.fakes.FakeTextAnalyzer
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
+import io.mockk.unmockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -40,19 +44,24 @@ class EditAndSaveHighlightViewModelTest {
         fakeFileSource = FakeFileSource()
         formatCurrentDateTimeUseCase = FormatCurrentDateTimeUseCase()
 
-        viewModel = EditAndSaveHighlightViewModel(
-            dateTimeSource = fakeDateTimeSource,
-            textAnalyzer = fakeTextAnalyzer,
-            highlightsRepository = fakeHighlightsRepository,
-            formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
-            fileSource = fakeFileSource
-        )
+        viewModel = buildViewModel()
     }
 
     @After
     fun tearDown() {
         Dispatchers.resetMain()
     }
+
+    private fun buildViewModel(
+        savedStateHandle: SavedStateHandle = SavedStateHandle()
+    ): EditAndSaveHighlightViewModel = EditAndSaveHighlightViewModel(
+        dateTimeSource = fakeDateTimeSource,
+        textAnalyzer = fakeTextAnalyzer,
+        highlightsRepository = fakeHighlightsRepository,
+        formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
+        fileSource = fakeFileSource,
+        savedStateHandle = savedStateHandle
+    )
 
     @Test
     fun `when initialized then state has correct defaults`() = runTest {
@@ -339,4 +348,107 @@ class EditAndSaveHighlightViewModelTest {
 
         assertFalse(viewModel.uiState.value.isLoading)
     }
+
+    @Test
+    fun `when created with a uri in SavedStateHandle then processes the image automatically`() = runTest {
+        fakeTextAnalyzer.textToReturn = "Text from auto-processed image"
+        mockkStatic(Uri::class)
+        every { Uri.decode(any()) } answers { firstArg() }
+        every { Uri.parse(any()) } returns mockk(relaxed = true)
+        try {
+            val savedStateHandle = SavedStateHandle(mapOf("uri" to "content://test/image.jpg"))
+
+            val autoInitViewModel = buildViewModel(savedStateHandle)
+
+            autoInitViewModel.uiState.test {
+                awaitItem()
+                val loadedState = awaitItem()
+                assertEquals("Text from auto-processed image", loadedState.highlightText)
+            }
+            assertEquals(1, fakeTextAnalyzer.analyzeImageInvocationCount)
+        } finally {
+            unmockkStatic(Uri::class)
+        }
+    }
+
+    @Test
+    fun `when created with a highlightId in SavedStateHandle then loads the highlight automatically`() = runTest {
+        val savedStateHandle = SavedStateHandle(mapOf("highlightId" to "test-highlight-id"))
+
+        val autoInitViewModel = buildViewModel(savedStateHandle)
+
+        autoInitViewModel.uiState.test {
+            awaitItem()
+            val loadedState = awaitItem()
+            assertEquals("Test highlight text", loadedState.highlightText)
+        }
+        assertEquals(1, fakeHighlightsRepository.loadHighlightFromDbInvocationCount)
+    }
+
+    @Test
+    fun `when process image for highlight text is called twice then only processes once`() = runTest {
+        val fakeUri = mockk<Uri>()
+
+        viewModel.processImageForHighlightText(fakeUri)
+        viewModel.processImageForHighlightText(fakeUri)
+        advanceUntilIdle()
+
+        assertEquals(1, fakeTextAnalyzer.analyzeImageInvocationCount)
+        assertEquals(1, fakeFileSource.deletedUris.size)
+    }
+
+    @Test
+    fun `when load highlight text is called twice then only loads once`() = runTest {
+        viewModel.loadHighlightText("highlight-id")
+        viewModel.loadHighlightText("highlight-id")
+        advanceUntilIdle()
+
+        assertEquals(1, fakeHighlightsRepository.loadHighlightFromDbInvocationCount)
+    }
+
+    @Test
+    fun `when updateHighlightText is called then draft is persisted to SavedStateHandle`() = runTest {
+        val savedStateHandle = SavedStateHandle()
+        val originalViewModel = buildViewModel(savedStateHandle)
+
+        originalViewModel.updateHighlightText("in progress edit")
+
+        val recreatedViewModel = buildViewModel(savedStateHandle)
+
+        assertEquals("in progress edit", recreatedViewModel.uiState.value.highlightText)
+    }
+
+    @Test
+    fun `when recreated after process death with a draft then it does not reprocess the deleted image`() = runTest {
+        val savedStateHandle = SavedStateHandle(
+            mapOf(
+                "uri" to "content://test/image.jpg",
+                "draftHighlightText" to "recovered draft text"
+            )
+        )
+
+        val recreatedViewModel = buildViewModel(savedStateHandle)
+        advanceUntilIdle()
+
+        assertEquals("recovered draft text", recreatedViewModel.uiState.value.highlightText)
+        assertEquals(0, fakeTextAnalyzer.analyzeImageInvocationCount)
+    }
+
+    @Test
+    fun `when recreated after process death with a draft for an existing highlight then title reflects edit mode`() =
+        runTest {
+            val savedStateHandle = SavedStateHandle(
+                mapOf(
+                    "highlightId" to "test-highlight-id",
+                    "draftHighlightText" to "recovered draft text"
+                )
+            )
+
+            val recreatedViewModel = buildViewModel(savedStateHandle)
+            advanceUntilIdle()
+
+            assertEquals("recovered draft text", recreatedViewModel.uiState.value.highlightText)
+            assertEquals(R.string.edit_highlight_title_text, recreatedViewModel.uiState.value.screenTitle)
+            assertEquals(0, fakeHighlightsRepository.loadHighlightFromDbInvocationCount)
+        }
 }

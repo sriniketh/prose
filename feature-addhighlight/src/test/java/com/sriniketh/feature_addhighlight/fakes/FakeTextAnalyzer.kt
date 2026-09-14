@@ -11,9 +11,11 @@ class FakeTextAnalyzer : TextAnalyzer {
     var shouldThrowException = false
     var analyzedUri: Uri? = null
     var textToReturn = "Fake analyzed text from image"
+    var analyzeImageInvocationCount = 0
 
     override suspend fun analyzeImage(uri: Uri): Text {
         analyzedUri = uri
+        analyzeImageInvocationCount++
         if (shouldThrowException) {
             throw RuntimeException("Text analysis failed")
         }

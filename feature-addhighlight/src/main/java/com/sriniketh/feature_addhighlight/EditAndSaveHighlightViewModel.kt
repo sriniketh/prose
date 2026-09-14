@@ -2,6 +2,7 @@ package com.sriniketh.feature_addhighlight
 
 import android.net.Uri
 import androidx.annotation.StringRes
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sriniketh.core_data.HighlightsRepository
@@ -9,6 +10,7 @@ import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
 import com.sriniketh.core_platform.FileSource
+import com.sriniketh.core_platform.decodeUri
 import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -30,20 +32,52 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     private val textAnalyzer: TextAnalyzer,
     private val highlightsRepository: HighlightsRepository,
     private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
-    private val fileSource: FileSource
+    private val fileSource: FileSource,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<EditAndSaveHighlightUiState> =
-        MutableStateFlow(EditAndSaveHighlightUiState())
+        MutableStateFlow(
+            EditAndSaveHighlightUiState(
+                highlightText = savedStateHandle.get<String>(DRAFT_HIGHLIGHT_TEXT_ARG).orEmpty()
+            )
+        )
     internal val uiState: StateFlow<EditAndSaveHighlightUiState> =
         _uiState.asStateFlow()
 
     private val _effects = Channel<EditAndSaveHighlightEffect>(Channel.BUFFERED)
     internal val effects: Flow<EditAndSaveHighlightEffect> = _effects.receiveAsFlow()
 
-    private var savedOnTimestamp: String? = null
+    private var savedOnTimestamp: String?
+        get() = savedStateHandle.get<String>(SAVED_ON_TIMESTAMP_ARG)
+        set(value) {
+            savedStateHandle[SAVED_ON_TIMESTAMP_ARG] = value
+        }
+    private var hasStartedProcessingImage = false
+    private var hasStartedLoadingHighlight = false
+
+    init {
+        val encodedUri = savedStateHandle.get<String>(URI_ARG)
+        val highlightId = savedStateHandle.get<String>(HIGHLIGHT_ID_ARG)
+        val hasDraft = savedStateHandle.get<String>(DRAFT_HIGHLIGHT_TEXT_ARG) != null
+
+        if (hasDraft) {
+            if (highlightId != null) {
+                _uiState.update { state -> state.copy(screenTitle = R.string.edit_highlight_title_text) }
+            }
+            hasStartedProcessingImage = true
+            hasStartedLoadingHighlight = true
+        } else if (encodedUri != null) {
+            processImageForHighlightText(encodedUri.decodeUri())
+        } else if (highlightId != null) {
+            loadHighlightText(highlightId)
+        }
+    }
 
     internal fun processImageForHighlightText(uri: Uri) {
+        if (hasStartedProcessingImage) return
+        hasStartedProcessingImage = true
+
         _uiState.update { state ->
             state.copy(isLoading = true)
         }
@@ -55,6 +89,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 _uiState.update { state ->
                     state.copy(isLoading = false, highlightText = highlightText)
                 }
+                savedStateHandle[DRAFT_HIGHLIGHT_TEXT_ARG] = highlightText
             } catch (cancellationException: CancellationException) {
                 throw cancellationException
             } catch (_: Exception) {
@@ -69,6 +104,9 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     }
 
     internal fun loadHighlightText(highlightId: String) {
+        if (hasStartedLoadingHighlight) return
+        hasStartedLoadingHighlight = true
+
         _uiState.update { state ->
             state.copy(isLoading = true, screenTitle = R.string.edit_highlight_title_text)
         }
@@ -82,6 +120,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                         highlightText = highlight?.text.orEmpty()
                     )
                 }
+                savedStateHandle[DRAFT_HIGHLIGHT_TEXT_ARG] = highlight?.text.orEmpty()
                 savedOnTimestamp = highlight?.savedOnTimestamp
             } else {
                 _uiState.update { state ->
@@ -96,6 +135,7 @@ class EditAndSaveHighlightViewModel @Inject constructor(
         _uiState.update { state ->
             state.copy(highlightText = highlightText)
         }
+        savedStateHandle[DRAFT_HIGHLIGHT_TEXT_ARG] = highlightText
     }
 
     internal fun saveHighlight(bookId: String, highlightText: String) {
@@ -140,6 +180,13 @@ class EditAndSaveHighlightViewModel @Inject constructor(
                 _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.save_highlight_error_message))
             }
         }
+    }
+
+    private companion object {
+        private const val URI_ARG = "uri"
+        private const val HIGHLIGHT_ID_ARG = "highlightId"
+        private const val DRAFT_HIGHLIGHT_TEXT_ARG = "draftHighlightText"
+        private const val SAVED_ON_TIMESTAMP_ARG = "savedOnTimestamp"
     }
 }
 

@@ -23,6 +23,7 @@ class FakeBooksRepository : BooksRepository {
 	var insertedBook: Book? = null
 	var deletedBook: Book? = null
 	var doesBookExistResult = false
+	var fetchBookInfoInvocationCount = 0
 
 	val queriesSearched: MutableList<String> = mutableListOf()
 	var searchDelayMillis: Long = 0L
@@ -59,6 +60,7 @@ class FakeBooksRepository : BooksRepository {
 
 	override suspend fun fetchBookInfo(volumeId: String): Result<Book> {
 		volumeIdPassed = volumeId
+		fetchBookInfoInvocationCount++
 		return if (shouldFetchBookInfoThrowException) {
 			Result.failure(RuntimeException("Fetch book info failed"))
 		} else {

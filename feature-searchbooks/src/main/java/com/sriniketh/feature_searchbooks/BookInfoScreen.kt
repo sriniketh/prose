@@ -63,13 +63,9 @@ import kotlinx.coroutines.launch
 fun BookInfoScreen(
     modifier: Modifier = Modifier,
     viewModel: BookInfoViewModel = hiltViewModel(),
-    bookId: String,
     goBack: () -> Unit,
     onBookAddedToShelf: () -> Unit = {}
 ) {
-    LaunchedEffect(key1 = bookId) {
-        viewModel.getBookDetail(bookId)
-    }
     val uiState: BookInfoUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val resources = LocalResources.current
