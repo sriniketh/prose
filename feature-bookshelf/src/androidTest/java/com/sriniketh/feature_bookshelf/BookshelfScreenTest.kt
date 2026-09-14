@@ -5,6 +5,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -331,7 +333,8 @@ class BookshelfScreenTest {
         }
 
         composeTestRule.waitForIdle()
-        composeTestRule.onNodeWithText("Error retrieving saved books.").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("BookshelfErrorState").assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Error retrieving saved books.").onFirst().assertIsDisplayed()
     }
 
     @Test
@@ -376,6 +379,45 @@ class BookshelfScreenTest {
 
         composeTestRule.onNodeWithTag("BookItem_test-id").performClick()
         assertEquals("test-id", calledBookId)
+    }
+
+    @Test
+    fun whenErrorMessageIsSetThenErrorStateAndRetryButtonAreDisplayed() {
+        val uiState = BookshelfUIState(errorMessage = R.string.getallbooks_error_message)
+
+        composeTestRule.setContent {
+            AppTheme {
+                Bookshelf(
+                    uiState = uiState,
+                    goToSearch = {},
+                    goToHighlight = {}
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("BookshelfErrorState").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("BookshelfRetryButton").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Go ahead, grab a book!").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenRetryButtonIsClickedThenOnRetryIsCalled() {
+        val uiState = BookshelfUIState(errorMessage = R.string.getallbooks_error_message)
+        var onRetryCalled = false
+
+        composeTestRule.setContent {
+            AppTheme {
+                Bookshelf(
+                    uiState = uiState,
+                    goToSearch = {},
+                    goToHighlight = {},
+                    onRetry = { onRetryCalled = true }
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("BookshelfRetryButton").performClick()
+        assertTrue(onRetryCalled)
     }
 
     private fun createTestBookUIState(
