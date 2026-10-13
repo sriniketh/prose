@@ -10,7 +10,7 @@ of them.
  │  Presentation (feature-* modules)                            │
  │  Compose screen  ⇄  ViewModel (StateFlow + effect Channel)   │
  └───────────────▲───────────────────────────┬─────────────────┘
-                 │ UiState / Effect           │ UseCase()
+                 │ UiState / Effect           │ Repository / UseCase call
  ┌───────────────┴───────────────────────────▼─────────────────┐
  │  Domain + Data API (core-data:api)                           │
  │  Repository interfaces + UseCases (feature-visible surface)  │
@@ -30,7 +30,7 @@ of them.
 The canonical pipeline (also stated in `AGENTS.md`):
 
 ```
-Network / Database → Repository → UseCase → ViewModel → Compose UI
+Network / Database → Repository → (UseCase, where one exists) → ViewModel → Compose UI
 ```
 
 A feature module **never** talks to `core-network`, `core-db`, or `core-data:impl` directly. Its
@@ -73,10 +73,12 @@ actually done), so a feature only ever compiles against interfaces and use cases
   and [`HighlightsRepository`](../core-data/api/src/main/java/com/sriniketh/core_data/HighlightsRepository.kt)
   interfaces; use cases in
   [`usecases/`](../core-data/api/src/main/java/com/sriniketh/core_data/usecases) with an
-  `operator fun invoke()` (ViewModels depend on these, not on repositories directly — most are thin
-  pass-throughs, a few like `ExportHighlightsUseCase` coordinate multiple repositories); and the
-  export DTOs in [`models/`](../core-data/api/src/main/java/com/sriniketh/core_data/models). Depends
-  only on `core-models` and `core-platform` — never on `core-network` or `core-db`.
+  `operator fun invoke()`; and the export DTOs in
+  [`models/`](../core-data/api/src/main/java/com/sriniketh/core_data/models). ViewModels inject the
+  repository interfaces directly for single-repository operations; use cases exist only where logic
+  spans sources or is worth sharing — `ExportHighlightsUseCase` (both repositories + `FileSource`)
+  and `FormatCurrentDateTimeUseCase`. Depends only on `core-models` and `core-platform` — never on
+  `core-network` or `core-db`.
 - **`core-data:impl`** — `*Impl` classes
   ([`BooksRepositoryImpl`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/BooksRepositoryImpl.kt),
   [`HighlightsRepositoryImpl`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/HighlightsRepositoryImpl.kt))
@@ -103,7 +105,8 @@ hosts the single Activity, the navigation graph, and app-level bindings.
 
 ## The UDF contract
 
-Every ViewModel in the codebase follows the same pattern. Use it as the template when adding a screen.
+Every ViewModel in the codebase follows the same pattern (`CaptureAndCropImageViewModel` is
+state-only, with no effect `Channel`). Use it as the template when adding a screen.
 
 **State** — an immutable data class exposed as a read-only `StateFlow`:
 
@@ -156,7 +159,7 @@ Hilt wires everything. Conventions:
 | [`NetworkModule`](../core-network/src/main/java/com/sriniketh/prose/core_network/di/NetworkModule.kt) | `Retrofit`/`BooksApi` (singleton), `BooksRemoteDataSource` |
 | [`DatabaseModule`](../core-db/src/main/java/com/sriniketh/core_db/dagger/DatabaseModule.kt) | `BookDatabase` (singleton), `BookDao`, `HighlightDao` |
 | [`DataModule`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/di/DataModule.kt) | `BooksRepository`, `HighlightsRepository`, IO `CoroutineDispatcher` |
-| [`PlatformModule`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/PlatformModule.kt) | `DateTimeSource` |
+| [`PlatformModule`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/PlatformModule.kt) | `DateTimeSource`, `java.time.Clock` |
 | [`AppModule`](../app/src/main/java/com/sriniketh/prose/dagger/AppModule.kt) | `FileSource` → `FileSourceImpl` |
 | [`TextAnalysisModule`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/dagger/TextAnalysisModule.kt) | `TextAnalyzer` → `TextAnalyzerImpl` |
 
