@@ -90,8 +90,8 @@ Module `build.gradle.kts` files declare only identity — `namespace`, module-lo
 | `core-data:api` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | — |
 | `core-data:impl` | `prose.android.library` + `prose.android.hilt` | — |
 | `core-design` | `prose.android.library` + `prose.android.compose` | — |
-| `feature-bookshelf` | `prose.android.feature` + `prose.android.screenshot` | — |
-| `feature-searchbooks`, `feature-viewhighlights`, `feature-addhighlight` | `prose.android.feature` | — |
+| `feature-bookshelf`, `feature-searchbooks` | `prose.android.feature` + `prose.android.screenshot` | — |
+| `feature-viewhighlights`, `feature-addhighlight` | `prose.android.feature` | — |
 
 `prose.android.feature` is itself `prose.android.library` + `prose.android.compose` +
 `prose.android.hilt` plus the dependency set every feature shares (`core-design`, `core-data:api`,

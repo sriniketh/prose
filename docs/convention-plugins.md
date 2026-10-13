@@ -267,7 +267,7 @@ task (HTML + XML, no custom task needed) — see [Coverage reporting](#coverage-
 | `core-data:impl` | `prose.android.library`, `prose.android.hilt` | — |
 | `core-design` | `prose.android.library`, `prose.android.compose` | — |
 | `feature-bookshelf` | `prose.android.feature`, `prose.android.screenshot` | — |
-| `feature-searchbooks` | `prose.android.feature` | — |
+| `feature-searchbooks` | `prose.android.feature`, `prose.android.screenshot` | — |
 | `feature-viewhighlights` | `prose.android.feature` | — |
 | `feature-addhighlight` | `prose.android.feature` | — |
 
