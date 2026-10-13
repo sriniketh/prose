@@ -100,7 +100,7 @@ module-specific, and its `dependencies` — nothing else.
 | `prose.android.compose` | Compose compiler plugin, `buildFeatures.compose`, Compose dependency set |
 | `prose.android.hilt` | KSP + Hilt plugin and dependencies |
 | `prose.android.feature` | library + compose + hilt + the shared feature dependency set |
-| `prose.android.screenshot` | Compose Preview Screenshot Testing (`screenshotTest` source set), opt-in per feature module |
+| `prose.android.screenshot` | Compose Preview Screenshot Testing (`screenshotTest` source set), applied by every feature module |
 | `prose.jvm.library` | `java-library` + Kotlin JVM + toolchain |
 
 Rules when editing the build:
