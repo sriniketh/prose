@@ -90,7 +90,8 @@ Module `build.gradle.kts` files declare only identity — `namespace`, module-lo
 | `core-data:api` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | — |
 | `core-data:impl` | `prose.android.library` + `prose.android.hilt` | — |
 | `core-design` | `prose.android.library` + `prose.android.compose` | — |
-| `feature-*` (×4) | `prose.android.feature` | — |
+| `feature-bookshelf` | `prose.android.feature` + `prose.android.screenshot` | — |
+| `feature-searchbooks`, `feature-viewhighlights`, `feature-addhighlight` | `prose.android.feature` | — |
 
 `prose.android.feature` is itself `prose.android.library` + `prose.android.compose` +
 `prose.android.hilt` plus the dependency set every feature shares (`core-design`, `core-data:api`,
@@ -153,8 +154,9 @@ Room database `book-db`.
 
 ### `core-design`
 Compose design system: `AppTheme` (Material 3 + dynamic color), shared components
-(`ProseTopAppBar`, `NavigationBack`, `Placeholder`), typography, animation specs, and the shared
-transition `CompositionLocals`. No internal deps.
+(`ProseTopAppBar`, `NavigationBack`, `Placeholder`), typography, animation specs, the shared
+transition `CompositionLocals`, and the multi-preview annotations screenshot tests use
+(`ScreenSizePreviews`, `ScreenVariantPreviews`, `ScreenStatePreviews`). No internal deps.
 
 ### `core-data:api` / `core-data:impl`
 The bridge between data sources and presentation, split into a thin api module (repository

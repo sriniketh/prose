@@ -41,6 +41,10 @@ gradlePlugin {
             id = "prose.android.feature"
             implementationClass = "com.sriniketh.prose.buildlogic.AndroidFeatureConventionPlugin"
         }
+        register("androidScreenshot") {
+            id = "prose.android.screenshot"
+            implementationClass = "com.sriniketh.prose.buildlogic.AndroidScreenshotConventionPlugin"
+        }
         register("jvmLibrary") {
             id = "prose.jvm.library"
             implementationClass = "com.sriniketh.prose.buildlogic.JvmLibraryConventionPlugin"
