@@ -220,7 +220,7 @@ stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-bu
 `buildConfig` generation is **not** part of this shared helper — only `app` and `core-network` read
 a generated `BuildConfig` class, so `prose.android.application` sets
 `buildFeatures.buildConfig = true` itself, and `core-network/build.gradle.kts` opts in explicitly.
-The other seven Android modules get no `BuildConfig` class or compile task at all.
+The other nine Android modules get no `BuildConfig` class or compile task at all.
 
 `enableAndroidTestCoverage` makes AGP instrument the debug variant so `connectedDebugAndroidTest`
 produces its own JaCoCo data, surfaced through the auto-generated `createDebugAndroidTestCoverageReport`

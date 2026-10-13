@@ -86,7 +86,7 @@ Module `build.gradle.kts` files declare only identity — `namespace`, module-lo
 | `core-models` | `prose.jvm.library` | — |
 | `core-platform` | `prose.android.library` + `prose.android.hilt` | — |
 | `core-db` | `prose.android.library` + `prose.android.hilt` | `ksp { arg("room.schemaLocation", …) }` |
-| `core-network` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | `apikey.properties`, `buildConfigField`, `optIn` |
+| `core-network` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | `apikey.properties`, `buildFeatures.buildConfig = true`, `buildConfigField`, `optIn` |
 | `core-data:api` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | — |
 | `core-data:impl` | `prose.android.library` + `prose.android.hilt` | — |
 | `core-design` | `prose.android.library` + `prose.android.compose` | — |
@@ -125,9 +125,12 @@ Retrofit 3 + kotlinx.serialization client for the Google Books API.
 - [`BooksApi`](../core-network/src/main/java/com/sriniketh/prose/core_network/retrofit/BooksApi.kt) —
   `GET books/v1/volumes` (search) and `GET books/v1/volumes/{id}` (detail).
 - [`BooksRemoteDataSource`](../core-network/src/main/java/com/sriniketh/prose/core_network/BooksRemoteDataSource.kt)
-  — thin wrapper that injects the API key and `projection=lite` for search.
+  — thin interface over the API; its impl
+  [`BooksRemoteDataSourceImpl`](../core-network/src/main/java/com/sriniketh/prose/core_network/retrofit/BooksRemoteDataSourceImpl.kt)
+  injects the API key and `projection=lite` for search.
 - [`Volumes`](../core-network/src/main/java/com/sriniketh/prose/core_network/model/Volumes.kt) — DTOs
-  with defaulted/nullable fields; JSON parsed with `ignoreUnknownKeys = true`.
+  with defaulted/nullable fields; JSON parsed with `ignoreUnknownKeys = true`
+  ([`BooksApiJson.kt`](../core-network/src/main/java/com/sriniketh/prose/core_network/di/BooksApiJson.kt)).
 - **API key:** `BOOKS_API_KEY` is read from `core-network/apikey.properties` into `BuildConfig` at
   build time. `HttpLoggingInterceptor` logs bodies only in debug.
 
@@ -178,7 +181,7 @@ extension functions, and the `DataModule` Hilt bindings.
 ## Feature modules
 
 Each feature module owns Compose screens + ViewModels + feature DI. ViewModels are `@HiltViewModel`
-and consume `core-data:api` use cases.
+and consume `core-data:api` repository interfaces (and use cases where one exists).
 
 ### `feature-bookshelf`
 Home screen. [`BookshelfViewModel`](../feature-bookshelf/src/main/java/com/sriniketh/feature_bookshelf/BookshelfViewModel.kt)

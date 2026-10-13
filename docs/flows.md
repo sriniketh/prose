@@ -31,9 +31,8 @@ ProseApplication (@HiltAndroidApp, plants Timber in debug)
 ```
 BookshelfScreen
   → BookshelfViewModel.init
-      → BooksRepository.getAllSavedBooksFromDb()        (core-data)
-        → BooksRepository.getAllSavedBooksFromDb(): Flow<Result<List<Book>>>
-          → BookDao.getAllBooks(): Flow<List<BookEntity>>   (Room, core-db)
+      → BooksRepository.getAllSavedBooksFromDb(): Flow<Result<List<Book>>>   (core-data)
+        → BookDao.getAllBooks(): Flow<List<BookEntity>>   (Room, core-db)
       ← entities.map { it.asBook() }  → map to BookUIState (ImmutableList)
 ```
 
@@ -104,9 +103,8 @@ Details ([`BookInfoViewModel`](../feature-searchbooks/src/main/java/com/sriniket
 
 ```
 ViewHighlightsScreen → ViewHighlightsViewModel.getHighlights(bookId)
-  → HighlightsRepository.getAllHighlightsForBookFromDb(bookId)
-      → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
-        → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
+  → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
+      → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
   ← sortedBy { savedOnTimestamp } → HighlightUIState list
 ```
 
@@ -139,10 +137,12 @@ capture_and_crop_image/{bookId}
 Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt),
 [`CaptureAndCropImageScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageScreen.kt)):
 1. **CaptureImage** — a `TakePicture` activity-result launcher writes the photo into the temp
-   FileProvider URI. On cancel/failure the screen calls `goBack()`.
+   FileProvider URI. On success the screen calls `viewModel.onImageCaptured()`, advancing to
+   `CropImage`; on cancel/failure it calls `goBack()`.
 2. **CropImage** — `CropImageScreen` (Cropify) lets the user crop; `onImageCropped()` advances state.
-3. **ImageCapturedAndCropped** — the screen calls `onImageCaptured(uri)`, which URL-encodes the URI
-   and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
+3. **ImageCapturedAndCropped** — the screen invokes its `onImageCaptured(uri)` callback; the
+   navigation layer ([`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt))
+   URL-encodes the URI and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
 4. **Cleanup** — `onCleared()` deletes the temp file *unless* the flow completed
    (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The completed file is handed
    off to the next screen, which deletes it after OCR.
@@ -205,7 +205,7 @@ ViewHighlights "share" → ViewHighlightsViewModel.processAction(OnExportHighlig
 
 Details:
 - [`ExportHighlightsUseCase`](../core-data/api/src/main/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCase.kt)
-  is one of the few use cases that coordinates **both** repositories. It takes a one-shot snapshot of
+  is the only use case that coordinates **both** repositories. It takes a one-shot snapshot of
   the highlights `Flow` via `.first()`.
 - The serialized shape is the `*Export` DTO set in
   [`HighlightsExport.kt`](../core-data/api/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)
@@ -220,7 +220,7 @@ Details:
 
 ## Flow ↔ source map (quick index)
 
-| Flow | Screen / ViewModel | Use case(s) | Data source |
+| Flow | Screen / ViewModel | Use case / repository call(s) | Data source |
 |------|--------------------|-------------|-------------|
 | Bookshelf | `feature-bookshelf` | `BooksRepository.getAllSavedBooksFromDb` | Room `BookDao` (Flow) |
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
