@@ -3,6 +3,7 @@ package com.sriniketh.feature_searchbooks
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertTouchHeightIsEqualTo
 import androidx.compose.ui.test.assertTouchWidthIsEqualTo
 import androidx.compose.ui.test.hasTestTag
@@ -329,6 +330,88 @@ class SearchBookScreenTest {
         composeTestRule.onNodeWithTag("SearchBookTextField").performImeAction()
 
         composeTestRule.onNodeWithContentDescription("Close icon").assertDoesNotExist()
+    }
+
+    @Test
+    fun whenInitialQueryIsProvidedThenItIsShownInSearchField() {
+        val uiState = BookSearchUiState()
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {},
+                    initialQuery = "le guin"
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").assertTextEquals("le guin")
+    }
+
+    @Test
+    fun whenInitiallyExpandedThenResultsAreShownWithoutTappingSearchField() {
+        val books = persistentListOf(createTestBookUiState(title = "Test Book Title"))
+        val uiState = BookSearchUiState(bookUiStates = books)
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = uiState,
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {},
+                    initiallyExpanded = true
+                )
+            }
+        }
+
+        composeTestRule.onNodeWithText("Test Book Title").assertIsDisplayed()
+        composeTestRule.onNodeWithContentDescription("Close icon").assertIsDisplayed()
+    }
+
+    @Test
+    fun whenInitialQueryChangesAfterFirstCompositionThenSearchFieldKeepsOriginalQuery() {
+        val initialQuery = mutableStateOf("le guin")
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = BookSearchUiState(),
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {},
+                    initialQuery = initialQuery.value
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle { initialQuery.value = "tolkien" }
+
+        composeTestRule.onNodeWithTag("SearchBookTextField").assertTextEquals("le guin")
+    }
+
+    @Test
+    fun whenInitiallyExpandedChangesAfterFirstCompositionThenSearchBarStaysExpanded() {
+        val initiallyExpanded = mutableStateOf(true)
+
+        composeTestRule.setContent {
+            AppTheme {
+                SearchBook(
+                    uiState = BookSearchUiState(),
+                    searchForBooks = {},
+                    navigateToBookInfo = {},
+                    resetSearch = {},
+                    initiallyExpanded = initiallyExpanded.value
+                )
+            }
+        }
+
+        composeTestRule.runOnIdle { initiallyExpanded.value = false }
+
+        composeTestRule.onNodeWithContentDescription("Close icon").assertIsDisplayed()
     }
 
     @Test
