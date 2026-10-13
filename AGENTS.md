@@ -46,6 +46,12 @@ If a change touches none of the above (e.g. an internal refactor with no structu
 # Run UI tests for specific feature modules
 ./gradlew :feature-bookshelf:connectedDebugAndroidTest
 
+# Validate screenshot tests against committed reference images (host-side, no device)
+./gradlew validateDebugScreenshotTest
+
+# Regenerate reference images for a module after an intended UI change
+./gradlew :feature-bookshelf:updateDebugScreenshotTest
+
 # Compile the convention plugins only (fast check after editing build-logic)
 ./gradlew -p build-logic :convention:compileKotlin
 ```
@@ -94,6 +100,7 @@ module-specific, and its `dependencies` — nothing else.
 | `prose.android.compose` | Compose compiler plugin, `buildFeatures.compose`, Compose dependency set |
 | `prose.android.hilt` | KSP + Hilt plugin and dependencies |
 | `prose.android.feature` | library + compose + hilt + the shared feature dependency set |
+| `prose.android.screenshot` | Compose Preview Screenshot Testing (`screenshotTest` source set), opt-in per feature module |
 | `prose.jvm.library` | `java-library` + Kotlin JVM + toolchain |
 
 Rules when editing the build:
@@ -149,6 +156,7 @@ Navigation Compose with routes defined in `app/src/main/java/com/sriniketh/prose
 - Use `StandardTestDispatcher()` with `Dispatchers.setMain()` for coroutine tests
 - Fake implementations live in `src/test/.../fakes/` directories
 - **MockK** is available for mocking
+- Screenshot tests use Compose Preview Screenshot Testing (the deprecated standalone plugin, since AGP is below 9.5). They live in `src/screenshotTest/java/` as `@PreviewTest` composables that render a screen's stateless composable with a fixed UI state. Reference PNGs are committed under `src/screenshotTestDebug/reference/`. Use the `core-design` multi-preview annotations: `@ScreenSizePreviews` + `@ScreenVariantPreviews` for the main state, `@ScreenStatePreviews` for the others. See `docs/convention-plugins.md#screenshot-tests`
 
 ### Version Catalog
 

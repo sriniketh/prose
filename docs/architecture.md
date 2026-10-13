@@ -213,7 +213,7 @@ Notes:
 ## Build logic
 
 Gradle configuration is centralized in [`build-logic/`](../build-logic), an **included build** that
-publishes six convention plugins. Nothing shared is repeated in a module file: SDK levels, the JDK 17
+publishes seven convention plugins. Nothing shared is repeated in a module file: SDK levels, the JDK 17
 toolchain, ProGuard wiring, Compose enablement, and Hilt/KSP wiring all arrive via a plugin.
 
 | Plugin | Encodes |
@@ -223,6 +223,7 @@ toolchain, ProGuard wiring, Compose enablement, and Hilt/KSP wiring all arrive v
 | `prose.android.compose` | Compose compiler plugin, `buildFeatures.compose`, the Compose BOM and dependency set |
 | `prose.android.hilt` | KSP + Hilt plugin and their dependencies |
 | `prose.android.feature` | library + compose + hilt + the dependency set every feature shares |
+| `prose.android.screenshot` | Compose Preview Screenshot Testing plugin, `screenshotTest` source set, its dependencies |
 | `prose.jvm.library` | `java-library` + Kotlin JVM + toolchain |
 
 The plugins are **composable rather than monolithic** — `prose.android.compose` never applies AGP,
@@ -259,4 +260,6 @@ constraints that shape it, and how to add a module or change a convention.
   declares `namespace` and `dependencies` and little else. See [Build logic](#build-logic) below.
 - **Testing** — ViewModels are unit-tested with Turbine + fake repositories and a
   `StandardTestDispatcher`; fakes live under each module's `src/test/.../fakes/`. UI tests use the
-  Compose test rule. See `AGENTS.md` for the full testing notes.
+  Compose test rule. Screenshot tests render each screen's stateless composable host-side via
+  `@PreviewTest` (see [convention-plugins.md](convention-plugins.md#screenshot-tests)). See
+  `AGENTS.md` for the full testing notes.

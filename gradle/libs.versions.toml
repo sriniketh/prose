@@ -12,6 +12,7 @@ kotlin-jvm-plugin-version = "2.4.21"
 kotlin-compose-plugin-version = "2.4.21"
 ksp-plugin-version = "2.3.12"
 hilt-plugin-version = "2.60.1"
+screenshot-plugin-version = "0.0.1-alpha16"
 
 # Library dependencies
 coroutines-android-version = "1.11.0"
@@ -77,6 +78,7 @@ compose-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifes
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
+screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot-plugin-version" }
 
 # Gradle plugin artifacts, for the build-logic compile classpath only
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-application-plugin-version" }
@@ -84,6 +86,7 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin-compose-plugin-version" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp-plugin-version" }
 hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt-plugin-version" }
+screenshot-gradlePlugin = { group = "com.android.compose.screenshot", name = "screenshot-test-gradle-plugin", version.ref = "screenshot-plugin-version" }
 
 [bundles]
 compose = ["compose-material3", "compose-ui-tooling-preview"]
@@ -97,3 +100,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 java-library = { id = "java-library" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-plugin-version" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot-plugin-version" }
