@@ -186,8 +186,9 @@ What is **not** here, and why:
 - `core-platform` — `feature-viewhighlights` needs it only on `testImplementation`, so it stays a
   per-module line.
 - `mockk` — only two of the four features use it. Two explicit lines beat two unused dependencies.
-- `prose.android.screenshot` — opt-in per module, applied alongside `prose.android.feature`, so a
-  feature starts carrying reference images only when it actually has screenshot tests.
+- `prose.android.screenshot` — applied alongside `prose.android.feature` in each module's `plugins { }`
+  block rather than bundled, so a future feature module opts into carrying reference images only once
+  it actually has screenshot tests.
 
 ### `prose.android.screenshot`
 
@@ -269,7 +270,7 @@ task (HTML + XML, no custom task needed) — see [Coverage reporting](#coverage-
 | `feature-bookshelf` | `prose.android.feature`, `prose.android.screenshot` | — |
 | `feature-searchbooks` | `prose.android.feature`, `prose.android.screenshot` | — |
 | `feature-viewhighlights` | `prose.android.feature`, `prose.android.screenshot` | — |
-| `feature-addhighlight` | `prose.android.feature` | — |
+| `feature-addhighlight` | `prose.android.feature`, `prose.android.screenshot` | — |
 
 `kotlin.serialization` stays a catalog alias rather than a convention plugin — only two modules use
 it, so a plugin would not earn its keep. Applying it *after* a convention plugin works fine.
@@ -332,6 +333,8 @@ The HTML report lands in `<module>/build/reports/screenshotTest/preview/debug/in
 
 Known rendering gaps: layoutlib can't fetch Google Fonts, so text renders in the fallback font
 rather than Noto Serif. Coil never loads network images, so thumbnails show `gradientPlaceholder()`.
+`feature-addhighlight`'s `CropImageScreen` has no screenshot test: it decodes a real camera-image
+`Uri` through `ContentResolver` and Cropify, which layoutlib has no way to supply.
 
 ---
 
@@ -417,7 +420,7 @@ gradle/libs.versions.toml ──┬─→ build-logic (compileOnly plugin JARs, 
                             │        ├─ prose.android.feature ──┴──→ the 4 feature-* modules
                             │        │   (= library + compose + hilt + shared deps)
                             │        │
-                            │        ├─ prose.android.screenshot ──→ feature-* modules with screenshot tests
+                            │        ├─ prose.android.screenshot ──→ the 4 feature-* modules
                             │        │
                             │        └─ prose.android.application ─→ app
                             │
