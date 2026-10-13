@@ -268,7 +268,7 @@ task (HTML + XML, no custom task needed) — see [Coverage reporting](#coverage-
 | `core-design` | `prose.android.library`, `prose.android.compose` | — |
 | `feature-bookshelf` | `prose.android.feature`, `prose.android.screenshot` | — |
 | `feature-searchbooks` | `prose.android.feature`, `prose.android.screenshot` | — |
-| `feature-viewhighlights` | `prose.android.feature` | — |
+| `feature-viewhighlights` | `prose.android.feature`, `prose.android.screenshot` | — |
 | `feature-addhighlight` | `prose.android.feature` | — |
 
 `kotlin.serialization` stays a catalog alias rather than a convention plugin — only two modules use
