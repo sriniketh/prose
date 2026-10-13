@@ -86,6 +86,7 @@ kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-pl
 compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin-compose-plugin-version" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp-plugin-version" }
 hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt-plugin-version" }
+screenshot-gradlePlugin = { group = "com.android.compose.screenshot", name = "screenshot-test-gradle-plugin", version.ref = "screenshot-plugin-version" }
 
 [bundles]
 compose = ["compose-material3", "compose-ui-tooling-preview"]

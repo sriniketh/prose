@@ -67,7 +67,7 @@ modules use, so plugin versions can never drift between the two builds.
 The catalog carries the plugins' own JAR coordinates under `[libraries]` in
 [`gradle/libs.versions.toml`](../gradle/libs.versions.toml) — separate from the `[plugins]` markers,
 which only work in a `plugins { }` block. Look for `android-gradlePlugin`, `kotlin-gradlePlugin`,
-`compose-gradlePlugin`, `ksp-gradlePlugin`, and `hilt-gradlePlugin` there.
+`compose-gradlePlugin`, `ksp-gradlePlugin`, `hilt-gradlePlugin`, and `screenshot-gradlePlugin` there.
 
 These are `compileOnly` in `build-logic/convention/build.gradle.kts` — the convention plugins need
 AGP's *types* to compile, but AGP is already on the buildscript classpath at runtime via the root
@@ -198,7 +198,12 @@ Compose Preview Screenshot Testing: applies `com.android.compose.screenshot`, se
 extension, and adds the Compose BOM, `ui-tooling`, and `screenshot-validation-api` to
 `screenshotTestImplementation`. Everything happens inside `pluginManager.withPlugin("com.android.base")`
 because the screenshot plugin needs AGP applied first and the `screenshotTestImplementation`
-configuration only exists after it is. The same flag also has to be on in
+configuration only exists after it is. It also sets each `PreviewScreenshotValidationTask`'s
+`testEngineInput.threshold` to `0.00001` — the reason `screenshot-gradlePlugin` is `compileOnly` in
+`build-logic` (AGP 9.4's `testOptions.screenshotTests` is the test-suite container, so the old
+`imageDifferenceThreshold` DSL property is gone). The plugin's default threshold is `0`, and Linux CI
+renders differ from macOS-generated references by 1–5 pixels at ±1 colour level around gradients;
+`0.00001` absorbs that while a one-character text change still fails. The same flag also has to be on in
 [`gradle.properties`](../gradle.properties); the screenshot plugin reads both.
 
 This is the **standalone plugin** setup, which Google has deprecated in favour of AGP test suites

@@ -16,6 +16,7 @@ dependencies {
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.hilt.gradlePlugin)
+    compileOnly(libs.screenshot.gradlePlugin)
 }
 
 gradlePlugin {
