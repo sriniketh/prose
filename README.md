@@ -4,7 +4,7 @@
 
 Prose is an Android app to capture and save highlights from physical books.
 
-The app uses the [Google Play Books API](https://developers.google.com/books) to search for a book
+The app uses the [Google Books API](https://developers.google.com/books) to search for a book
 and obtain rich content for the same. Books can be saved into a bookshelf and highlights can be
 added for each saved book. Text recognition is performed
 on-device using [ML Kit](https://developers.google.com/ml-kit/vision/text-recognition/android).
@@ -17,29 +17,58 @@ align UI colors with the color theme of the wallpaper in both dark and light mod
 
 <table border="0">
   <tr>
-    <td><img src="docs/images/screenshot-bookshelf-compose-light.png" /></td>
-    <td><img src="docs/images/screenshot-bookshelf-compose-dark.png" /></td>
-    <td><img src="docs/images/screenshot-search-compose.png" /></td>
-    <td><img src="docs/images/screenshot-bookinfo-compose.png" /></td>
-    <td><img src="docs/images/screenshot-image-permission-compose.png" /></td>
+    <td><img src="docs/images/screenshot-shelf-light.png" alt="Bookshelf" /></td>
+    <td><img src="docs/images/screenshot-search.png" alt="Searching for a book" /></td>
+    <td><img src="docs/images/screenshot-bookinfo.png" alt="Book details with Add to shelf" /></td>
+    <td><img src="docs/images/screenshot-crop.png" alt="Cropping a captured page" /></td>
+    <td><img src="docs/images/screenshot-edit.png" alt="Editing a highlight" /></td>
   </tr>
   <tr>
-    <td><img src="docs/images/screenshot-crop-image-compose.png" /></td>
-    <td><img src="docs/images/screenshot-save-highlight-compose.png" /></td>
-    <td><img src="docs/images/screenshot-highlights-compose.png" /></td>
-    <td><img src="docs/images/screenshot-highlights-delete-compose.png" /></td>
-    <td><img src="docs/images/screenshot-highlights-select-compose.png" /></td>
+    <td><img src="docs/images/screenshot-highlights.png" alt="Saved highlights" /></td>
+    <td><img src="docs/images/screenshot-menu.png" alt="Copy, edit, or delete a highlight" /></td>
+    <td><img src="docs/images/screenshot-share.png" alt="Sharing exported highlights as JSON" /></td>
+    <td><img src="docs/images/screenshot-shelf-dark.png" alt="Bookshelf in dark mode" /></td>
+    <td><img src="docs/images/screenshot-highlights-dark.png" alt="Saved highlights in dark mode" /></td>
   </tr>
 </table>
 
 ## Building the project
 
-The project requires a Google Books API key that needs to be added to a `apikey.properties` file in
-the `core-network` module.
+### Requirements
 
-The app is setup as a multi-module project containing core and feature modules. It follows the
-unidirectional data flow model where data flows from the network/database layers to the presentation
-layer where it's reduced to UI state. This state is then consumed and rendered as UI using Compose.
+- JDK 17 or newer to run Gradle (the JDK 17 toolchain the build compiles against is provisioned
+  automatically)
+- Android SDK with platform 37 installed
+- A device or emulator running Android 8.0 (API 26) or newer, with Google Play services for
+  on-device text recognition
+- A [Google Books API key](https://developers.google.com/books/docs/v1/using#APIKey)
+
+### Setup
+
+Create `core-network/apikey.properties` with your key. Keep the quotes — the value is compiled into
+the app as a string constant:
+
+```properties
+BOOKS_API_KEY="your-google-books-api-key"
+```
+
+Then build and test:
+
+```bash
+./gradlew assembleDebug
+./gradlew test
+```
+
+## Architecture
+
+Prose is a multi-module app. `core-*` modules cover networking (Retrofit + kotlinx.serialization),
+persistence (Room), domain models, platform abstractions, and the Compose design system; each
+`feature-*` module owns one area of the UI. Data flows one way — data sources → repositories →
+ViewModels → Compose UI — with Hilt wiring everything together. Features depend only on the
+`core-data:api` interfaces, while the implementations live in `core-data:impl`.
+
+The [engineering docs](docs/README.md) cover the module graph, the UDF contract, and every user flow
+in detail.
 
 ## License
 
