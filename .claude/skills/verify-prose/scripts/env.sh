@@ -1,0 +1,15 @@
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+SDK_DIR="${ANDROID_HOME:-$(sed -n 's/^sdk.dir=//p' "$REPO_ROOT/local.properties")}"
+ADB="${SDK_DIR}/platform-tools/adb"
+EMULATOR="${SDK_DIR}/emulator/emulator"
+AVD_NAME="${PROSE_VERIFY_AVD:-Pixel_8}"
+PORT="${PROSE_VERIFY_PORT:-5580}"
+SERIAL="emulator-${PORT}"
+PACKAGE="com.sriniketh.prose"
+APK="$REPO_ROOT/app/build/outputs/apk/debug/app-debug.apk"
+OUT_DIR="${PROSE_VERIFY_OUT:-/tmp/prose-verify}"
+EVIDENCE_DIR="$OUT_DIR/evidence"
+STATE_DIR="$OUT_DIR/state"
+MARKER="$STATE_DIR/started-by-verify-prose"
+
+adb_s() { "$ADB" -s "$SERIAL" "$@"; }
