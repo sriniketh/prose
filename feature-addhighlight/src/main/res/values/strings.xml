@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="done_fab_cont_desc">Done cropping button</string>
-    <string name="select_fab_text">Select</string>
+    <string name="select_text_title">Select text</string>
+    <string name="select_text_hint">Tap a paragraph or swipe across lines to select text.</string>
+    <string name="reading_text_message">Reading text…</string>
+    <string name="no_text_found_message">No text found. Retake the photo with the page in focus.</string>
+    <string name="retake_button_label">Retake</string>
+    <string name="continue_button_label">Continue</string>
     <string name="inputhighlight_fragment_label">Edit highlight</string>
     <string name="save_highlight_title_text">Save highlight</string>
     <string name="edit_highlight_title_text">Edit highlight</string>

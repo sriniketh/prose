@@ -105,7 +105,7 @@ hosts the single Activity, the navigation graph, and app-level bindings.
 
 ## The UDF contract
 
-Every ViewModel in the codebase follows the same pattern (`CaptureAndCropImageViewModel` is
+Every ViewModel in the codebase follows the same pattern (`CaptureAndSelectTextViewModel` is
 state-only, with no effect `Channel`). Use it as the template when adding a screen.
 
 **State** — an immutable data class exposed as a read-only `StateFlow`:
@@ -161,7 +161,7 @@ Hilt wires everything. Conventions:
 | [`DataModule`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/di/DataModule.kt) | `BooksRepository`, `HighlightsRepository`, IO `CoroutineDispatcher` |
 | [`PlatformModule`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/PlatformModule.kt) | `DateTimeSource`, `java.time.Clock` |
 | [`AppModule`](../app/src/main/java/com/sriniketh/prose/dagger/AppModule.kt) | `FileSource` → `FileSourceImpl` |
-| [`TextAnalysisModule`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/dagger/TextAnalysisModule.kt) | `TextAnalyzer` → `TextAnalyzerImpl` |
+| [`TextAnalysisModule`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/dagger/TextAnalysisModule.kt) | `PageScanner` → `PageScannerImpl` |
 
 > **Note — split interface/impl.** `FileSource` is *declared* in `core-platform` but *implemented*
 > in `app` ([`FileSourceImpl`](../app/src/main/java/com/sriniketh/prose/files/FileSourceImpl.kt)),
@@ -194,14 +194,13 @@ destination is `bookshelf`. Arguments are passed as path segments (`view_highlig
 | `search` | Book search | — |
 | `book_info/{bookId}` | Book detail / add-to-shelf | `bookId` |
 | `view_highlights/{bookId}` | Highlights list | `bookId` |
-| `capture_and_crop_image/{bookId}` | Camera + crop | `bookId` |
-| `save_highlight_from_uri/{bookId}/{uri}` | OCR + save new highlight | `bookId`, encoded `uri` |
+| `capture_and_select_text/{bookId}` | Camera + OCR + select text | `bookId` |
+| `save_highlight_from_text/{bookId}/{text}` | Edit + save new highlight | `bookId`, encoded `text` |
 | `save_highlight_from_highlight_id/{bookId}/{highlightId}` | Edit existing highlight | `bookId`, `highlightId` |
 
 Notes:
-- The image `uri` is URL-encoded/decoded across the route boundary via
-  [`UriExtensions`](../core-platform/src/main/java/com/sriniketh/core_platform/UriExtensions.kt)
-  (`encodeUri()` / `decodeUri()`).
+- The selected highlight `text` is `Uri.encode`d into the route; Navigation decodes path
+  arguments, so the destination reads it back unchanged.
 - Cross-screen results use `savedStateHandle` on a back-stack entry. Adding a book sets
   `BOOKSHELF_SHOW_ADDED_MESSAGE` on the bookshelf entry, then pops back to it; the bookshelf
   ViewModel observes that handle and shows a confirmation snackbar.

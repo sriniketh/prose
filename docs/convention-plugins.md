@@ -333,8 +333,8 @@ The HTML report lands in `<module>/build/reports/screenshotTest/preview/debug/in
 
 Known rendering gaps: layoutlib can't fetch Google Fonts, so text renders in the fallback font
 rather than Noto Serif. Coil never loads network images, so thumbnails show `gradientPlaceholder()`.
-`feature-addhighlight`'s `CropImageScreen` has no screenshot test: it decodes a real camera-image
-`Uri` through `ContentResolver` and Cropify, which layoutlib has no way to supply.
+`feature-addhighlight`'s selection screenshots draw a generated page bitmap, since layoutlib cannot
+decode a camera photo through `ContentResolver`.
 
 ---
 

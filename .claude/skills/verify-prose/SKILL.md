@@ -68,7 +68,7 @@ Evidence goes to `$PROSE_VERIFY_OUT/evidence` (default `/tmp/prose-verify/eviden
 A proof contains:
 - The action and the resulting state: a screenshot before and after, or a `ui.sh dump` before and after, not only the final screen.
 - A side-effect check next to what is visible: the Room row via `db.sh`, or the exported file via `run-as ... cat cache/<title>_export.json`.
-- The real user path. Do not call internal setters or write rows for a flow the UI can perform. The one sanctioned shortcut is injecting a highlight row (see `features/view-highlights.md`), because highlight creation needs camera OCR, which cannot run on this Mac's emulators.
+- The real user path. Do not call internal setters or write rows for a flow the UI can perform. The sanctioned shortcuts are injecting a highlight row (see `features/view-highlights.md`) and swapping a generated page into the captured photo (see `features/add-highlight.md`), because the emulator camera cannot photograph a real page.
 
 Name artifacts `<feature-id>-<step>` so a reader can tell which sub-feature each one proves, and report any sub-feature you could not reach with the command you attempted and the unmet precondition. Do not report it as verified through another entry point.
 
@@ -84,5 +84,5 @@ Run cleanup after every failed attempt too.
 
 ## Not reachable here
 
-- OCR (`EditAndSaveHighlightViewModel` after capture): ML Kit cannot run on any emulator on this Mac (API 34 cannot download the module; API 36 crashes with `SIGILL`). Verify on a real device.
+- OCR with the shipped Play-services model: the API 34 image cannot download it, and API 36 crashes with `SIGILL`. Swap in the bundled model locally to drive OCR on API 34 (see `features/add-highlight.md`).
 - The `Medium_Phone_API_36.1` image: Espresso-dependent tests fail there, and it is the user's own.

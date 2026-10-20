@@ -19,7 +19,7 @@ Preconditions:
 
 - `scripts/launch.sh` has printed `ready:` and `scripts/doctor.sh` passes.
 - `Dune` is on the shelf, added through `search-and-add-book.md`.
-- Highlights are created in the app only through camera OCR, which cannot run on this Mac's emulators. Inject one row instead, which is the single sanctioned shortcut:
+- Highlights are created in the app only through camera OCR of a page photo, which takes the setup in `add-highlight.md`. To test listing alone, inject one row instead:
 
 ```bash
 adb -s emulator-5580 shell am force-stop com.sriniketh.prose

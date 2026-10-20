@@ -20,7 +20,7 @@ align UI colors with the color theme of the wallpaper in both dark and light mod
     <td><img src="docs/images/screenshot-shelf-light.png" alt="Bookshelf" /></td>
     <td><img src="docs/images/screenshot-search.png" alt="Searching for a book" /></td>
     <td><img src="docs/images/screenshot-bookinfo.png" alt="Book details with Add to shelf" /></td>
-    <td><img src="docs/images/screenshot-crop.png" alt="Cropping a captured page" /></td>
+    <td><img src="docs/images/screenshot-select.png" alt="Selecting recognized text on a captured page" /></td>
     <td><img src="docs/images/screenshot-edit.png" alt="Editing a highlight" /></td>
   </tr>
   <tr>

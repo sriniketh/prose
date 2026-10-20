@@ -12,14 +12,14 @@ internal sealed interface Screen {
         const val argBookId: String = "bookId"
     }
 
-    data object CAPTUREANDCROPIMAGE : Screen {
-        override val route: String = "capture_and_crop_image"
+    data object CAPTUREANDSELECTTEXT : Screen {
+        override val route: String = "capture_and_select_text"
         const val argBookId: String = "bookId"
     }
 
-    data object SAVEHIGHLIGHT_FROMURI : Screen {
-        override val route: String = "save_highlight_from_uri"
-        const val argUri: String = "uri"
+    data object SAVEHIGHLIGHT_FROMTEXT : Screen {
+        override val route: String = "save_highlight_from_text"
+        const val argText: String = "text"
         const val argBookId: String = "bookId"
     }
 

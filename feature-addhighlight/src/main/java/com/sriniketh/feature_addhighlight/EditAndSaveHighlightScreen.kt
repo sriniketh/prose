@@ -1,6 +1,5 @@
 package com.sriniketh.feature_addhighlight
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,15 +45,15 @@ import com.sriniketh.core_design.ui.theme.AppTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun EditAndSaveHighlightScreen(
+fun EditAndSaveNewHighlightScreen(
     modifier: Modifier = Modifier,
     viewModel: EditAndSaveHighlightViewModel = hiltViewModel(),
-    uri: Uri,
+    highlightText: String,
     bookId: String,
     goBack: () -> Unit
 ) {
-    LaunchedEffect(key1 = bookId) {
-        viewModel.processImageForHighlightText(uri)
+    LaunchedEffect(key1 = highlightText) {
+        viewModel.startWithText(highlightText)
     }
     val editHighlightUiState: EditAndSaveHighlightUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
