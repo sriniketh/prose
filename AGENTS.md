@@ -85,7 +85,7 @@ Prose is a multi-module Android app for capturing book highlights from physical 
 - `feature-bookshelf` - Main screen showing saved books
 - `feature-searchbooks` - Book search and info screens
 - `feature-viewhighlights` - Display highlights for a book
-- `feature-addhighlight` - Camera capture, crop, OCR, and save highlight
+- `feature-addhighlight` - Camera capture, OCR, text selection over the photo, and save highlight
 
 ### Build Configuration
 
@@ -147,7 +147,7 @@ Navigation Compose with routes defined in `app/src/main/java/com/sriniketh/prose
 - **Retrofit 3 + kotlinx.serialization** for networking
 - **Room** for local persistence
 - **Coil** for image loading
-- **Cropify** for image cropping
+- **ML Kit** on-device text recognition
 - **Timber** for logging
 
 ### Testing Patterns
