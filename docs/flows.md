@@ -115,47 +115,64 @@ Actions are dispatched through `processAction(ViewHighlightsAction)`
 - **Camera permission denied** → `permission_denied` snackbar. The screen's camera-permission
   launcher requests `CAMERA`; on grant it navigates into the capture flow, on deny it dispatches the
   denied action.
-- Adding a highlight navigates to `capture_and_crop_image/{bookId}`; editing one navigates to
+- Adding a highlight navigates to `capture_and_select_text/{bookId}`; editing one navigates to
   `save_highlight_from_highlight_id/{bookId}/{highlightId}`.
 
 ---
 
-## 5. Add a highlight — capture → crop → OCR → save
+## 5. Add a highlight — capture → select text → save
 
-This is the most involved flow and spans two ViewModels and three navigation destinations.
+This flow spans two ViewModels and two navigation destinations. The user photographs a page, the
+app recognizes its text on-device, and the user picks the passage by tapping or swiping over the
+recognized lines drawn on top of the photo.
 
-### 5a. Capture & crop
+### 5a. Capture & select text
 
 ```
-capture_and_crop_image/{bookId}
-  → CaptureAndCropImageScreen + CaptureAndCropImageViewModel
-      imageUri = FileSource.createNewFile("<uuid>.jpg")
+capture_and_select_text/{bookId}
+  → CaptureAndSelectTextScreen + CaptureAndSelectTextViewModel
+      photoUri = FileSource.createNewFile("<uuid>.jpg")
                  (cacheDir file, exposed via FileProvider; stored in SavedStateHandle)
-      state: CaptureImage → CropImage → ImageCapturedAndCropped
+      state: OpenCamera → CameraOpen → Reading → Selecting
+                                              ↘ Failed (no text / unreadable) → Retake → OpenCamera
+             CameraOpen → Abandoned (first photo cancelled) → goBack()
 ```
 
-Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt),
-[`CaptureAndCropImageScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageScreen.kt)):
-1. **CaptureImage** — a `TakePicture` activity-result launcher writes the photo into the temp
-   FileProvider URI. On success the screen calls `viewModel.onImageCaptured()`, advancing to
-   `CropImage`; on cancel/failure it calls `goBack()`.
-2. **CropImage** — `CropImageScreen` (Cropify) lets the user crop; `onImageCropped()` advances state.
-3. **ImageCapturedAndCropped** — the screen invokes its `onImageCaptured(uri)` callback; the
-   navigation layer ([`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt))
-   URL-encodes the URI and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
-4. **Cleanup** — `onCleared()` deletes the temp file *unless* the flow completed
-   (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The completed file is handed
-   off to the next screen, which deletes it after OCR.
+Steps ([`CaptureAndSelectTextViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndSelectTextViewModel.kt),
+[`CaptureAndSelectTextScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndSelectTextScreen.kt)):
+1. **OpenCamera / CameraOpen** — a `TakePicture` activity-result launcher writes the photo into the
+   temp FileProvider URI. The ViewModel records in `SavedStateHandle` that the camera is open and
+   whether a photo exists, so a config change or process death never opens the camera twice and a
+   restored screen re-reads the photo it already has.
+2. **Reading** — [`PageScanner`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/PageScanner.kt)
+   decodes the photo once (EXIF-rotated, downsampled to a 2048 px long edge by `ImageRotater`) and
+   runs ML Kit on that same bitmap, so every recognized line's corner points are in the coordinates
+   of the image on screen. ML Kit's `Text` is mapped to an
+   [`OcrPage`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/ocr/OcrPage.kt)
+   of lines tagged with their block.
+3. **Selecting** — the photo is drawn with each recognized line as a faint tilted highlight.
+   Selection is a [`LineSelection`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/ocr/LineSelection.kt)
+   reducer over line indices in reading order: tapping a block toggles all its lines; a drag
+   selects (or, when it starts on a selected line, deselects) every line between the anchor and the
+   line nearest the finger, and dragging back shrinks the range. Each block is also an accessibility
+   node with its text as the content description and a click action. `OcrPage.textOf` assembles the
+   selection: lines join with spaces, a word hyphenated across a line break is rejoined, and a new
+   block starts a new line only when the previous one ended a sentence.
+4. **Failed** — no text found or the photo could not be read; the user can retake. Cancelling a
+   retake re-reads the existing photo.
+5. **Continue** — the screen passes the selected text to `onTextSelected`; the navigation layer
+   ([`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt)) URL-encodes it
+   and navigates to `save_highlight_from_text/{bookId}/{text}`. The selection screen stays on the
+   back stack, so back from the editor returns to the same selection.
+6. **Cleanup** — `onCleared()` deletes the temp photo, which happens when the flow is abandoned or
+   saving pops back to `view_highlights/{bookId}`.
 
-### 5b. OCR & save
+### 5b. Edit & save
 
 ```
-save_highlight_from_uri/{bookId}/{uri}
-  → EditAndSaveHighlightScreen(uri) + EditAndSaveHighlightViewModel
-      processImageForHighlightText(uri):
-        → TextAnalyzer.analyzeImage(uri)        (ML Kit on-device Latin OCR)
-        → visionText.text.replace("\n", " ")    → editable highlightText
-        finally → FileSource.deleteFile(uri)     (delete the temp image)
+save_highlight_from_text/{bookId}/{text}
+  → EditAndSaveNewHighlightScreen(highlightText) + EditAndSaveHighlightViewModel
+      startWithText(text)                       (seeds the field once; edits survive rotation)
 
 [user edits text, taps save]
   → saveHighlight(bookId, text)
@@ -166,10 +183,8 @@ save_highlight_from_uri/{bookId}/{uri}
 ```
 
 Details:
-- [`TextAnalyzer`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/TextAnalyzer.kt)
-  wraps the callback-based ML Kit recognizer in `suspendCancellableCoroutine` and closes the
-  recognizer on cancellation. OCR runs fully on-device.
-- OCR failure → `image_processing_failure` snackbar; the temp file is deleted in `finally` either way.
+- `PageScanner` wraps the callback-based ML Kit recognizer in `suspendCancellableCoroutine` and
+  closes the recognizer on success, failure, and cancellation. OCR runs fully on-device.
 - A new highlight gets a random `UUID` and the current formatted timestamp.
 
 ### 5c. Edit an existing highlight
@@ -226,6 +241,6 @@ Details:
 | Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
 | Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
 | View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
-| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `FileSource.createNewFile`, `FileSource.deleteFile` | `FileSource` (cacheDir) |
-| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase`, `FileSource.deleteFile` | ML Kit + `HighlightDao` |
+| Capture / select text | `feature-addhighlight` (`CaptureAndSelectTextViewModel`) | `FileSource.createNewFile`, `FileSource.deleteFile`, `PageScanner` | `FileSource` (cacheDir) + ML Kit |
+| Edit / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase` | `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |

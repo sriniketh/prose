@@ -116,7 +116,7 @@ Android OS abstractions that keep upper layers testable and `Context`-free.
 - [`DateTimeSource`](../core-platform/src/main/java/com/sriniketh/core_platform/DateTimeSource.kt) —
   injectable `now()` (impl + Hilt binding here).
 - [`UriExtensions`](../core-platform/src/main/java/com/sriniketh/core_platform/UriExtensions.kt) —
-  `encodeUri()`, `decodeUri()`, `buildHttpsUri()`.
+  `buildHttpsUri()`.
 - [`LogExtensions`](../core-platform/src/main/java/com/sriniketh/core_platform/LogExtensions.kt) —
   `logTag()`.
 
@@ -200,13 +200,18 @@ Two screens: search and book detail.
 — lists, deletes, and exports/shares a book's highlights; also routes the camera-permission result.
 
 ### `feature-addhighlight`
-The most involved feature (camera, crop, OCR, save).
-- [`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt)
-  — temp-file lifecycle + capture→crop state machine.
+The most involved feature (camera, OCR, text selection, save).
+- [`CaptureAndSelectTextViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndSelectTextViewModel.kt)
+  — temp-file lifecycle + capture→read→select state machine.
+- [`CaptureAndSelectTextScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndSelectTextScreen.kt)
+  — draws recognized lines over the photo; tap a block or swipe across lines to select.
+- [`ocr/`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/ocr/) —
+  pure-Kotlin `OcrPage` (lines, blocks, hit testing, text assembly) and the `LineSelection` reducer.
 - [`EditAndSaveHighlightViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/EditAndSaveHighlightViewModel.kt)
-  — runs OCR, edits, and persists.
-- [`TextAnalyzer`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/TextAnalyzer.kt)
-  — ML Kit on-device Latin recognizer. Depends on `mlkit-text-recognition` and `cropify`.
+  — edits and persists.
+- [`PageScanner`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/PageScanner.kt)
+  — decodes the photo and runs the ML Kit on-device Latin recognizer on it. Depends on
+  `mlkit-text-recognition`.
 
 ---
 

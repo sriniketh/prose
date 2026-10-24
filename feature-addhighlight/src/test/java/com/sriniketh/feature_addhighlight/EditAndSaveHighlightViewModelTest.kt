@@ -1,13 +1,9 @@
 package com.sriniketh.feature_addhighlight
 
-import android.net.Uri
 import app.cash.turbine.test
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.feature_addhighlight.fakes.FakeDateTimeSource
-import com.sriniketh.feature_addhighlight.fakes.FakeFileSource
 import com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository
-import com.sriniketh.feature_addhighlight.fakes.FakeTextAnalyzer
-import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -25,9 +21,7 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class EditAndSaveHighlightViewModelTest {
     private lateinit var fakeDateTimeSource: FakeDateTimeSource
-    private lateinit var fakeTextAnalyzer: FakeTextAnalyzer
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
-    private lateinit var fakeFileSource: FakeFileSource
     private lateinit var formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase
     private lateinit var viewModel: EditAndSaveHighlightViewModel
 
@@ -35,17 +29,13 @@ class EditAndSaveHighlightViewModelTest {
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeDateTimeSource = FakeDateTimeSource()
-        fakeTextAnalyzer = FakeTextAnalyzer()
         fakeHighlightsRepository = FakeHighlightsRepository()
-        fakeFileSource = FakeFileSource()
         formatCurrentDateTimeUseCase = FormatCurrentDateTimeUseCase()
 
         viewModel = EditAndSaveHighlightViewModel(
             dateTimeSource = fakeDateTimeSource,
-            textAnalyzer = fakeTextAnalyzer,
             highlightsRepository = fakeHighlightsRepository,
-            formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
-            fileSource = fakeFileSource
+            formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase
         )
     }
 
@@ -80,93 +70,25 @@ class EditAndSaveHighlightViewModelTest {
     }
 
     @Test
-    fun `when process image for highlight text is called then loading is set to true`() = runTest {
-        val fakeUri = mockk<Uri>()
-
-        viewModel.uiState.test {
-            val initialState = awaitItem()
-            assertFalse(initialState.isLoading)
-
-            viewModel.processImageForHighlightText(fakeUri)
-
-            val loadingState = awaitItem()
-            assertTrue(loadingState.isLoading)
-
-            skipItems(1)
-        }
-    }
-
-    @Test
-    fun `when process image for highlight text succeeds then text is updated`() = runTest {
-        val fakeUri = mockk<Uri>()
-        fakeTextAnalyzer.textToReturn = "Processed text from image"
-
+    fun `when started with text then highlight text is that text`() = runTest {
         viewModel.uiState.test {
             awaitItem()
 
-            viewModel.processImageForHighlightText(fakeUri)
-            skipItems(1)
+            viewModel.startWithText("Selected text from the page")
 
-            val resultState = awaitItem()
-            assertFalse(resultState.isLoading)
-            assertEquals("Processed text from image", resultState.highlightText)
+            assertEquals("Selected text from the page", awaitItem().highlightText)
         }
     }
 
     @Test
-    fun `when process image for highlight text fails then error is shown`() = runTest {
-        val fakeUri = mockk<Uri>()
-        fakeTextAnalyzer.shouldThrowException = true
+    fun `when started again after the text was edited then edits are kept`() = runTest {
+        viewModel.startWithText("Selected text from the page")
+        viewModel.updateHighlightText("Edited text")
 
-        viewModel.effects.test {
-            viewModel.processImageForHighlightText(fakeUri)
+        viewModel.startWithText("Selected text from the page")
 
-            assertEquals(
-                EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message),
-                awaitItem()
-            )
-        }
-
-        assertFalse(viewModel.uiState.value.isLoading)
+        assertEquals("Edited text", viewModel.uiState.value.highlightText)
     }
-
-    @Test
-    fun `when process image for highlight text completes then file is deleted`() = runTest {
-        val fakeUri = mockk<Uri>()
-
-        viewModel.processImageForHighlightText(fakeUri)
-        advanceUntilIdle()
-
-        assertTrue(fakeFileSource.deletedUris.contains(fakeUri))
-    }
-
-    @Test
-    fun `when process image for highlight text succeeds then newlines are replaced with spaces`() =
-        runTest {
-            val fakeUri = mockk<Uri>()
-            fakeTextAnalyzer.textToReturn = "Line one\nLine two\nLine three"
-
-            viewModel.uiState.test {
-                awaitItem()
-
-                viewModel.processImageForHighlightText(fakeUri)
-                skipItems(1)
-
-                val resultState = awaitItem()
-                assertEquals("Line one Line two Line three", resultState.highlightText)
-            }
-        }
-
-    @Test
-    fun `when process image for highlight text is called then correct uri is analyzed`() =
-        runTest {
-            val fakeUri = mockk<Uri>()
-
-            viewModel.processImageForHighlightText(fakeUri)
-            advanceUntilIdle()
-
-            assertEquals(fakeUri, fakeTextAnalyzer.analyzedUri)
-        }
 
     @Test
     fun `when save highlight is called then loading is set to true`() = runTest {

@@ -1,6 +1,5 @@
 package com.sriniketh.feature_addhighlight
 
-import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,8 +7,6 @@ import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
 import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.core_platform.DateTimeSource
-import com.sriniketh.core_platform.FileSource
-import com.sriniketh.core_platform.logTag
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -19,18 +16,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.UUID
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class EditAndSaveHighlightViewModel @Inject constructor(
     private val dateTimeSource: DateTimeSource,
-    private val textAnalyzer: TextAnalyzer,
     private val highlightsRepository: HighlightsRepository,
-    private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase,
-    private val fileSource: FileSource
+    private val formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<EditAndSaveHighlightUiState> =
@@ -42,30 +35,12 @@ class EditAndSaveHighlightViewModel @Inject constructor(
     internal val effects: Flow<EditAndSaveHighlightEffect> = _effects.receiveAsFlow()
 
     private var savedOnTimestamp: String? = null
+    private var hasStarted = false
 
-    internal fun processImageForHighlightText(uri: Uri) {
-        _uiState.update { state ->
-            state.copy(isLoading = true)
-        }
-        viewModelScope.launch {
-            try {
-                val visionText = textAnalyzer.analyzeImage(uri)
-                val highlightText = visionText.text.replace("\n", " ")
-                Timber.d("${this.logTag()}: Transformed text: $highlightText")
-                _uiState.update { state ->
-                    state.copy(isLoading = false, highlightText = highlightText)
-                }
-            } catch (cancellationException: CancellationException) {
-                throw cancellationException
-            } catch (_: Exception) {
-                _uiState.update { state ->
-                    state.copy(isLoading = false)
-                }
-                _effects.trySend(EditAndSaveHighlightEffect.ShowMessage(R.string.image_processing_failure_error_message))
-            } finally {
-                fileSource.deleteFile(uri)
-            }
-        }
+    internal fun startWithText(text: String) {
+        if (hasStarted) return
+        hasStarted = true
+        _uiState.update { state -> state.copy(highlightText = text) }
     }
 
     internal fun loadHighlightText(highlightId: String) {

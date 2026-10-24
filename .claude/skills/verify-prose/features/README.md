@@ -39,4 +39,4 @@ Status of each recipe: `proven` means the commands below were run end to end aga
 - [Search and add a book](./search-and-add-book.md) covers search-as-you-type, book info, and adding to the shelf. Proven, except `add-message`, which fails: the "added" snackbar is not shown.
 - [Bookshelf](./bookshelf.md) covers the saved-books list, empty state, and opening a book. Proven.
 - [View and export highlights](./view-highlights.md) covers listing, share/export, and delete. Proven.
-- [Add or edit a highlight](./add-highlight.md) covers capture, crop, OCR, save, and edit. `edit` is proven. Capture, crop, OCR, and save are not runnable on this Mac's emulators; `permission-denied` is written from source and not yet run.
+- [Add or edit a highlight](./add-highlight.md) covers capture, text selection over the photo, save, and edit. Capture, no-text, tap, swipe, retake, and save were proven on 2026-10-19 with the bundled ML Kit model swapped in locally; `edit` is proven; `permission-denied` is written from source and not yet run.

@@ -43,7 +43,7 @@ Verify min/target/compile SDK, JVM toolchain, and key-library claims against `gr
 `AGENTS.md` carries a condensed "Architecture Overview" that duplicates parts of `docs/`, so it drifts the same way. Cross-check its concrete claims against the code, not against `docs/`:
 
 - **Module Structure** list — every module present and described correctly (responsibilities, named entities/types).
-- **Key Libraries** — the named stack (networking + JSON converter, image loading, cropping, logging, OCR) matches `gradle/libs.versions.toml`. The JSON library is the known drift point: confirm it against the actual `core-network` imports and converter dependency, not the prose.
+- **Key Libraries** — the named stack (networking + JSON converter, image loading, logging, OCR) matches `gradle/libs.versions.toml`. The JSON library is the known drift point: confirm it against the actual `core-network` imports and converter dependency, not the prose.
 - **Dependency Injection** — the named `@Module` classes exist and the stated DI-package convention matches reality.
 - **Navigation** — the `Navigation.kt` path and any example route still hold.
 - **Testing Patterns** — the named test libraries and dispatcher pattern are still what the suites use.
