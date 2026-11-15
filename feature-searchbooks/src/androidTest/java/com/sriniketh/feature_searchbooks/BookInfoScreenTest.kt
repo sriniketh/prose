@@ -207,15 +207,15 @@ class BookInfoScreenTest {
         var addToShelfCalled = false
         val uiState = BookInfoUiState(
             book = book,
-            canAddToShelf = true,
-            addBookToShelf = { addToShelfCalled = true }
+            canAddToShelf = true
         )
 
         composeTestRule.setContent {
             AppTheme {
                 BookInfo(
                     uiState = uiState,
-                    goBack = {}
+                    goBack = {},
+                    onAddToShelf = { addToShelfCalled = true }
                 )
             }
         }
