@@ -1,0 +1,58 @@
+package com.sriniketh.core_data.impl
+
+import com.sriniketh.core_data.HighlightsRepository
+import com.sriniketh.core_data.impl.transformers.asHighlight
+import com.sriniketh.core_data.impl.transformers.asHighlightEntity
+import com.sriniketh.core_db.dao.HighlightDao
+import com.sriniketh.core_models.book.Highlight
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import timber.log.Timber
+import javax.inject.Inject
+
+class HighlightsRepositoryImpl @Inject constructor(
+    private val localHighlightsDataSource: HighlightDao
+) : HighlightsRepository {
+
+    override suspend fun insertHighlightIntoDb(highlight: Highlight): Result<Unit> =
+        try {
+            localHighlightsDataSource.insertHighlight(highlight.asHighlightEntity())
+            Result.success(Unit)
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            Result.failure(exception)
+        }
+
+    override suspend fun loadHighlightFromDb(highlightId: String): Result<Highlight> =
+        try {
+            val highlightEntity = localHighlightsDataSource.getHighlightById(highlightId)
+            if (highlightEntity != null) {
+                Result.success(highlightEntity.asHighlight())
+            } else {
+                Result.failure(NoSuchElementException("Highlight with id $highlightId not found"))
+            }
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            Result.failure(exception)
+        }
+
+    override fun getAllHighlightsForBookFromDb(bookId: String): Flow<Result<List<Highlight>>> =
+        localHighlightsDataSource.getAllHighlightsForBook(bookId)
+            .map { entities ->
+                Result.success(entities.map { entity -> entity.asHighlight() })
+            }
+            .catch { exception ->
+                Timber.e(exception)
+                emit(Result.failure(exception))
+            }
+
+    override suspend fun deleteHighlightFromDb(highlightId: String): Result<Unit> =
+        try {
+            localHighlightsDataSource.deleteHighlightById(highlightId)
+            Result.success(Unit)
+        } catch (exception: Exception) {
+            Timber.e(exception)
+            Result.failure(exception)
+        }
+}

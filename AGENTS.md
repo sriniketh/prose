@@ -46,6 +46,12 @@ If a change touches none of the above (e.g. an internal refactor with no structu
 # Run UI tests for specific feature modules
 ./gradlew :feature-bookshelf:connectedDebugAndroidTest
 
+# Validate screenshot tests against committed reference images (host-side, no device)
+./gradlew validateDebugScreenshotTest
+
+# Regenerate reference images for a module after an intended UI change
+./gradlew :feature-bookshelf:updateDebugScreenshotTest
+
 # Compile the convention plugins only (fast check after editing build-logic)
 ./gradlew -p build-logic :convention:compileKotlin
 ```
@@ -66,7 +72,8 @@ Prose is a multi-module Android app for capturing book highlights from physical 
 **Core Modules:**
 - `core-network` - Retrofit API client for Google Books API (kotlinx.serialization for JSON)
 - `core-db` - Room database with `BookEntity` and `HighlightEntity`
-- `core-data` - Repositories and UseCases that combine network/db operations
+- `core-data:api` - Repository interfaces and UseCases (the only data module features depend on)
+- `core-data:impl` - Repository implementations, DTO/entity transformers, and the `DataModule` bindings (wired in only by `app`)
 - `core-models` - Domain models (`Book`, `Highlight`, `BookSearch`) — pure Kotlin, no Android deps
 - `core-design` - Shared Compose theme and components
 - `core-platform` - Platform utilities (file operations, URI encoding)
@@ -93,12 +100,14 @@ module-specific, and its `dependencies` — nothing else.
 | `prose.android.compose` | Compose compiler plugin, `buildFeatures.compose`, Compose dependency set |
 | `prose.android.hilt` | KSP + Hilt plugin and dependencies |
 | `prose.android.feature` | library + compose + hilt + the shared feature dependency set |
+| `prose.android.screenshot` | Compose Preview Screenshot Testing (`screenshotTest` source set), applied by every feature module |
 | `prose.jvm.library` | `java-library` + Kotlin JVM + toolchain |
 
 Rules when editing the build:
 - Do **not** add `compileSdk`, `minSdk`, `jvmToolchain`, `buildTypes`, or `buildFeatures.buildConfig`
-  to a module file — they come from a convention plugin. If a module genuinely needs different
-  behaviour, change the convention rather than overriding locally.
+  to a module file — they come from a convention plugin (`core-network`'s `buildConfig` opt-in is the
+  one documented exception). If a module genuinely needs different behaviour, change the convention
+  rather than overriding locally.
 - Do **not** apply `org.jetbrains.kotlin.android` anywhere. AGP 9 has built-in Kotlin support and
   applying it fails the build. (`org.jetbrains.kotlin.jvm` is still required for `core-models`.)
 - Keep the root `build.gradle.kts` `plugins { … apply false }` block — it puts AGP on the
@@ -113,18 +122,18 @@ See [`docs/convention-plugins.md`](docs/convention-plugins.md) for the full refe
 ### Data Flow Pattern
 
 ```
-Network/Database → Repository → UseCase → ViewModel → Compose UI
+Network/Database → Repository → (UseCase, where one exists) → ViewModel → Compose UI
 ```
 
 - **Repositories** (`BooksRepository`, `HighlightsRepository`) abstract data sources
-- **UseCases** are single-purpose classes with `operator fun invoke()` (e.g., `GetAllSavedBooksUseCase`)
+- **UseCases** are single-purpose classes with `operator fun invoke()` (e.g., `ExportHighlightsUseCase`), used only for logic spanning multiple sources; ViewModels otherwise inject repositories directly
 - **ViewModels** expose `StateFlow<UIState>` to Compose screens
 - Results are wrapped in Kotlin `Result<T>` for error handling
 
 ### Dependency Injection
 
-Hilt is used throughout. Each module has a DI package (`di/` or `dagger/`) with `@Module` classes:
-- `NetworkModule` provides Retrofit/OkHttp instances
+Hilt is used throughout. Modules that contribute bindings keep their `@Module` classes in a `di/` or `dagger/` package:
+- `NetworkModule` provides `BooksApi` (Retrofit/OkHttp built inline) and `BooksRemoteDataSource`
 - `DatabaseModule` provides Room database and DAOs
 - `DataModule` binds repository implementations
 
@@ -147,6 +156,7 @@ Navigation Compose with routes defined in `app/src/main/java/com/sriniketh/prose
 - Use `StandardTestDispatcher()` with `Dispatchers.setMain()` for coroutine tests
 - Fake implementations live in `src/test/.../fakes/` directories
 - **MockK** is available for mocking
+- Screenshot tests use Compose Preview Screenshot Testing (the deprecated standalone plugin, since AGP is below 9.5). They live in `src/screenshotTest/java/` as `@PreviewTest` composables that render a screen's stateless composable with a fixed UI state. Reference PNGs are committed under `src/screenshotTestDebug/reference/`. Use the `core-design` multi-preview annotations: `@ScreenSizePreviews` + `@ScreenVariantPreviews` for the main state, `@ScreenStatePreviews` for the others. See `docs/convention-plugins.md#screenshot-tests`
 
 ### Version Catalog
 

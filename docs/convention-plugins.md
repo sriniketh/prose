@@ -1,7 +1,7 @@
 # Build Logic & Convention Plugins
 
 Prose's Gradle configuration lives in [`build-logic/`](../build-logic), an **included build** that
-publishes six convention plugins into the main build. Module `build.gradle.kts` files declare
+publishes seven convention plugins into the main build. Module `build.gradle.kts` files declare
 *identity* (namespace, dependencies) and nothing else; everything shared — SDK levels, the JDK
 toolchain, ProGuard wiring, Compose, Hilt — comes from a plugin.
 
@@ -20,6 +20,7 @@ way, and the AGP 9 constraints that dictate how the plugins are written.
 - [The plugins](#the-plugins)
 - [Which module applies what](#which-module-applies-what)
 - [Coverage reporting](#coverage-reporting)
+- [Screenshot tests](#screenshot-tests)
 - [AGP 9 constraints](#agp-9-constraints)
 - [How the pieces fit](#how-the-pieces-fit)
 - [Adding a new module](#adding-a-new-module)
@@ -45,6 +46,7 @@ build-logic/
         ├── AndroidComposeConventionPlugin.kt
         ├── AndroidHiltConventionPlugin.kt
         ├── AndroidFeatureConventionPlugin.kt
+        ├── AndroidScreenshotConventionPlugin.kt
         └── JvmLibraryConventionPlugin.kt
 ```
 
@@ -65,7 +67,7 @@ modules use, so plugin versions can never drift between the two builds.
 The catalog carries the plugins' own JAR coordinates under `[libraries]` in
 [`gradle/libs.versions.toml`](../gradle/libs.versions.toml) — separate from the `[plugins]` markers,
 which only work in a `plugins { }` block. Look for `android-gradlePlugin`, `kotlin-gradlePlugin`,
-`compose-gradlePlugin`, `ksp-gradlePlugin`, and `hilt-gradlePlugin` there.
+`compose-gradlePlugin`, `ksp-gradlePlugin`, `hilt-gradlePlugin`, and `screenshot-gradlePlugin` there.
 
 These are `compileOnly` in `build-logic/convention/build.gradle.kts` — the convention plugins need
 AGP's *types* to compile, but AGP is already on the buildscript classpath at runtime via the root
@@ -76,7 +78,7 @@ AGP's *types* to compile, but AGP is already on the buildscript classpath at run
 
 ## The plugins
 
-Six plugins, deliberately **composable** — a module applies the two or three it needs rather than
+Seven plugins, deliberately **composable** — a module applies the two or three it needs rather than
 one monolith. Each encodes *a decision*, not *a module*.
 
 ### `prose.jvm.library`
@@ -168,7 +170,7 @@ Bundling KSP with Hilt is a judgement call: in this repo every KSP consumer is a
 [`AndroidFeatureConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidFeatureConventionPlugin.kt)
 
 Applies `prose.android.library` + `prose.android.compose` + `prose.android.hilt`, then a
-`dependencies { }` block: `implementation` on `core-design`, `core-data`, `core-models`, the
+`dependencies { }` block: `implementation` on `core-design`, `core-data:api`, `core-models`, the
 lifecycle/Compose-ViewModel libraries, and immutable collections; `testImplementation` on
 `coroutines-test` and Turbine.
 
@@ -184,6 +186,31 @@ What is **not** here, and why:
 - `core-platform` — `feature-viewhighlights` needs it only on `testImplementation`, so it stays a
   per-module line.
 - `mockk` — only two of the four features use it. Two explicit lines beat two unused dependencies.
+- `prose.android.screenshot` — applied alongside `prose.android.feature` in each module's `plugins { }`
+  block rather than bundled, so a future feature module opts into carrying reference images only once
+  it actually has screenshot tests.
+
+### `prose.android.screenshot`
+
+[`AndroidScreenshotConventionPlugin.kt`](../build-logic/convention/src/main/kotlin/com/sriniketh/prose/buildlogic/AndroidScreenshotConventionPlugin.kt)
+
+Compose Preview Screenshot Testing: applies `com.android.compose.screenshot`, sets the
+`android.experimental.enableScreenshotTest` experimental property on the module's `android { }`
+extension, and adds the Compose BOM, `ui-tooling`, and `screenshot-validation-api` to
+`screenshotTestImplementation`. Everything happens inside `pluginManager.withPlugin("com.android.base")`
+because the screenshot plugin needs AGP applied first and the `screenshotTestImplementation`
+configuration only exists after it is. It also sets each `PreviewScreenshotValidationTask`'s
+`testEngineInput.threshold` to `0.00001` — the reason `screenshot-gradlePlugin` is `compileOnly` in
+`build-logic` (AGP 9.4's `testOptions.screenshotTests` is the test-suite container, so the old
+`imageDifferenceThreshold` DSL property is gone). The plugin's default threshold is `0`, and Linux CI
+renders differ from macOS-generated references by 1–5 pixels at ±1 colour level around gradients;
+`0.00001` absorbs that while a one-character text change still fails. The same flag also has to be on in
+[`gradle.properties`](../gradle.properties); the screenshot plugin reads both.
+
+This is the **standalone plugin** setup, which Google has deprecated in favour of AGP test suites
+(`testOptions { screenshotTests.create(…) }`). Test suites need AGP 9.5.0-alpha03 or higher; moving to
+them is a follow-up to an AGP upgrade, done by rewriting this one plugin. See
+[Screenshot tests](#screenshot-tests) for how the tests themselves are laid out.
 
 ### Shared helpers
 
@@ -220,7 +247,7 @@ stylistic — see [constraint 3](#3-commonextension-exposes-defaultconfig-and-bu
 `buildConfig` generation is **not** part of this shared helper — only `app` and `core-network` read
 a generated `BuildConfig` class, so `prose.android.application` sets
 `buildFeatures.buildConfig = true` itself, and `core-network/build.gradle.kts` opts in explicitly.
-The other seven Android modules get no `BuildConfig` class or compile task at all.
+The other nine Android modules get no `BuildConfig` class or compile task at all.
 
 `enableAndroidTestCoverage` makes AGP instrument the debug variant so `connectedDebugAndroidTest`
 produces its own JaCoCo data, surfaced through the auto-generated `createDebugAndroidTestCoverageReport`
@@ -237,12 +264,13 @@ task (HTML + XML, no custom task needed) — see [Coverage reporting](#coverage-
 | `core-platform` | `prose.android.library`, `prose.android.hilt` | — |
 | `core-db` | `prose.android.library`, `prose.android.hilt` | `ksp { arg("room.schemaLocation", …) }` |
 | `core-network` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | `apikey.properties` loading, `buildFeatures.buildConfig = true`, `buildConfigField`, `optIn` |
-| `core-data` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | — |
+| `core-data:api` | `prose.android.library`, `prose.android.hilt`, `kotlin.serialization` | — |
+| `core-data:impl` | `prose.android.library`, `prose.android.hilt` | — |
 | `core-design` | `prose.android.library`, `prose.android.compose` | — |
-| `feature-bookshelf` | `prose.android.feature` | — |
-| `feature-searchbooks` | `prose.android.feature` | — |
-| `feature-viewhighlights` | `prose.android.feature` | — |
-| `feature-addhighlight` | `prose.android.feature` | — |
+| `feature-bookshelf` | `prose.android.feature`, `prose.android.screenshot` | — |
+| `feature-searchbooks` | `prose.android.feature`, `prose.android.screenshot` | — |
+| `feature-viewhighlights` | `prose.android.feature`, `prose.android.screenshot` | — |
+| `feature-addhighlight` | `prose.android.feature`, `prose.android.screenshot` | — |
 
 `kotlin.serialization` stays a catalog alias rather than a convention plugin — only two modules use
 it, so a plugin would not earn its keep. Applying it *after* a convention plugin works fine.
@@ -272,6 +300,41 @@ catalog entry is the single source of truth both wiring paths read from, so it n
 the Android and JVM cases. [`codecov.yml`](../codecov.yml) at the repo root excludes generated code
 (Hilt, `R`, `BuildConfig`, DI modules) from the numbers and has both status checks (`project`,
 `patch`) turned off — reporting only, no merge gating, until real thresholds are chosen.
+
+---
+
+## Screenshot tests
+
+Feature modules that apply `prose.android.screenshot` keep host-side screenshot tests under
+`src/screenshotTest/java/`, one `<Screen>ScreenshotTest.kt` per screen. Each test is a
+`@PreviewTest` composable that wraps the screen's `internal` stateless composable in `AppTheme` and
+feeds it a fixed UI state, so no ViewModel, Hilt, or network is involved. Reference PNGs are
+committed under `src/screenshotTestDebug/reference/`.
+
+The preview configurations come from multi-preview annotations in
+[`core-design`'s `ScreenPreviews.kt`](../core-design/src/main/kotlin/com/sriniketh/core_design/ui/preview/ScreenPreviews.kt):
+
+| Annotation | Configurations | Used for |
+|---|---|---|
+| `@ScreenSizePreviews` | 9 sizes: widths 400 / 610 / 900 dp × heights 400 / 500 / 1000 dp | the screen's main content state |
+| `@ScreenVariantPreviews` | 400×500 dark theme, 400×500 at 1.5× font scale | the screen's main content state |
+| `@ScreenStatePreviews` | 400×500 light and dark | secondary states (loading, empty, error) |
+
+Preview names end up in the reference file names, and a `.` in one breaks them — hence
+`large-font`, not `font 1.5x`.
+
+```bash
+./gradlew validateDebugScreenshotTest                         # compare against the references
+./gradlew :feature-bookshelf:updateDebugScreenshotTest        # regenerate one module's references
+```
+
+The HTML report lands in `<module>/build/reports/screenshotTest/preview/debug/index.html`. CI runs
+`validateDebugScreenshotTest` in its own `screenshot-tests` job and uploads that report as an artifact.
+
+Known rendering gaps: layoutlib can't fetch Google Fonts, so text renders in the fallback font
+rather than Noto Serif. Coil never loads network images, so thumbnails show `gradientPlaceholder()`.
+`feature-addhighlight`'s `CropImageScreen` has no screenshot test: it decodes a real camera-image
+`Uri` through `ContentResolver` and Cropify, which layoutlib has no way to supply.
 
 ---
 
@@ -349,13 +412,15 @@ gradle/libs.versions.toml ──┬─→ build-logic (compileOnly plugin JARs, 
                             │        ├─ prose.jvm.library ─────────→ core-models
                             │        │
                             │        ├─ prose.android.library ──┬──→ core-platform, core-db,
-                            │        │                          │    core-network, core-data,
-                            │        │                          │    core-design
+                            │        │                          │    core-network, core-data:api,
+                            │        │                          │    core-data:impl, core-design
                             │        ├─ prose.android.compose ──┤
                             │        ├─ prose.android.hilt ─────┤
                             │        │                          │
                             │        ├─ prose.android.feature ──┴──→ the 4 feature-* modules
                             │        │   (= library + compose + hilt + shared deps)
+                            │        │
+                            │        ├─ prose.android.screenshot ──→ the 4 feature-* modules
                             │        │
                             │        └─ prose.android.application ─→ app
                             │

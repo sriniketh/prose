@@ -1,5 +1,6 @@
 plugins {
     id("prose.android.feature")
+    id("prose.android.screenshot")
 }
 
 android {

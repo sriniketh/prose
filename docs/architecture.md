@@ -10,10 +10,15 @@ of them.
  │  Presentation (feature-* modules)                            │
  │  Compose screen  ⇄  ViewModel (StateFlow + effect Channel)   │
  └───────────────▲───────────────────────────┬─────────────────┘
-                 │ UiState / Effect           │ UseCase()
+                 │ UiState / Effect           │ Repository / UseCase call
  ┌───────────────┴───────────────────────────▼─────────────────┐
- │  Domain + Data (core-data)                                   │
- │  UseCase  →  Repository  →  transformers (DTO/Entity ↔ Model)│
+ │  Domain + Data API (core-data:api)                           │
+ │  Repository interfaces + UseCases (feature-visible surface)  │
+ └───────────────▲───────────────────────────┬─────────────────┘
+                 │ implements                 │ Result<DomainModel>
+ ┌───────────────┴───────────────────────────▼─────────────────┐
+ │  Data impl (core-data:impl)                                  │
+ │  Repository impls  →  transformers (DTO/Entity ↔ Model)      │
  └───────────────▲───────────────────────────┬─────────────────┘
                  │ Result<DomainModel>        │
  ┌───────────────┴──────────┬────────────────▼─────────────────┐
@@ -25,11 +30,15 @@ of them.
 The canonical pipeline (also stated in `AGENTS.md`):
 
 ```
-Network / Database → Repository → UseCase → ViewModel → Compose UI
+Network / Database → Repository → (UseCase, where one exists) → ViewModel → Compose UI
 ```
 
-A feature module **never** talks to `core-network` or `core-db` directly. Its only data dependency
-is `core-data`, which hides the data sources behind repositories and exposes use cases.
+A feature module **never** talks to `core-network`, `core-db`, or `core-data:impl` directly. Its
+only data dependency is `core-data:api`, a thin module of repository interfaces and use cases;
+`core-data:impl` holds the actual repository implementations and is wired in only by `app`, which
+Hilt needs to see it to satisfy the bindings. This api/impl split means a change to the
+implementation (swap a data source, rework a transformer) never forces a feature module to
+recompile.
 
 ---
 
@@ -45,7 +54,7 @@ that flow through the whole app:
 - [`BookSearch`](../core-models/src/main/java/com/sriniketh/core_models/search/BookSearch.kt)
 
 These are the lingua franca: network DTOs and Room entities are mapped to/from them at the
-`core-data` boundary, so nothing above `core-data` ever sees a Retrofit or Room type.
+`core-data:impl` boundary, so nothing above `core-data:api` ever sees a Retrofit or Room type.
 
 ### Data sources
 
@@ -55,21 +64,29 @@ These are the lingua franca: network DTOs and Room entities are mapped to/from t
 | [`core-db`](../core-db) | Room database `book-db`. | [`BookDatabase`](../core-db/src/main/java/com/sriniketh/core_db/BookDatabase.kt), [`BookDao`](../core-db/src/main/java/com/sriniketh/core_db/dao/BookDao.kt), [`HighlightDao`](../core-db/src/main/java/com/sriniketh/core_db/dao/HighlightDao.kt), entities |
 | [`core-platform`](../core-platform) | OS abstractions that keep `core-data` testable. | [`FileSource`](../core-platform/src/main/java/com/sriniketh/core_platform/FileSource.kt), [`DateTimeSource`](../core-platform/src/main/java/com/sriniketh/core_platform/DateTimeSource.kt), URI/log extensions |
 
-### Repository + domain — `core-data`
+### Repository + domain — `core-data:api` / `core-data:impl`
 
-The single module that combines the data sources. It contains:
+`core-data` is split into a thin **api** module (what features see) and an **impl** module (how it's
+actually done), so a feature only ever compiles against interfaces and use cases:
 
-- **Repositories** — [`BooksRepository`](../core-data/src/main/java/com/sriniketh/core_data/BooksRepository.kt)
-  and [`HighlightsRepository`](../core-data/src/main/java/com/sriniketh/core_data/HighlightsRepository.kt)
-  (interfaces) with `*Impl` classes that orchestrate network + db and map DTO/entity ↔ domain model.
-- **Use cases** — single-purpose classes in
-  [`usecases/`](../core-data/src/main/java/com/sriniketh/core_data/usecases) with an
-  `operator fun invoke()`. ViewModels depend on these, not on repositories directly. Most are thin
-  pass-throughs (e.g. `SaveHighlightUseCase`); a few coordinate multiple sources (e.g.
-  `ExportHighlightsUseCase` reads both repositories).
-- **Transformers** — extension functions in
-  [`transformers/`](../core-data/src/main/java/com/sriniketh/core_data/transformers) such as
-  `Volume.asBook()`, `Book.asBookEntity()`, `BookEntity.asBook()` that cross the model boundaries.
+- **`core-data:api`** — [`BooksRepository`](../core-data/api/src/main/java/com/sriniketh/core_data/BooksRepository.kt)
+  and [`HighlightsRepository`](../core-data/api/src/main/java/com/sriniketh/core_data/HighlightsRepository.kt)
+  interfaces; use cases in
+  [`usecases/`](../core-data/api/src/main/java/com/sriniketh/core_data/usecases) with an
+  `operator fun invoke()`; and the export DTOs in
+  [`models/`](../core-data/api/src/main/java/com/sriniketh/core_data/models). ViewModels inject the
+  repository interfaces directly for single-repository operations; use cases exist only where logic
+  spans sources or is worth sharing — `ExportHighlightsUseCase` (both repositories + `FileSource`)
+  and `FormatCurrentDateTimeUseCase`. Depends only on `core-models` and `core-platform` — never on
+  `core-network` or `core-db`.
+- **`core-data:impl`** — `*Impl` classes
+  ([`BooksRepositoryImpl`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/BooksRepositoryImpl.kt),
+  [`HighlightsRepositoryImpl`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/HighlightsRepositoryImpl.kt))
+  that orchestrate network + db and map DTO/entity ↔ domain model via extension functions in
+  [`transformers/`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/transformers) (e.g.
+  `Volume.asBook()`, `Book.asBookEntity()`, `BookEntity.asBook()`), plus the `DataModule` Hilt
+  bindings. Depends on `core-data:api`, `core-network`, `core-db`, `core-platform`, `core-models`.
+  Nothing outside `core-data:impl` and `app` (which wires it in for Hilt) ever imports from it.
 
 ### Design system — `core-design`
 
@@ -88,7 +105,8 @@ hosts the single Activity, the navigation graph, and app-level bindings.
 
 ## The UDF contract
 
-Every ViewModel in the codebase follows the same pattern. Use it as the template when adding a screen.
+Every ViewModel in the codebase follows the same pattern (`CaptureAndCropImageViewModel` is
+state-only, with no effect `Channel`). Use it as the template when adding a screen.
 
 **State** — an immutable data class exposed as a read-only `StateFlow`:
 
@@ -140,16 +158,22 @@ Hilt wires everything. Conventions:
 |-------------|------------------|
 | [`NetworkModule`](../core-network/src/main/java/com/sriniketh/prose/core_network/di/NetworkModule.kt) | `Retrofit`/`BooksApi` (singleton), `BooksRemoteDataSource` |
 | [`DatabaseModule`](../core-db/src/main/java/com/sriniketh/core_db/dagger/DatabaseModule.kt) | `BookDatabase` (singleton), `BookDao`, `HighlightDao` |
-| [`DataModule`](../core-data/src/main/java/com/sriniketh/core_data/di/DataModule.kt) | `BooksRepository`, `HighlightsRepository`, IO `CoroutineDispatcher` |
-| [`PlatformModule`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/PlatformModule.kt) | `DateTimeSource` |
+| [`DataModule`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/di/DataModule.kt) | `BooksRepository`, `HighlightsRepository`, IO `CoroutineDispatcher` |
+| [`PlatformModule`](../core-platform/src/main/java/com/sriniketh/core_platform/dagger/PlatformModule.kt) | `DateTimeSource`, `java.time.Clock` |
 | [`AppModule`](../app/src/main/java/com/sriniketh/prose/dagger/AppModule.kt) | `FileSource` → `FileSourceImpl` |
 | [`TextAnalysisModule`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/dagger/TextAnalysisModule.kt) | `TextAnalyzer` → `TextAnalyzerImpl` |
 
 > **Note — split interface/impl.** `FileSource` is *declared* in `core-platform` but *implemented*
 > in `app` ([`FileSourceImpl`](../app/src/main/java/com/sriniketh/prose/files/FileSourceImpl.kt)),
-> because the implementation needs `FileProvider` + the app's `packageName`/authority. `core-data`
+> because the implementation needs `FileProvider` + the app's `packageName`/authority. `core-data:api`
 > depends only on the interface. `DateTimeSource`, by contrast, is implemented and bound inside
 > `core-platform`.
+>
+> **Note — `core-data:impl` and Hilt aggregation.** Feature modules depend only on `core-data:api`,
+> so nothing pulls `core-data:impl` (and its `DataModule`) into the app's dependency graph
+> transitively. `app/build.gradle.kts` declares `implementation(project(":core-data:impl"))`
+> explicitly so Hilt's aggregating component in `app` sees the `BooksRepository`/`HighlightsRepository`
+> bindings.
 
 The application class [`ProseApplication`](../app/src/main/java/com/sriniketh/prose/ProseApplication.kt)
 is `@HiltAndroidApp` and plants a Timber `DebugTree` in debug builds.
@@ -189,7 +213,7 @@ Notes:
 ## Build logic
 
 Gradle configuration is centralized in [`build-logic/`](../build-logic), an **included build** that
-publishes six convention plugins. Nothing shared is repeated in a module file: SDK levels, the JDK 17
+publishes seven convention plugins. Nothing shared is repeated in a module file: SDK levels, the JDK 17
 toolchain, ProGuard wiring, Compose enablement, and Hilt/KSP wiring all arrive via a plugin.
 
 | Plugin | Encodes |
@@ -199,6 +223,7 @@ toolchain, ProGuard wiring, Compose enablement, and Hilt/KSP wiring all arrive v
 | `prose.android.compose` | Compose compiler plugin, `buildFeatures.compose`, the Compose BOM and dependency set |
 | `prose.android.hilt` | KSP + Hilt plugin and their dependencies |
 | `prose.android.feature` | library + compose + hilt + the dependency set every feature shares |
+| `prose.android.screenshot` | Compose Preview Screenshot Testing plugin, `screenshotTest` source set, its dependencies |
 | `prose.jvm.library` | `java-library` + Kotlin JVM + toolchain |
 
 The plugins are **composable rather than monolithic** — `prose.android.compose` never applies AGP,
@@ -235,4 +260,6 @@ constraints that shape it, and how to add a module or change a convention.
   declares `namespace` and `dependencies` and little else. See [Build logic](#build-logic) below.
 - **Testing** — ViewModels are unit-tested with Turbine + fake repositories and a
   `StandardTestDispatcher`; fakes live under each module's `src/test/.../fakes/`. UI tests use the
-  Compose test rule. See `AGENTS.md` for the full testing notes.
+  Compose test rule. Screenshot tests render each screen's stateless composable host-side via
+  `@PreviewTest` (see [convention-plugins.md](convention-plugins.md#screenshot-tests)). See
+  `AGENTS.md` for the full testing notes.

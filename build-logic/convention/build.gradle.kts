@@ -16,6 +16,7 @@ dependencies {
     compileOnly(libs.compose.gradlePlugin)
     compileOnly(libs.ksp.gradlePlugin)
     compileOnly(libs.hilt.gradlePlugin)
+    compileOnly(libs.screenshot.gradlePlugin)
 }
 
 gradlePlugin {
@@ -40,6 +41,10 @@ gradlePlugin {
         register("androidFeature") {
             id = "prose.android.feature"
             implementationClass = "com.sriniketh.prose.buildlogic.AndroidFeatureConventionPlugin"
+        }
+        register("androidScreenshot") {
+            id = "prose.android.screenshot"
+            implementationClass = "com.sriniketh.prose.buildlogic.AndroidScreenshotConventionPlugin"
         }
         register("jvmLibrary") {
             id = "prose.jvm.library"

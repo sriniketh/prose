@@ -107,11 +107,13 @@ internal fun SearchBook(
     modifier: Modifier = Modifier,
     searchForBooks: (String) -> Unit,
     navigateToBookInfo: (String) -> Unit,
-    resetSearch: () -> Unit
+    resetSearch: () -> Unit,
+    initialQuery: String = "",
+    initiallyExpanded: Boolean = false
 ) {
     val focusRequester = remember { FocusRequester() }
-    var text by rememberSaveable { mutableStateOf("") }
-    var expanded by rememberSaveable { mutableStateOf(false) }
+    var text by rememberSaveable { mutableStateOf(initialQuery) }
+    var expanded by rememberSaveable { mutableStateOf(initiallyExpanded) }
     val listState = rememberLazyListState()
 
     LaunchedEffect(uiState.bookUiStates) {
