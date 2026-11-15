@@ -6,11 +6,11 @@ jvmToolchainVersion = "17"
 jacocoVersion = "0.8.12"
 
 # Plugin dependencies
-android-application-plugin-version = "9.4.1"
-android-library-plugin-version = "9.4.1"
+android-application-plugin-version = "9.5.1"
+android-library-plugin-version = "9.5.1"
 kotlin-jvm-plugin-version = "2.4.21"
 kotlin-compose-plugin-version = "2.4.21"
-ksp-plugin-version = "2.3.12"
+ksp-plugin-version = "2.3.14"
 hilt-plugin-version = "2.60.1"
 screenshot-plugin-version = "0.0.1-alpha17"
 
@@ -31,7 +31,7 @@ hilt-navigation-version = "1.4.0"
 timber-version = "5.0.1"
 retrofit-version = "3.0.0"
 okhttp-version = "5.5.1"
-kotlinx-serialization-version = "1.12.0"
+kotlinx-serialization-version = "1.13.0"
 cropify-version = "0.5.2"
 coil-version = "2.7.0"
 kotlinx-collections-immutable-version = "0.5.2"
@@ -40,7 +40,7 @@ junit-version = "4.13.2"
 android-junit-version = "1.3.0"
 android-test-runner-version = "1.7.0"
 turbine-version = "1.2.1"
-mockk-version = "1.14.11"
+mockk-version = "1.14.12"
 
 [libraries]
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android-version" }
