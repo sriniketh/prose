@@ -2,9 +2,12 @@
 
 Prose is split into **7 core modules** and **4 feature modules**, assembled by the `app` module. The
 split enforces the layering described in [architecture.md](architecture.md): features depend on
-`core-data` for everything data-related and never reach a data source directly.
+`core-data:api` for everything data-related and never reach a data source, or `core-data:impl`,
+directly.
 
-All modules are listed in [`settings.gradle.kts`](../settings.gradle.kts).
+All modules are listed in [`settings.gradle.kts`](../settings.gradle.kts). Their Gradle
+configuration comes from convention plugins in [`build-logic/`](../build-logic) — see
+[convention-plugins.md](convention-plugins.md) and [Build configuration](#build-configuration) below.
 
 ## Dependency graph
 
@@ -17,7 +20,8 @@ graph TD
     fv[":feature-viewhighlights"]
     fa[":feature-addhighlight"]
 
-    cdata[":core-data"]
+    cdataapi[":core-data:api"]
+    cdataimpl[":core-data:impl"]
     cdesign[":core-design"]
     cplatform[":core-platform"]
     cnetwork[":core-network"]
@@ -25,14 +29,15 @@ graph TD
     cmodels[":core-models"]
 
     app --> fb & fs & fv & fa
-    app --> cdesign & cplatform
+    app --> cdesign & cplatform & cdataimpl
 
-    fb --> cdesign & cdata & cmodels & cplatform
-    fs --> cdesign & cdata & cmodels & cplatform
-    fv --> cdesign & cdata & cmodels
-    fa --> cdesign & cdata & cmodels & cplatform
+    fb --> cdesign & cdataapi & cmodels & cplatform
+    fs --> cdesign & cdataapi & cmodels & cplatform
+    fv --> cdesign & cdataapi & cmodels
+    fa --> cdesign & cdataapi & cmodels & cplatform
 
-    cdata --> cnetwork & cdb & cplatform & cmodels
+    cdataimpl --> cdataapi & cnetwork & cdb & cplatform & cmodels
+    cdataapi --> cplatform & cmodels
 
     style cmodels fill:#e8f5e9
 ```
@@ -43,13 +48,14 @@ dependencies**; `core-models` is a pure Kotlin/JVM library (highlighted above).
 Text form (who each module `implementation`-depends on):
 
 ```
-app                  → core-design, core-platform, feature-bookshelf,
+app                  → core-design, core-platform, core-data:impl, feature-bookshelf,
                        feature-searchbooks, feature-viewhighlights, feature-addhighlight
-feature-bookshelf    → core-design, core-data, core-models, core-platform
-feature-searchbooks  → core-design, core-data, core-models, core-platform
-feature-viewhighlights → core-design, core-data, core-models   (core-platform is test-only)
-feature-addhighlight → core-design, core-data, core-models, core-platform
-core-data            → core-network, core-db, core-platform, core-models
+feature-bookshelf    → core-design, core-data:api, core-models, core-platform
+feature-searchbooks  → core-design, core-data:api, core-models, core-platform
+feature-viewhighlights → core-design, core-data:api, core-models   (core-platform is test-only)
+feature-addhighlight → core-design, core-data:api, core-models, core-platform
+core-data:api        → core-platform, core-models
+core-data:impl       → core-data:api, core-network, core-db, core-platform, core-models
 core-network         → (none internal)
 core-db              → (none internal)
 core-design          → (none internal)
@@ -58,19 +64,50 @@ core-models          → (none — pure Kotlin/JVM)
 ```
 
 Key invariants:
-- **`core-data` is the only module that depends on `core-network` and `core-db`.** Features cannot
-  see Retrofit or Room types.
+- **`core-data:impl` is the only module that depends on `core-network` and `core-db`.** Features
+  depend only on `core-data:api` and cannot see Retrofit or Room types, or the repository
+  implementations. `app` depends on `core-data:impl` solely so Hilt's aggregating component can see
+  the `DataModule` bindings — nothing in `app`'s own source imports from it.
 - **`core-models` has no Android dependency**, so domain logic and transformers stay pure and fast to
   test.
 - **Feature modules do not depend on each other.** Cross-feature navigation is mediated by `app`.
 
 ---
 
+## Build configuration
+
+Module `build.gradle.kts` files declare only identity — `namespace`, module-local settings, and
+`dependencies`. Everything shared comes from a convention plugin published by the
+[`build-logic`](../build-logic) included build.
+
+| Module | Convention plugins | Module-local build config |
+|---|---|---|
+| `app` | `prose.android.application` + `prose.android.compose` + `prose.android.hilt` | `applicationId`, `versionCode`, `versionName` |
+| `core-models` | `prose.jvm.library` | — |
+| `core-platform` | `prose.android.library` + `prose.android.hilt` | — |
+| `core-db` | `prose.android.library` + `prose.android.hilt` | `ksp { arg("room.schemaLocation", …) }` |
+| `core-network` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | `apikey.properties`, `buildFeatures.buildConfig = true`, `buildConfigField`, `optIn` |
+| `core-data:api` | `prose.android.library` + `prose.android.hilt` + `kotlin.serialization` | — |
+| `core-data:impl` | `prose.android.library` + `prose.android.hilt` | — |
+| `core-design` | `prose.android.library` + `prose.android.compose` | — |
+| `feature-*` (×4) | `prose.android.feature` + `prose.android.screenshot` | — |
+
+`prose.android.feature` is itself `prose.android.library` + `prose.android.compose` +
+`prose.android.hilt` plus the dependency set every feature shares (`core-design`, `core-data:api`,
+`core-models`, lifecycle/Compose ViewModel, immutable collections, and the coroutines-test + Turbine
+test duo — `junit` and the `android-junit`/`android-test-runner`/`compose-junit` androidTest trio
+come from the library and compose conventions it applies, not from this plugin directly).
+
+`build-logic` is **not** a module of the app — it is a separate Gradle build on the plugin
+classpath, so it never appears in the dependency graph above and ships nothing into the APK.
+
+---
+
 ## Core modules
 
 ### `core-models`
-Pure Kotlin library (`java-library`, `kotlin-jvm`). Domain types only: `Book`, `BookInfo`,
-`Highlight`, `BookSearch`. No DI, no Android.
+Pure Kotlin library (`prose.jvm.library` → `java-library` + `kotlin-jvm`). Domain types only:
+`Book`, `BookInfo`, `Highlight`, `BookSearch`. No DI, no Android.
 
 ### `core-platform`
 Android OS abstractions that keep upper layers testable and `Context`-free.
@@ -88,9 +125,12 @@ Retrofit 3 + kotlinx.serialization client for the Google Books API.
 - [`BooksApi`](../core-network/src/main/java/com/sriniketh/prose/core_network/retrofit/BooksApi.kt) —
   `GET books/v1/volumes` (search) and `GET books/v1/volumes/{id}` (detail).
 - [`BooksRemoteDataSource`](../core-network/src/main/java/com/sriniketh/prose/core_network/BooksRemoteDataSource.kt)
-  — thin wrapper that injects the API key and `projection=lite` for search.
+  — thin interface over the API; its impl
+  [`BooksRemoteDataSourceImpl`](../core-network/src/main/java/com/sriniketh/prose/core_network/retrofit/BooksRemoteDataSourceImpl.kt)
+  injects the API key and `projection=lite` for search.
 - [`Volumes`](../core-network/src/main/java/com/sriniketh/prose/core_network/model/Volumes.kt) — DTOs
-  with defaulted/nullable fields; JSON parsed with `ignoreUnknownKeys = true`.
+  with defaulted/nullable fields; JSON parsed with `ignoreUnknownKeys = true`
+  ([`BooksApiJson.kt`](../core-network/src/main/java/com/sriniketh/prose/core_network/di/BooksApiJson.kt)).
 - **API key:** `BOOKS_API_KEY` is read from `core-network/apikey.properties` into `BuildConfig` at
   build time. `HttpLoggingInterceptor` logs bodies only in debug.
 
@@ -113,41 +153,36 @@ Room database `book-db`.
 
 ### `core-design`
 Compose design system: `AppTheme` (Material 3 + dynamic color), shared components
-(`ProseTopAppBar`, `NavigationBack`, `Placeholder`), typography, animation specs, and the shared
-transition `CompositionLocals`. No internal deps.
+(`ProseTopAppBar`, `NavigationBack`, `Placeholder`), typography, animation specs, the shared
+transition `CompositionLocals`, and the multi-preview annotations screenshot tests use
+(`ScreenSizePreviews`, `ScreenVariantPreviews`, `ScreenStatePreviews`). No internal deps.
 
-### `core-data`
-Repositories, use cases, transformers, and the export DTOs
-([`HighlightsExport`](../core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)).
-This is the bridge between data sources and presentation. See
-[architecture.md](architecture.md#repository--domain--core-data) for the type breakdown and
-[flows.md](flows.md) for how each use case is invoked.
+### `core-data:api` / `core-data:impl`
+The bridge between data sources and presentation, split into a thin api module (repository
+interfaces + use cases — what features depend on) and an impl module (repository implementations +
+transformers + Hilt bindings — depended on only by `app`). See
+[architecture.md](architecture.md#repository--domain--core-dataapi--core-dataimpl) for the type
+breakdown and [flows.md](flows.md) for how each use case is invoked.
 
-**Use cases** (in [`usecases/`](../core-data/src/main/java/com/sriniketh/core_data/usecases)):
+**`core-data:api`** — `BooksRepository`, `HighlightsRepository` interfaces; the export DTOs
+([`HighlightsExport`](../core-data/api/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt));
+and use cases (in [`usecases/`](../core-data/api/src/main/java/com/sriniketh/core_data/usecases)):
 
 | Use case | Backed by | Used in flow |
 |----------|-----------|--------------|
-| `SearchForBookUseCase` | `BooksRepository.searchForBooks` | Search |
-| `FetchBookInfoUseCase` | `BooksRepository.fetchBookInfo` | Book info |
-| `IsBookInDbUseCase` | `BooksRepository.doesBookExistInDb` | Book info |
-| `AddBookToShelfUseCase` | `BooksRepository.insertBookIntoDb` | Add book |
-| `GetAllSavedBooksUseCase` | `BooksRepository.getAllSavedBooksFromDb` | Bookshelf |
-| `DeleteBookUseCase` | `BooksRepository.deleteBookFromDb` | (book removal) |
-| `GetAllSavedHighlightsUseCase` | `HighlightsRepository.getAllHighlightsForBookFromDb` | View highlights |
-| `SaveHighlightUseCase` | `HighlightsRepository.insertHighlightIntoDb` | Save highlight |
-| `LoadHighlightUseCase` | `HighlightsRepository.loadHighlightFromDb` | Edit highlight |
-| `DeleteHighlightUseCase` | `HighlightsRepository.deleteHighlightFromDb` | View highlights |
 | `ExportHighlightsUseCase` | both repos + `FileSource` | Export/share |
-| `CreateTempImageFileUseCase` | `FileSource.createNewFile` | Capture |
-| `DeleteFileUseCase` | `FileSource.deleteFile` | Capture / OCR cleanup |
 | `FormatCurrentDateTimeUseCase` | `DateTimeFormatter` | Save highlight |
+
+**`core-data:impl`** — `BooksRepositoryImpl`, `HighlightsRepositoryImpl`, the
+[`transformers/`](../core-data/impl/src/main/java/com/sriniketh/core_data/impl/transformers)
+extension functions, and the `DataModule` Hilt bindings.
 
 ---
 
 ## Feature modules
 
 Each feature module owns Compose screens + ViewModels + feature DI. ViewModels are `@HiltViewModel`
-and consume `core-data` use cases.
+and consume `core-data:api` repository interfaces (and use cases where one exists).
 
 ### `feature-bookshelf`
 Home screen. [`BookshelfViewModel`](../feature-bookshelf/src/main/java/com/sriniketh/feature_bookshelf/BookshelfViewModel.kt)

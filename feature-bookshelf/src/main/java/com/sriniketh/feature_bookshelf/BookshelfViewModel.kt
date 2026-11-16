@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.usecases.GetAllSavedBooksUseCase
+import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -24,7 +24,7 @@ const val BOOKSHELF_SHOW_ADDED_MESSAGE = "bookshelf_show_added_message"
 
 @HiltViewModel
 class BookshelfViewModel @Inject constructor(
-    private val getAllSavedBooksUseCase: GetAllSavedBooksUseCase,
+    private val booksRepository: BooksRepository,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -49,7 +49,7 @@ class BookshelfViewModel @Inject constructor(
             _bookshelfUIState.update { state ->
                 state.copy(isLoading = true)
             }
-            getAllSavedBooksUseCase().collect { result ->
+            booksRepository.getAllSavedBooksFromDb().collect { result ->
                 if (result.isSuccess) {
                     val books = result.getOrThrow()
                     _bookshelfUIState.update { state ->

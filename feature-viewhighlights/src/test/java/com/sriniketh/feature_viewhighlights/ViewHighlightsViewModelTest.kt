@@ -1,9 +1,8 @@
 package com.sriniketh.feature_viewhighlights
 
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
-import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
+import com.sriniketh.core_models.book.Highlight
 import com.sriniketh.feature_viewhighlights.fakes.FakeBooksRepository
 import com.sriniketh.feature_viewhighlights.fakes.FakeFileSource
 import com.sriniketh.feature_viewhighlights.fakes.FakeHighlightsRepository
@@ -27,8 +26,6 @@ class ViewHighlightsViewModelTest {
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
     private lateinit var fakeBooksRepository: FakeBooksRepository
     private lateinit var fakeFileSource: FakeFileSource
-    private lateinit var getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase
-    private lateinit var deleteHighlightUseCase: DeleteHighlightUseCase
     private lateinit var exportHighlightsUseCase: ExportHighlightsUseCase
     private lateinit var viewModel: ViewHighlightsViewModel
 
@@ -38,12 +35,9 @@ class ViewHighlightsViewModelTest {
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeBooksRepository = FakeBooksRepository()
         fakeFileSource = FakeFileSource()
-        getAllSavedHighlightsUseCase = GetAllSavedHighlightsUseCase(fakeHighlightsRepository)
-        deleteHighlightUseCase = DeleteHighlightUseCase(fakeHighlightsRepository)
         exportHighlightsUseCase = ExportHighlightsUseCase(fakeBooksRepository, fakeHighlightsRepository, fakeFileSource)
         viewModel = ViewHighlightsViewModel(
-            getAllSavedHighlightsUseCase,
-            deleteHighlightUseCase,
+            fakeHighlightsRepository,
             exportHighlightsUseCase
         )
     }
@@ -126,6 +120,43 @@ class ViewHighlightsViewModelTest {
             awaitItem()
             val errorState = awaitItem()
             assertTrue(errorState.highlights.isEmpty())
+        }
+    }
+
+    @Test
+    fun `when getHighlights succeeds with multiple highlights then sorts by saved timestamp`() = runTest {
+        val bookId = "test-book-id"
+        fakeHighlightsRepository.shouldGetAllHighlightsForBookFromDbThrowException = false
+        fakeHighlightsRepository.highlightsToReturn = listOf(
+            Highlight(
+                id = "later",
+                bookId = bookId,
+                text = "later text",
+                savedOnTimestamp = "2023-03-01 10:00 AM"
+            ),
+            Highlight(
+                id = "earlier",
+                bookId = bookId,
+                text = "earlier text",
+                savedOnTimestamp = "2023-01-01 10:00 AM"
+            ),
+            Highlight(
+                id = "middle",
+                bookId = bookId,
+                text = "middle text",
+                savedOnTimestamp = "2023-02-01 10:00 AM"
+            )
+        )
+
+        viewModel.highlightsUIStateFlow.test {
+            awaitItem()
+
+            viewModel.getHighlights(bookId)
+
+            awaitItem()
+            val finalState = awaitItem()
+
+            assertEquals(listOf("earlier", "middle", "later"), finalState.highlights.map { it.id })
         }
     }
 

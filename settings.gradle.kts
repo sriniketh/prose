@@ -1,25 +1,26 @@
 pluginManagement {
-	repositories {
-		google()
-		mavenCentral()
-		gradlePluginPortal()
-	}
+    includeBuild("build-logic")
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
 
 plugins {
-	id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
 @Suppress("UnstableApiUsage")
 dependencyResolutionManagement {
-	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-	repositories {
-		google()
-		mavenCentral()
-		maven {
-			url = uri("https://jitpack.io")
-		}
-	}
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven {
+            url = uri("https://jitpack.io")
+        }
+    }
 }
 rootProject.name = "prose"
 include(":app")
@@ -27,7 +28,8 @@ include(":core-network")
 include(":core-models")
 include(":feature-searchbooks")
 include(":feature-bookshelf")
-include(":core-data")
+include(":core-data:api")
+include(":core-data:impl")
 include(":core-design")
 include(":core-db")
 include(":feature-viewhighlights")

@@ -3,7 +3,7 @@ package com.sriniketh.feature_searchbooks
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.usecases.SearchForBookUseCase
+import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_models.book.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,7 +32,7 @@ import javax.inject.Inject
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class SearchBookViewModel @Inject constructor(
-    private val searchForBookUseCase: SearchForBookUseCase
+    private val booksRepository: BooksRepository
 ) : ViewModel() {
 
     private val _searchUiState: MutableStateFlow<BookSearchUiState> =
@@ -73,7 +73,7 @@ class SearchBookViewModel @Inject constructor(
 
     private fun searchResultsFlow(query: String): Flow<BookSearchUiState> = flow {
         emit(_searchUiState.value.copy(isLoading = true))
-        val result = searchForBookUseCase(query)
+        val result = booksRepository.searchForBooks(query)
         if (result.isSuccess) {
             emit(
                 BookSearchUiState(

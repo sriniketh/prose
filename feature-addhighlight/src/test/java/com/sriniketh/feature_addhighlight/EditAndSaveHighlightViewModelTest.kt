@@ -2,10 +2,7 @@ package com.sriniketh.feature_addhighlight
 
 import android.net.Uri
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.DeleteFileUseCase
 import com.sriniketh.core_data.usecases.FormatCurrentDateTimeUseCase
-import com.sriniketh.core_data.usecases.LoadHighlightUseCase
-import com.sriniketh.core_data.usecases.SaveHighlightUseCase
 import com.sriniketh.feature_addhighlight.fakes.FakeDateTimeSource
 import com.sriniketh.feature_addhighlight.fakes.FakeFileSource
 import com.sriniketh.feature_addhighlight.fakes.FakeHighlightsRepository
@@ -31,10 +28,7 @@ class EditAndSaveHighlightViewModelTest {
     private lateinit var fakeTextAnalyzer: FakeTextAnalyzer
     private lateinit var fakeHighlightsRepository: FakeHighlightsRepository
     private lateinit var fakeFileSource: FakeFileSource
-    private lateinit var saveHighlightUseCase: SaveHighlightUseCase
-    private lateinit var loadHighlightUseCase: LoadHighlightUseCase
     private lateinit var formatCurrentDateTimeUseCase: FormatCurrentDateTimeUseCase
-    private lateinit var deleteFileUseCase: DeleteFileUseCase
     private lateinit var viewModel: EditAndSaveHighlightViewModel
 
     @Before
@@ -44,18 +38,14 @@ class EditAndSaveHighlightViewModelTest {
         fakeTextAnalyzer = FakeTextAnalyzer()
         fakeHighlightsRepository = FakeHighlightsRepository()
         fakeFileSource = FakeFileSource()
-        saveHighlightUseCase = SaveHighlightUseCase(fakeHighlightsRepository)
-        loadHighlightUseCase = LoadHighlightUseCase(fakeHighlightsRepository)
         formatCurrentDateTimeUseCase = FormatCurrentDateTimeUseCase()
-        deleteFileUseCase = DeleteFileUseCase(fakeFileSource)
-        
+
         viewModel = EditAndSaveHighlightViewModel(
             dateTimeSource = fakeDateTimeSource,
             textAnalyzer = fakeTextAnalyzer,
-            saveHighlightUseCase = saveHighlightUseCase,
-            loadHighlightUseCase = loadHighlightUseCase,
+            highlightsRepository = fakeHighlightsRepository,
             formatCurrentDateTimeUseCase = formatCurrentDateTimeUseCase,
-            deleteFileUseCase = deleteFileUseCase
+            fileSource = fakeFileSource
         )
     }
 
@@ -151,6 +141,34 @@ class EditAndSaveHighlightViewModelTest {
     }
 
     @Test
+    fun `when process image for highlight text succeeds then newlines are replaced with spaces`() =
+        runTest {
+            val fakeUri = mockk<Uri>()
+            fakeTextAnalyzer.textToReturn = "Line one\nLine two\nLine three"
+
+            viewModel.uiState.test {
+                awaitItem()
+
+                viewModel.processImageForHighlightText(fakeUri)
+                skipItems(1)
+
+                val resultState = awaitItem()
+                assertEquals("Line one Line two Line three", resultState.highlightText)
+            }
+        }
+
+    @Test
+    fun `when process image for highlight text is called then correct uri is analyzed`() =
+        runTest {
+            val fakeUri = mockk<Uri>()
+
+            viewModel.processImageForHighlightText(fakeUri)
+            advanceUntilIdle()
+
+            assertEquals(fakeUri, fakeTextAnalyzer.analyzedUri)
+        }
+
+    @Test
     fun `when save highlight is called then loading is set to true`() = runTest {
         viewModel.uiState.test {
             val initialState = awaitItem()
@@ -174,6 +192,21 @@ class EditAndSaveHighlightViewModelTest {
         }
 
         assertFalse(viewModel.uiState.value.isLoading)
+    }
+
+    @Test
+    fun `when save highlight succeeds then highlight is inserted with correct fields`() = runTest {
+        viewModel.saveHighlight("book-id", "highlight text")
+        advanceUntilIdle()
+
+        val insertedHighlight = fakeHighlightsRepository.insertedHighlight
+        assertEquals("book-id", insertedHighlight?.bookId)
+        assertEquals("highlight text", insertedHighlight?.text)
+        assertTrue(insertedHighlight?.id.orEmpty().isNotBlank())
+        assertEquals(
+            formatCurrentDateTimeUseCase(fakeDateTimeSource.currentTime),
+            insertedHighlight?.savedOnTimestamp
+        )
     }
 
     @Test
@@ -263,6 +296,33 @@ class EditAndSaveHighlightViewModelTest {
 
         assertFalse(viewModel.uiState.value.isLoading)
     }
+
+    @Test
+    fun `when update highlight succeeds then highlight is inserted with provided highlight id`() =
+        runTest {
+            viewModel.updateHighlight("book-id", "updated highlight text", "highlight-id")
+            advanceUntilIdle()
+
+            val insertedHighlight = fakeHighlightsRepository.insertedHighlight
+            assertEquals("highlight-id", insertedHighlight?.id)
+            assertEquals("book-id", insertedHighlight?.bookId)
+            assertEquals("updated highlight text", insertedHighlight?.text)
+        }
+
+    @Test
+    fun `when highlight was loaded then updating it preserves the original saved on timestamp`() =
+        runTest {
+            viewModel.loadHighlightText("highlight-id")
+            advanceUntilIdle()
+
+            viewModel.updateHighlight("book-id", "edited highlight text", "highlight-id")
+            advanceUntilIdle()
+
+            assertEquals(
+                "2023-01-01",
+                fakeHighlightsRepository.insertedHighlight?.savedOnTimestamp
+            )
+        }
 
     @Test
     fun `when update highlight fails then error is shown`() = runTest {

@@ -31,9 +31,8 @@ ProseApplication (@HiltAndroidApp, plants Timber in debug)
 ```
 BookshelfScreen
   → BookshelfViewModel.init
-      → GetAllSavedBooksUseCase()                       (core-data)
-        → BooksRepository.getAllSavedBooksFromDb(): Flow<Result<List<Book>>>
-          → BookDao.getAllBooks(): Flow<List<BookEntity>>   (Room, core-db)
+      → BooksRepository.getAllSavedBooksFromDb(): Flow<Result<List<Book>>>   (core-data)
+        → BookDao.getAllBooks(): Flow<List<BookEntity>>   (Room, core-db)
       ← entities.map { it.asBook() }  → map to BookUIState (ImmutableList)
 ```
 
@@ -60,7 +59,7 @@ SearchBookScreen (text field) → SearchBookViewModel.searchForBook(query)
       .filter { length > 3 }
       .debounce(300ms)
       .distinctUntilChanged()
-      .flatMapLatest { SearchForBookUseCase(query) }     ← cancels the previous search
+      .flatMapLatest { BooksRepository.searchForBooks(query) }     ← cancels the previous search
         → BooksRepository.searchForBooks
           → BooksRemoteDataSource.getVolumes(query)  (projection = "lite")
           ← Volumes.asBookSearchResult()  → BookSearch  → BookUiState list
@@ -80,12 +79,12 @@ Details ([`SearchBookViewModel`](../feature-searchbooks/src/main/java/com/srinik
 
 ```
 BookInfoScreen → BookInfoViewModel.getBookDetail(volumeId)
-  → FetchBookInfoUseCase → BooksRepository.fetchBookInfo
+  → BooksRepository.fetchBookInfo
        → BooksRemoteDataSource.getVolume(volumeId)  → Volume.asBook()
-  → IsBookInDbUseCase → BookDao.doesBookExist(bookId)   → canAddToShelf = !isInDb
+  → BooksRepository.doesBookExistInDb → BookDao.doesBookExist(bookId)   → canAddToShelf = !isInDb
 
 [user taps "Add to shelf"]
-  → AddBookToShelfUseCase → BooksRepository.insertBookIntoDb
+  → BooksRepository.insertBookIntoDb
        → BookDao.insertBook(book.asBookEntity())   (onConflict = IGNORE)
   → Effect.NavigateToBookshelf
 ```
@@ -104,15 +103,14 @@ Details ([`BookInfoViewModel`](../feature-searchbooks/src/main/java/com/sriniket
 
 ```
 ViewHighlightsScreen → ViewHighlightsViewModel.getHighlights(bookId)
-  → GetAllSavedHighlightsUseCase(bookId)
-      → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
-        → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
+  → HighlightsRepository.getAllHighlightsForBookFromDb(bookId): Flow<...>
+      → HighlightDao.getAllHighlightsForBook(bookId): Flow<List<HighlightEntity>>
   ← sortedBy { savedOnTimestamp } → HighlightUIState list
 ```
 
 Actions are dispatched through `processAction(ViewHighlightsAction)`
 ([`ViewHighlightsViewModel`](../feature-viewhighlights/src/main/java/com/sriniketh/feature_viewhighlights/ViewHighlightsViewModel.kt)):
-- **Delete** → `DeleteHighlightUseCase` → `HighlightDao.deleteHighlightById(id)`.
+- **Delete** → `HighlightsRepository.deleteHighlightFromDb` → `HighlightDao.deleteHighlightById(id)`.
 - **Export** → see flow 6.
 - **Camera permission denied** → `permission_denied` snackbar. The screen's camera-permission
   launcher requests `CAMERA`; on grant it navigates into the capture flow, on deny it dispatches the
@@ -131,7 +129,7 @@ This is the most involved flow and spans two ViewModels and three navigation des
 ```
 capture_and_crop_image/{bookId}
   → CaptureAndCropImageScreen + CaptureAndCropImageViewModel
-      imageUri = CreateTempImageFileUseCase()  → FileSource.createNewFile("<uuid>.jpg")
+      imageUri = FileSource.createNewFile("<uuid>.jpg")
                  (cacheDir file, exposed via FileProvider; stored in SavedStateHandle)
       state: CaptureImage → CropImage → ImageCapturedAndCropped
 ```
@@ -139,10 +137,12 @@ capture_and_crop_image/{bookId}
 Steps ([`CaptureAndCropImageViewModel`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageViewModel.kt),
 [`CaptureAndCropImageScreen`](../feature-addhighlight/src/main/java/com/sriniketh/feature_addhighlight/CaptureAndCropImageScreen.kt)):
 1. **CaptureImage** — a `TakePicture` activity-result launcher writes the photo into the temp
-   FileProvider URI. On cancel/failure the screen calls `goBack()`.
+   FileProvider URI. On success the screen calls `viewModel.onImageCaptured()`, advancing to
+   `CropImage`; on cancel/failure it calls `goBack()`.
 2. **CropImage** — `CropImageScreen` (Cropify) lets the user crop; `onImageCropped()` advances state.
-3. **ImageCapturedAndCropped** — the screen calls `onImageCaptured(uri)`, which URL-encodes the URI
-   and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
+3. **ImageCapturedAndCropped** — the screen invokes its `onImageCaptured(uri)` callback; the
+   navigation layer ([`ProseAppScreen.kt`](../app/src/main/java/com/sriniketh/prose/ProseAppScreen.kt))
+   URL-encodes the URI and navigates to `save_highlight_from_uri/{bookId}/{encodedUri}`.
 4. **Cleanup** — `onCleared()` deletes the temp file *unless* the flow completed
    (`ImageCapturedAndCropped`), so abandoned captures don't leak files. The completed file is handed
    off to the next screen, which deletes it after OCR.
@@ -155,11 +155,11 @@ save_highlight_from_uri/{bookId}/{uri}
       processImageForHighlightText(uri):
         → TextAnalyzer.analyzeImage(uri)        (ML Kit on-device Latin OCR)
         → visionText.text.replace("\n", " ")    → editable highlightText
-        finally → DeleteFileUseCase(uri)         (delete the temp image)
+        finally → FileSource.deleteFile(uri)     (delete the temp image)
 
 [user edits text, taps save]
   → saveHighlight(bookId, text)
-      → SaveHighlightUseCase → HighlightsRepository.insertHighlightIntoDb
+      → HighlightsRepository.insertHighlightIntoDb
           → HighlightDao.insertHighlight(highlight.asHighlightEntity())  (onConflict = REPLACE)
       timestamp = FormatCurrentDateTimeUseCase(DateTimeSource.now())
   → Effect.HighlightSaved → goBack to view_highlights/{bookId}
@@ -177,7 +177,7 @@ Details:
 ```
 save_highlight_from_highlight_id/{bookId}/{highlightId}
   → EditAndSaveHighlightViewModel.loadHighlightText(highlightId)
-      → LoadHighlightUseCase → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
+      → HighlightsRepository.loadHighlightFromDb → HighlightDao.getHighlightById
   ← prefilled text + screen title switches to "edit"; original savedOnTimestamp is preserved
 [save] → updateHighlight(bookId, text, highlightId)   (same UUID → REPLACE updates the row)
 ```
@@ -204,11 +204,11 @@ ViewHighlights "share" → ViewHighlightsViewModel.processAction(OnExportHighlig
 ```
 
 Details:
-- [`ExportHighlightsUseCase`](../core-data/src/main/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCase.kt)
-  is one of the few use cases that coordinates **both** repositories. It takes a one-shot snapshot of
+- [`ExportHighlightsUseCase`](../core-data/api/src/main/java/com/sriniketh/core_data/usecases/ExportHighlightsUseCase.kt)
+  is the only use case that coordinates **both** repositories. It takes a one-shot snapshot of
   the highlights `Flow` via `.first()`.
 - The serialized shape is the `*Export` DTO set in
-  [`HighlightsExport.kt`](../core-data/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)
+  [`HighlightsExport.kt`](../core-data/api/src/main/java/com/sriniketh/core_data/models/HighlightsExport.kt)
   (kept separate from domain models so the on-disk format is independent of internal types).
   `explicitNulls = false` omits null fields from the JSON.
 - The file lands in the app cache dir and is shared through the `${applicationId}.fileProvider`
@@ -220,12 +220,12 @@ Details:
 
 ## Flow ↔ source map (quick index)
 
-| Flow | Screen / ViewModel | Use case(s) | Data source |
+| Flow | Screen / ViewModel | Use case / repository call(s) | Data source |
 |------|--------------------|-------------|-------------|
-| Bookshelf | `feature-bookshelf` | `GetAllSavedBooksUseCase` | Room `BookDao` (Flow) |
-| Search | `feature-searchbooks` (`SearchBookViewModel`) | `SearchForBookUseCase` | Books API `getVolumes` |
-| Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `FetchBookInfoUseCase`, `IsBookInDbUseCase`, `AddBookToShelfUseCase` | API `getVolume` + `BookDao` |
-| View highlights | `feature-viewhighlights` | `GetAllSavedHighlightsUseCase`, `DeleteHighlightUseCase` | Room `HighlightDao` (Flow) |
-| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `CreateTempImageFileUseCase`, `DeleteFileUseCase` | `FileSource` (cacheDir) |
-| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `SaveHighlightUseCase`, `LoadHighlightUseCase`, `FormatCurrentDateTimeUseCase`, `DeleteFileUseCase` | ML Kit + `HighlightDao` |
+| Bookshelf | `feature-bookshelf` | `BooksRepository.getAllSavedBooksFromDb` | Room `BookDao` (Flow) |
+| Search | `feature-searchbooks` (`SearchBookViewModel`) | `BooksRepository.searchForBooks` | Books API `getVolumes` |
+| Book info / add | `feature-searchbooks` (`BookInfoViewModel`) | `BooksRepository.fetchBookInfo`, `BooksRepository.doesBookExistInDb`, `BooksRepository.insertBookIntoDb` | API `getVolume` + `BookDao` |
+| View highlights | `feature-viewhighlights` | `HighlightsRepository.getAllHighlightsForBookFromDb`, `HighlightsRepository.deleteHighlightFromDb` | Room `HighlightDao` (Flow) |
+| Capture / crop | `feature-addhighlight` (`CaptureAndCropImageViewModel`) | `FileSource.createNewFile`, `FileSource.deleteFile` | `FileSource` (cacheDir) |
+| OCR / save | `feature-addhighlight` (`EditAndSaveHighlightViewModel`) | `HighlightsRepository.insertHighlightIntoDb`, `HighlightsRepository.loadHighlightFromDb`, `FormatCurrentDateTimeUseCase`, `FileSource.deleteFile` | ML Kit + `HighlightDao` |
 | Export / share | `feature-viewhighlights` | `ExportHighlightsUseCase` | both repos + `FileSource` |

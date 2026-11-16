@@ -3,47 +3,46 @@ compileSdkVersion = "37"
 minSdkVersion = "26"
 targetSdkVersion = "35"
 jvmToolchainVersion = "17"
+jacocoVersion = "0.8.12"
 
 # Plugin dependencies
-android-application-plugin-version = "9.2.1"
-android-library-plugin-version = "9.2.1"
-kotlin-jvm-plugin-version = "2.4.0"
-kotlin-compose-plugin-version = "2.4.0"
-ksp-plugin-version = "2.3.9"
-hilt-plugin-version = "2.60"
-android-navigation-safe-args-plugin-version = "2.9.8"
+android-application-plugin-version = "9.5.1"
+android-library-plugin-version = "9.5.1"
+kotlin-jvm-plugin-version = "2.4.21"
+kotlin-compose-plugin-version = "2.4.21"
+ksp-plugin-version = "2.3.14"
+hilt-plugin-version = "2.60.1"
+screenshot-plugin-version = "0.0.1-alpha16"
 
 # Library dependencies
-android-ktx-version = "1.19.0"
 coroutines-android-version = "1.11.0"
-android-appcompat-version = "1.7.1"
-compose-bom-version = "2026.06.00"
-compose-nav-version = "2.9.8"
-hilt-version = "2.60"
-room-version = "2.8.4"
+android-appcompat-version = "1.8.0"
+compose-bom-version = "2026.09.00"
+compose-nav-version = "2.10.2"
+hilt-version = "2.60.1"
+room-version = "2.8.5"
 material3-version = "1.5.0-alpha22"
-google-font-version = "1.11.3"
-mlkit-version = "19.0.1"
+google-font-version = "1.12.1"
+mlkit-version = "19.0.2"
 lifecycle-version = "2.11.0"
 activity-version = "1.13.0"
-hilt-navigation-version = "1.3.0"
+hilt-navigation-version = "1.4.0"
 
 timber-version = "5.0.1"
 retrofit-version = "3.0.0"
-okhttp-version = "5.4.0"
-kotlinx-serialization-version = "1.11.0"
+okhttp-version = "5.5.1"
+kotlinx-serialization-version = "1.13.0"
 cropify-version = "0.5.2"
 coil-version = "2.7.0"
-kotlinx-collections-immutable-version = "0.5.0"
+kotlinx-collections-immutable-version = "0.5.2"
 
 junit-version = "4.13.2"
 android-junit-version = "1.3.0"
-espresso-version = "3.7.0"
+android-test-runner-version = "1.7.0"
 turbine-version = "1.2.1"
-mockk-version = "1.14.11"
+mockk-version = "1.14.12"
 
 [libraries]
-android-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "android-ktx-version" }
 coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android-version" }
 android-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "android-appcompat-version" }
 google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "google-font-version" }
@@ -56,12 +55,11 @@ hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt-version" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room-version" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room-version" }
-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room-version" }
 mlkit-text-recognition = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition", version.ref = "mlkit-version" }
 lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-version" }
 lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-version" }
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-version" }
-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-version" }
+hilt-lifecycle-viewmodel-compose = { group = "androidx.hilt", name = "hilt-lifecycle-viewmodel-compose", version.ref = "hilt-navigation-version" }
 
 timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber-version" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit-version" }
@@ -74,12 +72,21 @@ kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotli
 
 junit = { group = "junit", name = "junit", version.ref = "junit-version" }
 android-junit = { group = "androidx.test.ext", name = "junit", version.ref = "android-junit-version" }
+android-test-runner = { group = "androidx.test", name = "runner", version.ref = "android-test-runner-version" }
 compose-junit = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 compose-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-version" }
 coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-android-version" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine-version" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
+screenshot-validation-api = { group = "com.android.tools.screenshot", name = "screenshot-validation-api", version.ref = "screenshot-plugin-version" }
+
+# Gradle plugin artifacts, for the build-logic compile classpath only
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "android-application-plugin-version" }
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-jvm-plugin-version" }
+compose-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin-compose-plugin-version" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "symbol-processing-gradle-plugin", version.ref = "ksp-plugin-version" }
+hilt-gradlePlugin = { group = "com.google.dagger", name = "hilt-android-gradle-plugin", version.ref = "hilt-plugin-version" }
+screenshot-gradlePlugin = { group = "com.android.compose.screenshot", name = "screenshot-test-gradle-plugin", version.ref = "screenshot-plugin-version" }
 
 [bundles]
 compose = ["compose-material3", "compose-ui-tooling-preview"]
@@ -93,4 +100,4 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 java-library = { id = "java-library" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin-version" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt-plugin-version" }
-android-navigation-safe-args = { id = "androidx.navigation.safeargs.kotlin", version.ref = "android-navigation-safe-args-plugin-version" }
+screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot-plugin-version" }

@@ -1,9 +1,6 @@
 package com.sriniketh.feature_searchbooks
 
 import app.cash.turbine.test
-import com.sriniketh.core_data.usecases.AddBookToShelfUseCase
-import com.sriniketh.core_data.usecases.FetchBookInfoUseCase
-import com.sriniketh.core_data.usecases.IsBookInDbUseCase
 import com.sriniketh.feature_searchbooks.fakes.FakeBooksRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -24,23 +21,13 @@ import org.junit.Test
 class BookInfoViewModelTest {
 
     private lateinit var fakeBooksRepository: FakeBooksRepository
-    private lateinit var fetchBookInfoUseCase: FetchBookInfoUseCase
-    private lateinit var addBookToShelfUseCase: AddBookToShelfUseCase
-    private lateinit var isBookInDbUseCase: IsBookInDbUseCase
     private lateinit var viewModel: BookInfoViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(StandardTestDispatcher())
         fakeBooksRepository = FakeBooksRepository()
-        fetchBookInfoUseCase = FetchBookInfoUseCase(fakeBooksRepository)
-        addBookToShelfUseCase = AddBookToShelfUseCase(fakeBooksRepository)
-        isBookInDbUseCase = IsBookInDbUseCase(fakeBooksRepository)
-        viewModel = BookInfoViewModel(
-            fetchBookInfoUseCase,
-            addBookToShelfUseCase,
-            isBookInDbUseCase
-        )
+        viewModel = BookInfoViewModel(fakeBooksRepository)
     }
 
     @After
@@ -179,6 +166,60 @@ class BookInfoViewModelTest {
                 awaitItem()
             )
         }
+    }
+
+    @Test
+    fun `when add book to shelf is called then loading state is set to true`() = runTest {
+        fakeBooksRepository.doesBookExistResult = false
+
+        viewModel.getBookDetail("test-volume-id")
+        advanceUntilIdle()
+
+        val addToShelf = viewModel.uiState.value.addBookToShelf
+
+        viewModel.uiState.test {
+            val currentState = awaitItem()
+            assertFalse(currentState.isLoading)
+
+            addToShelf()
+
+            val loadingState = awaitItem()
+            assertTrue(loadingState.isLoading)
+
+            skipItems(1)
+        }
+    }
+
+    @Test
+    fun `when add book to shelf fails then loading is set to false and error is shown`() = runTest {
+        fakeBooksRepository.doesBookExistResult = false
+        fakeBooksRepository.shouldInsertBookIntoDboThrowException = true
+
+        viewModel.getBookDetail("test-volume-id")
+        advanceUntilIdle()
+
+        val addToShelf = viewModel.uiState.value.addBookToShelf
+
+        viewModel.effects.test {
+            addToShelf()
+
+            assertEquals(
+                BookInfoEffect.ShowMessage(R.string.add_to_bookshelf_error_message),
+                awaitItem()
+            )
+        }
+
+        val finalState = viewModel.uiState.value
+        assertFalse(finalState.isLoading)
+        assertTrue(finalState.canAddToShelf)
+    }
+
+    @Test
+    fun `when get book detail succeeds then book id is passed to does book exist in db`() = runTest {
+        viewModel.getBookDetail("test-volume-id")
+        advanceUntilIdle()
+
+        assertEquals("test-id", fakeBooksRepository.bookIdPassed)
     }
 
     @Test

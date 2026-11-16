@@ -4,9 +4,8 @@ import android.net.Uri
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sriniketh.core_data.usecases.DeleteHighlightUseCase
+import com.sriniketh.core_data.HighlightsRepository
 import com.sriniketh.core_data.usecases.ExportHighlightsUseCase
-import com.sriniketh.core_data.usecases.GetAllSavedHighlightsUseCase
 import com.sriniketh.core_models.book.Highlight
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -24,8 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ViewHighlightsViewModel @Inject constructor(
-    private val getAllSavedHighlightsUseCase: GetAllSavedHighlightsUseCase,
-    private val deleteHighlightUseCase: DeleteHighlightUseCase,
+    private val highlightsRepository: HighlightsRepository,
     private val exportHighlightsUseCase: ExportHighlightsUseCase
 ) : ViewModel() {
 
@@ -42,7 +40,7 @@ class ViewHighlightsViewModel @Inject constructor(
             _highlightsUIStateFlow.update { state ->
                 state.copy(isLoading = true)
             }
-            getAllSavedHighlightsUseCase(bookId).collect { result ->
+            highlightsRepository.getAllHighlightsForBookFromDb(bookId).collect { result ->
                 if (result.isSuccess) {
                     val highlights = result.getOrThrow().sortedBy { it.savedOnTimestamp }
                     _highlightsUIStateFlow.update { state ->
@@ -87,7 +85,7 @@ class ViewHighlightsViewModel @Inject constructor(
             _highlightsUIStateFlow.update { state ->
                 state.copy(isLoading = true)
             }
-            val result = deleteHighlightUseCase.invoke(highlightId)
+            val result = highlightsRepository.deleteHighlightFromDb(highlightId)
             if (result.isFailure) {
                 _highlightsUIStateFlow.update { state ->
                     state.copy(isLoading = false)

@@ -1,0 +1,30 @@
+coverage:
+  status:
+    project: off
+    patch: off
+
+comment:
+  layout: "diff, flags, files"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+  hide_project_coverage: false
+
+ignore:
+  - "**/build/**"
+  - "**/R.java"
+  - "**/R.kt"
+  - "**/BuildConfig.java"
+  - "**/BuildConfig.kt"
+  - "**/*_Factory.kt"
+  - "**/*_Factory.java"
+  - "**/*_MembersInjector.kt"
+  - "**/*_MembersInjector.java"
+  - "**/*_HiltModules.kt"
+  - "**/*_HiltModules.java"
+  - "**/Hilt_*.kt"
+  - "**/Hilt_*.java"
+  - "**/hilt_aggregated_deps/**"
+  - "**/dagger/**"
+  - "**/di/**"

@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/check-docs-drift.sh\"",
+            "timeout": 15,
+            "statusMessage": "Checking docs stayed in sync with structural changes..."
+          }
+        ]
+      }
+    ]
+  }
+}
