@@ -6,6 +6,10 @@ import com.sriniketh.core_data.fakes.FakeHighlightsRepository
 import com.sriniketh.core_data.models.HighlightsExport
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -16,6 +20,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ExportHighlightsUseCaseTest {
 
     private lateinit var fakeBooksRepository: FakeBooksRepository
@@ -51,6 +56,26 @@ class ExportHighlightsUseCaseTest {
         assertTrue(writtenContent.contains("Test highlight text"))
         assertEquals("test_title_export.json", fakeFileSource.lastWrittenFileName)
     }
+
+    @Test
+    fun `propagates CancellationException instead of converting it to a failure result when the calling coroutine is cancelled`() =
+        runTest {
+            fakeBooksRepository.shouldGetBookByIdFromDbSuspendForever = true
+            var thrown: Throwable? = null
+
+            val job = launch {
+                try {
+                    useCase("test-book-id")
+                } catch (throwable: Throwable) {
+                    thrown = throwable
+                }
+            }
+            runCurrent()
+            job.cancel()
+            job.join()
+
+            assertTrue(thrown is CancellationException)
+        }
 
     @Test
     fun `when book not found then returns failure`() = runTest {

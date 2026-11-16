@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 class HighlightsRepositoryImpl @Inject constructor(
     private val localHighlightsDataSource: HighlightDao
@@ -19,6 +20,8 @@ class HighlightsRepositoryImpl @Inject constructor(
         try {
             localHighlightsDataSource.insertHighlight(highlight.asHighlightEntity())
             Result.success(Unit)
+        } catch (cancellationException: CancellationException) {
+            throw cancellationException
         } catch (exception: Exception) {
             Timber.e(exception)
             Result.failure(exception)
@@ -32,6 +35,8 @@ class HighlightsRepositoryImpl @Inject constructor(
             } else {
                 Result.failure(NoSuchElementException("Highlight with id $highlightId not found"))
             }
+        } catch (cancellationException: CancellationException) {
+            throw cancellationException
         } catch (exception: Exception) {
             Timber.e(exception)
             Result.failure(exception)
@@ -51,6 +56,8 @@ class HighlightsRepositoryImpl @Inject constructor(
         try {
             localHighlightsDataSource.deleteHighlightById(highlightId)
             Result.success(Unit)
+        } catch (cancellationException: CancellationException) {
+            throw cancellationException
         } catch (exception: Exception) {
             Timber.e(exception)
             Result.failure(exception)

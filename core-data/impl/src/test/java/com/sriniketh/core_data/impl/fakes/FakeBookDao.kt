@@ -2,6 +2,7 @@ package com.sriniketh.core_data.impl.fakes
 
 import com.sriniketh.core_db.dao.BookDao
 import com.sriniketh.core_db.entity.BookEntity
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -12,7 +13,9 @@ class FakeBookDao : BookDao {
 
 	var insertedBookEntity: BookEntity? = null
 	var shouldInsertBookThrowException = false
+	var shouldInsertBookSuspendForever = false
 	override suspend fun insertBook(book: BookEntity) {
+		if (shouldInsertBookSuspendForever) awaitCancellation()
 		if (shouldInsertBookThrowException) {
 			throw RuntimeException("some error inserting book")
 		}
@@ -30,7 +33,9 @@ class FakeBookDao : BookDao {
 	}
 
 	var shouldDoesBookExistThrowException = false
+	var shouldDoesBookExistSuspendForever = false
 	override suspend fun doesBookExist(bookId: String): Boolean {
+		if (shouldDoesBookExistSuspendForever) awaitCancellation()
 		if (shouldDoesBookExistThrowException) {
 			throw RuntimeException("some error checking if book exists")
 		}
@@ -38,7 +43,9 @@ class FakeBookDao : BookDao {
 	}
 
 	var shouldGetBookByIdThrowException = false
+	var shouldGetBookByIdSuspendForever = false
 	override suspend fun getBookById(bookId: String): BookEntity? {
+		if (shouldGetBookByIdSuspendForever) awaitCancellation()
 		if (shouldGetBookByIdThrowException) {
 			throw RuntimeException("some error fetching book by id")
 		}
@@ -47,7 +54,9 @@ class FakeBookDao : BookDao {
 
 	var shouldDeleteBookThrowException = false
 	var deletedBookEntity: BookEntity? = null
+	var shouldDeleteBookSuspendForever = false
 	override suspend fun deleteBook(book: BookEntity) {
+		if (shouldDeleteBookSuspendForever) awaitCancellation()
 		if (shouldDeleteBookThrowException) {
 			throw RuntimeException("some error deleting book")
 		}

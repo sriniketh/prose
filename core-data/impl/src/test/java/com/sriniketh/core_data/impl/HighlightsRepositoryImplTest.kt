@@ -148,4 +148,28 @@ class HighlightsRepositoryImplTest {
             assertTrue(exception is RuntimeException)
             assertEquals("some error deleting highlight", exception?.message)
         }
+
+    @Test
+    fun `insertHighlightIntoDb propagates CancellationException when the calling coroutine is cancelled`() =
+        runTest {
+            val highlight = Highlight(
+                id = "possim", bookId = "eius", text = "ignota", savedOnTimestamp = "diam"
+            )
+            highlightDao.shouldInsertHighlightSuspendForever = true
+            assertPropagatesCancellation { highlightsRepositoryImpl.insertHighlightIntoDb(highlight) }
+        }
+
+    @Test
+    fun `loadHighlightFromDb propagates CancellationException when the calling coroutine is cancelled`() =
+        runTest {
+            highlightDao.shouldGetHighlightByIdSuspendForever = true
+            assertPropagatesCancellation { highlightsRepositoryImpl.loadHighlightFromDb("possim") }
+        }
+
+    @Test
+    fun `deleteHighlightFromDb propagates CancellationException when the calling coroutine is cancelled`() =
+        runTest {
+            highlightDao.shouldDeleteHighlightSuspendForever = true
+            assertPropagatesCancellation { highlightsRepositoryImpl.deleteHighlightFromDb("possim") }
+        }
 }

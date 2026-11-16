@@ -4,6 +4,7 @@ import com.sriniketh.core_data.BooksRepository
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
 import com.sriniketh.core_models.search.BookSearch
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -16,6 +17,7 @@ class FakeBooksRepository : BooksRepository {
 	var shouldDoesBookExistInDbThrowException = false
 	var shouldDeleteBookFromDbThrowException = false
 	var shouldGetBookByIdFromDbThrowException = false
+	var shouldGetBookByIdFromDbSuspendForever = false
 
 	var searchQueryPassed: String? = null
 	var volumeIdPassed: String? = null
@@ -85,6 +87,7 @@ class FakeBooksRepository : BooksRepository {
 	}
 
 	override suspend fun getBookByIdFromDb(bookId: String): Result<Book> {
+		if (shouldGetBookByIdFromDbSuspendForever) awaitCancellation()
 		return if (shouldGetBookByIdFromDbThrowException) {
 			Result.failure(NoSuchElementException("Book not found"))
 		} else {

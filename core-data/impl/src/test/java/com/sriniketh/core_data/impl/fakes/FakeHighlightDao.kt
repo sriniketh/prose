@@ -2,6 +2,7 @@ package com.sriniketh.core_data.impl.fakes
 
 import com.sriniketh.core_db.dao.HighlightDao
 import com.sriniketh.core_db.entity.HighlightEntity
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -10,7 +11,9 @@ class FakeHighlightDao : HighlightDao {
 
     var insertedHighlightEntity: HighlightEntity? = null
     var shouldInsertHighlightThrowException = false
+    var shouldInsertHighlightSuspendForever = false
     override suspend fun insertHighlight(highlightEntity: HighlightEntity) {
+        if (shouldInsertHighlightSuspendForever) awaitCancellation()
         if (shouldInsertHighlightThrowException) {
             throw RuntimeException("some error inserting highlight")
         }
@@ -19,7 +22,9 @@ class FakeHighlightDao : HighlightDao {
 
 	var highlightEntityToReturn: HighlightEntity? = null
 	var shouldGetHighlightByIdThrowException = false
+	var shouldGetHighlightByIdSuspendForever = false
 	override suspend fun getHighlightById(id: String): HighlightEntity? {
+		if (shouldGetHighlightByIdSuspendForever) awaitCancellation()
 		if (shouldGetHighlightByIdThrowException) {
 			throw RuntimeException("some error fetching highlight by id")
 		}
@@ -41,7 +46,9 @@ class FakeHighlightDao : HighlightDao {
 
     var deletedHighlightId: String? = null
     var shouldDeleteHighlightThrowException = false
+    var shouldDeleteHighlightSuspendForever = false
     override suspend fun deleteHighlightById(id: String) {
+        if (shouldDeleteHighlightSuspendForever) awaitCancellation()
         if (shouldDeleteHighlightThrowException) {
             throw RuntimeException("some error deleting highlight")
         }

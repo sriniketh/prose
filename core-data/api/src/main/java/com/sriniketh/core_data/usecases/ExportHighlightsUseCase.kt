@@ -12,6 +12,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalSerializationApi::class)
 private val exportJson = Json {
@@ -58,6 +59,8 @@ class ExportHighlightsUseCase @Inject constructor(
         val fileName = "${book.info.title.lowercase().replace(" ", "_")}_export.json"
         val uri = fileSource.writeToFile(fileName, json)
         Result.success(uri)
+    } catch (cancellationException: CancellationException) {
+        throw cancellationException
     } catch (exception: Exception) {
         Result.failure(exception)
     }

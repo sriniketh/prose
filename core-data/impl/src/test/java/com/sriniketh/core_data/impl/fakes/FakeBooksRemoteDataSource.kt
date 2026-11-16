@@ -5,21 +5,26 @@ import com.sriniketh.prose.core_network.model.ImageLinks
 import com.sriniketh.prose.core_network.model.Volume
 import com.sriniketh.prose.core_network.model.VolumeInfo
 import com.sriniketh.prose.core_network.model.Volumes
+import kotlinx.coroutines.awaitCancellation
 
 class FakeBooksRemoteDataSource : BooksRemoteDataSource {
 
     var shouldGetVolumesThrowException = false
+    var shouldGetVolumesSuspendForever = false
     var searchQueryPassed: String? = null
     override suspend fun getVolumes(searchQuery: String): Volumes {
         searchQueryPassed = searchQuery
+        if (shouldGetVolumesSuspendForever) awaitCancellation()
         return if (shouldGetVolumesThrowException) throw RuntimeException("some error fetching volumes")
         else Volumes(items = listOf(volume1()))
     }
 
     var shouldGetVolumeThrowException = false
+    var shouldGetVolumeSuspendForever = false
     var volumeIdPassed: String? = null
     override suspend fun getVolume(volumeId: String): Volume {
         volumeIdPassed = volumeId
+        if (shouldGetVolumeSuspendForever) awaitCancellation()
         return if (shouldGetVolumeThrowException) throw RuntimeException("some error fetching volume")
         else volume1()
     }
