@@ -22,7 +22,9 @@ class FakeHighlightDao : HighlightDao {
 
 	var highlightEntityToReturn: HighlightEntity? = null
 	var shouldGetHighlightByIdThrowException = false
+	var shouldGetHighlightByIdSuspendForever = false
 	override suspend fun getHighlightById(id: String): HighlightEntity? {
+		if (shouldGetHighlightByIdSuspendForever) awaitCancellation()
 		if (shouldGetHighlightByIdThrowException) {
 			throw RuntimeException("some error fetching highlight by id")
 		}
@@ -44,7 +46,9 @@ class FakeHighlightDao : HighlightDao {
 
     var deletedHighlightId: String? = null
     var shouldDeleteHighlightThrowException = false
+    var shouldDeleteHighlightSuspendForever = false
     override suspend fun deleteHighlightById(id: String) {
+        if (shouldDeleteHighlightSuspendForever) awaitCancellation()
         if (shouldDeleteHighlightThrowException) {
             throw RuntimeException("some error deleting highlight")
         }

@@ -6,10 +6,6 @@ import com.sriniketh.core_data.impl.fakes.FakeBooksRemoteDataSource
 import com.sriniketh.core_db.entity.BookEntity
 import com.sriniketh.core_models.book.Book
 import com.sriniketh.core_models.book.BookInfo
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -18,7 +14,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class BooksRepositoryImplTest {
 
 	private lateinit var booksRemoteDataSource: FakeBooksRemoteDataSource
@@ -70,26 +65,6 @@ class BooksRepositoryImplTest {
 			val exception = result.exceptionOrNull()
 			assertTrue(exception is RuntimeException)
 			assertEquals("some error fetching volumes", exception?.message)
-		}
-
-	@Test
-	fun `searchForBooks propagates CancellationException instead of converting it to a failure Result when the calling coroutine is cancelled`() =
-		runTest {
-			booksRemoteDataSource.shouldGetVolumesSuspendForever = true
-			var thrown: Throwable? = null
-
-			val job = launch {
-				try {
-					booksRepositoryImpl.searchForBooks("some query")
-				} catch (throwable: Throwable) {
-					thrown = throwable
-				}
-			}
-			runCurrent()
-			job.cancel()
-			job.join()
-
-			assertTrue(thrown is CancellationException)
 		}
 
 	@Test
@@ -259,6 +234,48 @@ class BooksRepositoryImplTest {
 		assertTrue(result.exceptionOrNull() is RuntimeException)
 		assertEquals("some error fetching book by id", result.exceptionOrNull()?.message)
 	}
+
+	@Test
+	fun `searchForBooks propagates CancellationException when the calling coroutine is cancelled`() =
+		runTest {
+			booksRemoteDataSource.shouldGetVolumesSuspendForever = true
+			assertPropagatesCancellation { booksRepositoryImpl.searchForBooks("some query") }
+		}
+
+	@Test
+	fun `fetchBookInfo propagates CancellationException when the calling coroutine is cancelled`() =
+		runTest {
+			booksRemoteDataSource.shouldGetVolumeSuspendForever = true
+			assertPropagatesCancellation { booksRepositoryImpl.fetchBookInfo("someId1") }
+		}
+
+	@Test
+	fun `insertBookIntoDb propagates CancellationException when the calling coroutine is cancelled`() =
+		runTest {
+			bookDao.shouldInsertBookSuspendForever = true
+			assertPropagatesCancellation { booksRepositoryImpl.insertBookIntoDb(fakeBook("someId")) }
+		}
+
+	@Test
+	fun `doesBookExistInDb propagates CancellationException when the calling coroutine is cancelled`() =
+		runTest {
+			bookDao.shouldDoesBookExistSuspendForever = true
+			assertPropagatesCancellation { booksRepositoryImpl.doesBookExistInDb("someId") }
+		}
+
+	@Test
+	fun `getBookByIdFromDb propagates CancellationException when the calling coroutine is cancelled`() =
+		runTest {
+			bookDao.shouldGetBookByIdSuspendForever = true
+			assertPropagatesCancellation { booksRepositoryImpl.getBookByIdFromDb("someId") }
+		}
+
+	@Test
+	fun `deleteBookFromDb propagates CancellationException when the calling coroutine is cancelled`() =
+		runTest {
+			bookDao.shouldDeleteBookSuspendForever = true
+			assertPropagatesCancellation { booksRepositoryImpl.deleteBookFromDb(fakeBook("someId")) }
+		}
 
 	private fun fakeBook(bookId: String): Book = Book(
 		id = bookId, info = BookInfo(

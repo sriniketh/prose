@@ -20,9 +20,11 @@ class FakeBooksRemoteDataSource : BooksRemoteDataSource {
     }
 
     var shouldGetVolumeThrowException = false
+    var shouldGetVolumeSuspendForever = false
     var volumeIdPassed: String? = null
     override suspend fun getVolume(volumeId: String): Volume {
         volumeIdPassed = volumeId
+        if (shouldGetVolumeSuspendForever) awaitCancellation()
         return if (shouldGetVolumeThrowException) throw RuntimeException("some error fetching volume")
         else volume1()
     }
