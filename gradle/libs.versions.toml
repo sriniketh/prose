@@ -17,7 +17,7 @@ screenshot-plugin-version = "0.0.1-alpha16"
 # Library dependencies
 coroutines-android-version = "1.11.0"
 android-appcompat-version = "1.8.0"
-compose-bom-version = "2026.09.00"
+compose-bom-version = "2026.11.01"
 compose-nav-version = "2.10.2"
 hilt-version = "2.60.1"
 room-version = "2.8.5"
